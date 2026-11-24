@@ -3,127 +3,209 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Danh sách trang HTML</title>
+  <title>01_THUC_PHAM_DINH_DUONG — Mục lục HTML</title>
+  <style>
+    :root {
+      --bg: #f4f7f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px 16px 48px;
+    }
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(15, 118, 110, 0.18);
+      margin-bottom: 18px;
+    }
+    .header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .header p {
+      font-size: 0.92rem;
+      opacity: 0.92;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .search-box {
+      flex: 1 1 280px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+    .badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+    .warn {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 12px;
+    }
+    .item {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .item:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+    .item-title {
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: #0f172a;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+    .item-file {
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+      margin-bottom: 10px;
+    }
+    .item-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .empty {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--muted);
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+    }
+  </style>
 </head>
 <body>
-  <h1>Danh sách tệp HTML</h1>
-  <ul>
-    <li><a href="an-benh-tri.html">an-benh-tri</a></li>
-    <li><a href="an-uong-am-lich.html">an-uong-am-lich</a></li>
-    <li><a href="an-uong-can-chi.html">an-uong-can-chi</a></li>
-    <li><a href="an_uong_6_hanh.html">an_uong_6_hanh</a></li>
-    <li><a href="an_uong_bo_phan.html">an_uong_bo_phan</a></li>
-    <li><a href="auongn360.html">auongn360</a></li>
-    <li><a href="CACH_TINH_GIA_VON_MON_AN_NHA_HANG.html">CACH_TINH_GIA_VON_MON_AN_NHA_HANG</a></li>
-    <li><a href="cap-thuc-pham-ky-nhau.html">cap-thuc-pham-ky-nhau</a></li>
-    <li><a href="chay-cho-an-uong.html">chay-cho-an-uong</a></li>
-    <li><a href="chon-mau-trang-phuc.html">chon-mau-trang-phuc</a></li>
-    <li><a href="Chu_Kỳ_Thực_Phẩm_&_Thực_Vật.html">Chu_Kỳ_Thực_Phẩm_&_Thực_Vật</a></li>
-    <li><a href="chữa_bệnh.html">chữa_bệnh</a></li>
-    <li><a href="game-danh-sach-15-phan.html">game-danh-sach-15-phan</a></li>
-    <li><a href="game_3.html">game_3</a></li>
-    <li><a href="game_4.html">game_4</a></li>
-    <li><a href="game_5.html">game_5</a></li>
-    <li><a href="gio-i-xe-boi-bay-toi.html">gio-i-xe-boi-bay-toi</a></li>
-    <li><a href="gio-la-cq-noitang.html">gio-la-cq-noitang</a></li>
-    <li><a href="health_guide_auto_scroll.html">health_guide_auto_scroll</a></li>
-    <li><a href="khonguongnuocloc.html">khonguongnuocloc</a></li>
-    <li><a href="lich_van_nien_tra_cuu_ngu_hanh.html">lich_van_nien_tra_cuu_ngu_hanh</a></li>
-    <li><a href="Loc_Du_Lieu.html">Loc_Du_Lieu</a></li>
-    <li><a href="loc_âm_dương.html">loc_âm_dương</a></li>
-    <li><a href="mon-an-10.html">mon-an-10</a></li>
-    <li><a href="mon-an-13.html">mon-an-13</a></li>
-    <li><a href="mon-an-16.html">mon-an-16</a></li>
-    <li><a href="mon-an-19.html">mon-an-19</a></li>
-    <li><a href="mon-an-22.html">mon-an-22</a></li>
-    <li><a href="mon-an-25.html">mon-an-25</a></li>
-    <li><a href="mon-an-27.html">mon-an-27</a></li>
-    <li><a href="mon-an-30.html">mon-an-30</a></li>
-    <li><a href="mon-an-33.html">mon-an-33</a></li>
-    <li><a href="mon-an-36.html">mon-an-36</a></li>
-    <li><a href="mon-an-4.html">mon-an-4</a></li>
-    <li><a href="mon-an-6.html">mon-an-6</a></li>
-    <li><a href="mon-an-chua-benh-1.html">mon-an-chua-benh-1</a></li>
-    <li><a href="mon-an-chua-benh-10.html">mon-an-chua-benh-10</a></li>
-    <li><a href="mon-an-chua-benh-11.html">mon-an-chua-benh-11</a></li>
-    <li><a href="mon-an-chua-benh-12.html">mon-an-chua-benh-12</a></li>
-    <li><a href="mon-an-chua-benh-13.html">mon-an-chua-benh-13</a></li>
-    <li><a href="mon-an-chua-benh-14.html">mon-an-chua-benh-14</a></li>
-    <li><a href="mon-an-chua-benh-15.html">mon-an-chua-benh-15</a></li>
-    <li><a href="mon-an-chua-benh-2.html">mon-an-chua-benh-2</a></li>
-    <li><a href="mon-an-chua-benh-3.html">mon-an-chua-benh-3</a></li>
-    <li><a href="mon-an-chua-benh-4.html">mon-an-chua-benh-4</a></li>
-    <li><a href="mon-an-chua-benh-5.html">mon-an-chua-benh-5</a></li>
-    <li><a href="mon-an-chua-benh-6.html">mon-an-chua-benh-6</a></li>
-    <li><a href="mon-an-chua-benh-7.html">mon-an-chua-benh-7</a></li>
-    <li><a href="mon-an-chua-benh-8.html">mon-an-chua-benh-8</a></li>
-    <li><a href="mon-an-chua-benh-9.html">mon-an-chua-benh-9</a></li>
-    <li><a href="mon-tscl-3.html">mon-tscl-3</a></li>
-    <li><a href="mon-tscl-4.html">mon-tscl-4</a></li>
-    <li><a href="mon-tslc.html">mon-tslc</a></li>
-    <li><a href="montscl2.html">montscl2</a></li>
-    <li><a href="nap_tp_AD.html">nap_tp_AD</a></li>
-    <li><a href="ngay-mac-benh.html">ngay-mac-benh</a></li>
-    <li><a href="ngu-hanh-an-uong.html">ngu-hanh-an-uong</a></li>
-    <li><a href="ngu-hanh-chua-benh.html">ngu-hanh-chua-benh</a></li>
-    <li><a href="quanly_suckhoe.html">quanly_suckhoe</a></li>
-    <li><a href="quanlyngaytot.html">quanlyngaytot</a></li>
-    <li><a href="rau-cu-benh.html">rau-cu-benh</a></li>
-    <li><a href="robot.html">robot</a></li>
-    <li><a href="suc-khoe-tinh-cam.html">suc-khoe-tinh-cam</a></li>
-    <li><a href="Sổ_Tay_Dinh_Dưỡng.html">Sổ_Tay_Dinh_Dưỡng</a></li>
-    <li><a href="tao_prompt_an_uong.html">tao_prompt_an_uong</a></li>
-    <li><a href="task_3_Sức_khỏe_time_1330.html">task_3_Sức_khỏe_time_1330</a></li>
-    <li><a href="task_5_Sức_khỏe_time_1330.html">task_5_Sức_khỏe_time_1330</a></li>
-    <li><a href="task_9_Ngũ_hành_time_1542.html">task_9_Ngũ_hành_time_1542</a></li>
-    <li><a href="thap_dinh_duong.html">thap_dinh_duong</a></li>
-    <li><a href="theo-doi-sk-mua.html">theo-doi-sk-mua</a></li>
-    <li><a href="THO_NGU_HANH.html">THO_NGU_HANH</a></li>
-    <li><a href="thuc-don-cho-doi-truong.html">thuc-don-cho-doi-truong</a></li>
-    <li><a href="thuc-don-cho-lai-xe-o-to.html">thuc-don-cho-lai-xe-o-to</a></li>
-    <li><a href="thuc-don-cho-phi-cong.html">thuc-don-cho-phi-cong</a></li>
-    <li><a href="thuc-don-lai-tau-cano.html">thuc-don-lai-tau-cano</a></li>
-    <li><a href="thuc-don-nguoi-linh.html">thuc-don-nguoi-linh</a></li>
-    <li><a href="thuc-don-xe-may.html">thuc-don-xe-may</a></li>
-    <li><a href="thuc-don-xem-chieu.html">thuc-don-xem-chieu</a></li>
-    <li><a href="thuc-on-cho-lai-xe-o-to.html">thuc-on-cho-lai-xe-o-to</a></li>
-    <li><a href="thuc-on-cho-oi-truong.html">thuc-on-cho-oi-truong</a></li>
-    <li><a href="thuc-on-cho-phi-cong.html">thuc-on-cho-phi-cong</a></li>
-    <li><a href="thuc-on-i-linh.html">thuc-on-i-linh</a></li>
-    <li><a href="thuc-on-lai-tau-cano.html">thuc-on-lai-tau-cano</a></li>
-    <li><a href="thuc-on-xe-may.html">thuc-on-xe-may</a></li>
-    <li><a href="thuc-on-xem-chieu.html">thuc-on-xem-chieu</a></li>
-    <li><a href="thuc-pham-ky-nhau.html">thuc-pham-ky-nhau</a></li>
-    <li><a href="thuc_an_tong_hop.html">thuc_an_tong_hop</a></li>
-    <li><a href="thuc_don.html">thuc_don</a></li>
-    <li><a href="thuc_don_can_bang.html">thuc_don_can_bang</a></li>
-    <li><a href="thuc_don_dong_y_2.html">thuc_don_dong_y_2</a></li>
-    <li><a href="thuc_don_dong_y_3.html">thuc_don_dong_y_3</a></li>
-    <li><a href="thuc_don_nguoi_linh.html">thuc_don_nguoi_linh</a></li>
-    <li><a href="thuc_don_nguoi_linh_2.html">thuc_don_nguoi_linh_2</a></li>
-    <li><a href="thuc_don_nguoi_linh_3.html">thuc_don_nguoi_linh_3</a></li>
-    <li><a href="thucdon_dong_y_1.html">thucdon_dong_y_1</a></li>
-    <li><a href="THỰC_PHẨM_TỦ_LẠNH_-_01.html">THỰC_PHẨM_TỦ_LẠNH_-_01</a></li>
-    <li><a href="THỰC_PHẨM_TỦ_LẠNH_-_can_chi.html">THỰC_PHẨM_TỦ_LẠNH_-_can_chi</a></li>
-    <li><a href="THỰC_PHẨM_TỦ_LẠNH_-_thực_phẩm_tủ_lạnh.html">THỰC_PHẨM_TỦ_LẠNH_-_thực_phẩm_tủ_lạnh</a></li>
-    <li><a href="tiet-khi-mon-an.html">tiet-khi-mon-an</a></li>
-    <li><a href="tiet-khi.html">tiet-khi</a></li>
-    <li><a href="tinh-can-chi-theo-bang.html">tinh-can-chi-theo-bang</a></li>
-    <li><a href="trieu_chung_thuc_pham.html">trieu_chung_thuc_pham</a></li>
-    <li><a href="Triệu_chứng_thực_phẩm.html">Triệu_chứng_thực_phẩm</a></li>
-    <li><a href="TyLeLTV_CAC.html">TyLeLTV_CAC</a></li>
-    <li><a href="viec-12-con-giap.html">viec-12-con-giap</a></li>
-    <li><a href="web1_man_ngot.html">web1_man_ngot</a></li>
-    <li><a href="web2_chua_cay.html">web2_chua_cay</a></li>
-    <li><a href="web3_man_dang.html">web3_man_dang</a></li>
-    <li><a href="web4_chua_ngot.html">web4_chua_ngot</a></li>
-    <li><a href="web5_dang_cay.html">web5_dang_cay</a></li>
-    <li><a href="web6_khoaicam.html">web6_khoaicam</a></li>
-    <li><a href="web7_dinhduong.html">web7_dinhduong</a></li>
-    <li><a href="web8_anuong.html">web8_anuong</a></li>
-    <li><a href="webdinhduong.html">webdinhduong</a></li>
-    <li><a href="xem-cap-bac.html">xem-cap-bac</a></li>
-    <li><a href="Ăn_uống_6_hành.html">Ăn_uống_6_hành</a></li>
-  </ul>
+  <div class="container">
+    <div class="header">
+      <h1>01_THUC_PHAM_DINH_DUONG</h1>
+      <p>Kho lưu trữ: namnguyen7133-png/thuc-pham-dinh-duong • Tổng số tệp HTML: 109</p>
+    </div>
+    
+    <div class="toolbar">
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Gõ từ khóa để lọc nhanh tệp HTML..." autocomplete="off" />
+      </div>
+      <div id="countBadge" class="badge">Hiển thị 109 / 109 tệp</div>
+    </div>
+    <div id="listGrid" class="grid"></div>
+    <div id="emptyState" class="empty" style="display:none;">Không tìm thấy tệp HTML phù hợp với từ khóa.</div>
+  </div>
+
+  <script>
+    const ITEMS = [{"name": "CACH_TINH_GIA_VON_MON_AN_NHA_HANG.html", "title": "CACH TINH GIA VON MON AN NHA HANG", "rel_path": "CACH_TINH_GIA_VON_MON_AN_NHA_HANG.html", "size_text": "40.3 KB"}, {"name": "Chu_Kỳ_Thực_Phẩm_&_Thực_Vật.html", "title": "Chu Kỳ Thực Phẩm & Thực Vật", "rel_path": "Chu_Kỳ_Thực_Phẩm_&_Thực_Vật.html", "size_text": "40.5 KB"}, {"name": "Loc_Du_Lieu.html", "title": "Loc Du Lieu", "rel_path": "Loc_Du_Lieu.html", "size_text": "4.2 KB"}, {"name": "Sổ_Tay_Dinh_Dưỡng.html", "title": "Sổ Tay Dinh Dưỡng", "rel_path": "Sổ_Tay_Dinh_Dưỡng.html", "size_text": "106.7 KB"}, {"name": "THO_NGU_HANH.html", "title": "THO NGU HANH", "rel_path": "THO_NGU_HANH.html", "size_text": "2.7 KB"}, {"name": "THỰC_PHẨM_TỦ_LẠNH_-_01.html", "title": "THỰC PHẨM TỦ LẠNH   01", "rel_path": "THỰC_PHẨM_TỦ_LẠNH_-_01.html", "size_text": "95.0 KB"}, {"name": "THỰC_PHẨM_TỦ_LẠNH_-_can_chi.html", "title": "THỰC PHẨM TỦ LẠNH   can chi", "rel_path": "THỰC_PHẨM_TỦ_LẠNH_-_can_chi.html", "size_text": "4.7 KB"}, {"name": "THỰC_PHẨM_TỦ_LẠNH_-_thực_phẩm_tủ_lạnh.html", "title": "THỰC PHẨM TỦ LẠNH   thực phẩm tủ lạnh", "rel_path": "THỰC_PHẨM_TỦ_LẠNH_-_thực_phẩm_tủ_lạnh.html", "size_text": "24.4 KB"}, {"name": "Triệu_chứng_thực_phẩm.html", "title": "Triệu chứng thực phẩm", "rel_path": "Triệu_chứng_thực_phẩm.html", "size_text": "17.8 KB"}, {"name": "TyLeLTV_CAC.html", "title": "TyLeLTV CAC", "rel_path": "TyLeLTV_CAC.html", "size_text": "19.1 KB"}, {"name": "an-benh-tri.html", "title": "an benh tri", "rel_path": "an-benh-tri.html", "size_text": "57.5 KB"}, {"name": "an-uong-am-lich.html", "title": "an uong am lich", "rel_path": "an-uong-am-lich.html", "size_text": "38.4 KB"}, {"name": "an-uong-can-chi.html", "title": "an uong can chi", "rel_path": "an-uong-can-chi.html", "size_text": "31.3 KB"}, {"name": "an_uong_6_hanh.html", "title": "an uong 6 hanh", "rel_path": "an_uong_6_hanh.html", "size_text": "11.7 KB"}, {"name": "an_uong_bo_phan.html", "title": "an uong bo phan", "rel_path": "an_uong_bo_phan.html", "size_text": "7.1 KB"}, {"name": "auongn360.html", "title": "auongn360", "rel_path": "auongn360.html", "size_text": "48.9 KB"}, {"name": "cap-thuc-pham-ky-nhau.html", "title": "cap thuc pham ky nhau", "rel_path": "cap-thuc-pham-ky-nhau.html", "size_text": "19.6 KB"}, {"name": "chay-cho-an-uong.html", "title": "chay cho an uong", "rel_path": "chay-cho-an-uong.html", "size_text": "28.4 KB"}, {"name": "chon-mau-trang-phuc.html", "title": "chon mau trang phuc", "rel_path": "chon-mau-trang-phuc.html", "size_text": "63.1 KB"}, {"name": "chữa_bệnh.html", "title": "chữa bệnh", "rel_path": "chữa_bệnh.html", "size_text": "33.8 KB"}, {"name": "game-danh-sach-15-phan.html", "title": "game danh sach 15 phan", "rel_path": "game-danh-sach-15-phan.html", "size_text": "29.0 KB"}, {"name": "game_3.html", "title": "game 3", "rel_path": "game_3.html", "size_text": "7.7 KB"}, {"name": "game_4.html", "title": "game 4", "rel_path": "game_4.html", "size_text": "5.9 KB"}, {"name": "game_5.html", "title": "game 5", "rel_path": "game_5.html", "size_text": "6.5 KB"}, {"name": "gio-i-xe-boi-bay-toi.html", "title": "gio i xe boi bay toi", "rel_path": "gio-i-xe-boi-bay-toi.html", "size_text": "32.2 KB"}, {"name": "gio-la-cq-noitang.html", "title": "gio la cq noitang", "rel_path": "gio-la-cq-noitang.html", "size_text": "18.8 KB"}, {"name": "health_guide_auto_scroll.html", "title": "health guide auto scroll", "rel_path": "health_guide_auto_scroll.html", "size_text": "22.5 KB"}, {"name": "khonguongnuocloc.html", "title": "khonguongnuocloc", "rel_path": "khonguongnuocloc.html", "size_text": "17.6 KB"}, {"name": "lich_van_nien_tra_cuu_ngu_hanh.html", "title": "lich van nien tra cuu ngu hanh", "rel_path": "lich_van_nien_tra_cuu_ngu_hanh.html", "size_text": "99.1 KB"}, {"name": "loc_âm_dương.html", "title": "loc âm dương", "rel_path": "loc_âm_dương.html", "size_text": "21.4 KB"}, {"name": "mon-an-10.html", "title": "mon an 10", "rel_path": "mon-an-10.html", "size_text": "24.4 KB"}, {"name": "mon-an-13.html", "title": "mon an 13", "rel_path": "mon-an-13.html", "size_text": "23.4 KB"}, {"name": "mon-an-16.html", "title": "mon an 16", "rel_path": "mon-an-16.html", "size_text": "21.5 KB"}, {"name": "mon-an-19.html", "title": "mon an 19", "rel_path": "mon-an-19.html", "size_text": "23.3 KB"}, {"name": "mon-an-22.html", "title": "mon an 22", "rel_path": "mon-an-22.html", "size_text": "27.9 KB"}, {"name": "mon-an-25.html", "title": "mon an 25", "rel_path": "mon-an-25.html", "size_text": "28.2 KB"}, {"name": "mon-an-27.html", "title": "mon an 27", "rel_path": "mon-an-27.html", "size_text": "25.7 KB"}, {"name": "mon-an-30.html", "title": "mon an 30", "rel_path": "mon-an-30.html", "size_text": "37.0 KB"}, {"name": "mon-an-33.html", "title": "mon an 33", "rel_path": "mon-an-33.html", "size_text": "39.3 KB"}, {"name": "mon-an-36.html", "title": "mon an 36", "rel_path": "mon-an-36.html", "size_text": "42.0 KB"}, {"name": "mon-an-4.html", "title": "mon an 4", "rel_path": "mon-an-4.html", "size_text": "15.1 KB"}, {"name": "mon-an-6.html", "title": "mon an 6", "rel_path": "mon-an-6.html", "size_text": "39.3 KB"}, {"name": "mon-an-chua-benh-1.html", "title": "mon an chua benh 1", "rel_path": "mon-an-chua-benh-1.html", "size_text": "21.3 KB"}, {"name": "mon-an-chua-benh-10.html", "title": "mon an chua benh 10", "rel_path": "mon-an-chua-benh-10.html", "size_text": "22.6 KB"}, {"name": "mon-an-chua-benh-11.html", "title": "mon an chua benh 11", "rel_path": "mon-an-chua-benh-11.html", "size_text": "22.6 KB"}, {"name": "mon-an-chua-benh-12.html", "title": "mon an chua benh 12", "rel_path": "mon-an-chua-benh-12.html", "size_text": "22.9 KB"}, {"name": "mon-an-chua-benh-13.html", "title": "mon an chua benh 13", "rel_path": "mon-an-chua-benh-13.html", "size_text": "22.9 KB"}, {"name": "mon-an-chua-benh-14.html", "title": "mon an chua benh 14", "rel_path": "mon-an-chua-benh-14.html", "size_text": "25.3 KB"}, {"name": "mon-an-chua-benh-15.html", "title": "mon an chua benh 15", "rel_path": "mon-an-chua-benh-15.html", "size_text": "23.5 KB"}, {"name": "mon-an-chua-benh-2.html", "title": "mon an chua benh 2", "rel_path": "mon-an-chua-benh-2.html", "size_text": "21.5 KB"}, {"name": "mon-an-chua-benh-3.html", "title": "mon an chua benh 3", "rel_path": "mon-an-chua-benh-3.html", "size_text": "21.4 KB"}, {"name": "mon-an-chua-benh-4.html", "title": "mon an chua benh 4", "rel_path": "mon-an-chua-benh-4.html", "size_text": "21.3 KB"}, {"name": "mon-an-chua-benh-5.html", "title": "mon an chua benh 5", "rel_path": "mon-an-chua-benh-5.html", "size_text": "21.2 KB"}, {"name": "mon-an-chua-benh-6.html", "title": "mon an chua benh 6", "rel_path": "mon-an-chua-benh-6.html", "size_text": "22.0 KB"}, {"name": "mon-an-chua-benh-7.html", "title": "mon an chua benh 7", "rel_path": "mon-an-chua-benh-7.html", "size_text": "21.8 KB"}, {"name": "mon-an-chua-benh-8.html", "title": "mon an chua benh 8", "rel_path": "mon-an-chua-benh-8.html", "size_text": "21.8 KB"}, {"name": "mon-an-chua-benh-9.html", "title": "mon an chua benh 9", "rel_path": "mon-an-chua-benh-9.html", "size_text": "21.7 KB"}, {"name": "mon-tscl-3.html", "title": "mon tscl 3", "rel_path": "mon-tscl-3.html", "size_text": "52.0 KB"}, {"name": "mon-tscl-4.html", "title": "mon tscl 4", "rel_path": "mon-tscl-4.html", "size_text": "43.8 KB"}, {"name": "mon-tslc.html", "title": "mon tslc", "rel_path": "mon-tslc.html", "size_text": "23.5 KB"}, {"name": "montscl2.html", "title": "montscl2", "rel_path": "montscl2.html", "size_text": "35.6 KB"}, {"name": "nap_tp_AD.html", "title": "nap tp AD", "rel_path": "nap_tp_AD.html", "size_text": "11.3 KB"}, {"name": "ngay-mac-benh.html", "title": "ngay mac benh", "rel_path": "ngay-mac-benh.html", "size_text": "45.4 KB"}, {"name": "ngu-hanh-an-uong.html", "title": "ngu hanh an uong", "rel_path": "ngu-hanh-an-uong.html", "size_text": "30.0 KB"}, {"name": "ngu-hanh-chua-benh.html", "title": "ngu hanh chua benh", "rel_path": "ngu-hanh-chua-benh.html", "size_text": "21.7 KB"}, {"name": "quanly_suckhoe.html", "title": "quanly suckhoe", "rel_path": "quanly_suckhoe.html", "size_text": "5.0 KB"}, {"name": "quanlyngaytot.html", "title": "quanlyngaytot", "rel_path": "quanlyngaytot.html", "size_text": "25.1 KB"}, {"name": "rau-cu-benh.html", "title": "rau cu benh", "rel_path": "rau-cu-benh.html", "size_text": "41.7 KB"}, {"name": "robot.html", "title": "robot", "rel_path": "robot.html", "size_text": "4.2 KB"}, {"name": "suc-khoe-tinh-cam.html", "title": "suc khoe tinh cam", "rel_path": "suc-khoe-tinh-cam.html", "size_text": "28.3 KB"}, {"name": "tao_prompt_an_uong.html", "title": "tao prompt an uong", "rel_path": "tao_prompt_an_uong.html", "size_text": "6.1 KB"}, {"name": "task_3_Sức_khỏe_time_1330.html", "title": "task 3 Sức khỏe time 1330", "rel_path": "task_3_Sức_khỏe_time_1330.html", "size_text": "870 B"}, {"name": "task_5_Sức_khỏe_time_1330.html", "title": "task 5 Sức khỏe time 1330", "rel_path": "task_5_Sức_khỏe_time_1330.html", "size_text": "870 B"}, {"name": "task_9_Ngũ_hành_time_1542.html", "title": "task 9 Ngũ hành time 1542", "rel_path": "task_9_Ngũ_hành_time_1542.html", "size_text": "868 B"}, {"name": "thap_dinh_duong.html", "title": "thap dinh duong", "rel_path": "thap_dinh_duong.html", "size_text": "6.8 KB"}, {"name": "theo-doi-sk-mua.html", "title": "theo doi sk mua", "rel_path": "theo-doi-sk-mua.html", "size_text": "37.5 KB"}, {"name": "thuc-don-cho-doi-truong.html", "title": "thuc don cho doi truong", "rel_path": "thuc-don-cho-doi-truong.html", "size_text": "22.8 KB"}, {"name": "thuc-don-cho-lai-xe-o-to.html", "title": "thuc don cho lai xe o to", "rel_path": "thuc-don-cho-lai-xe-o-to.html", "size_text": "25.0 KB"}, {"name": "thuc-don-cho-phi-cong.html", "title": "thuc don cho phi cong", "rel_path": "thuc-don-cho-phi-cong.html", "size_text": "21.3 KB"}, {"name": "thuc-don-lai-tau-cano.html", "title": "thuc don lai tau cano", "rel_path": "thuc-don-lai-tau-cano.html", "size_text": "19.2 KB"}, {"name": "thuc-don-nguoi-linh.html", "title": "thuc don nguoi linh", "rel_path": "thuc-don-nguoi-linh.html", "size_text": "5.3 KB"}, {"name": "thuc-don-xe-may.html", "title": "thuc don xe may", "rel_path": "thuc-don-xe-may.html", "size_text": "7.1 KB"}, {"name": "thuc-don-xem-chieu.html", "title": "thuc don xem chieu", "rel_path": "thuc-don-xem-chieu.html", "size_text": "22.9 KB"}, {"name": "thuc-pham-ky-nhau.html", "title": "thuc pham ky nhau", "rel_path": "thuc-pham-ky-nhau.html", "size_text": "16.5 KB"}, {"name": "thuc_an_tong_hop.html", "title": "thuc an tong hop", "rel_path": "thuc_an_tong_hop.html", "size_text": "4.4 KB"}, {"name": "thuc_don.html", "title": "thuc don", "rel_path": "thuc_don.html", "size_text": "12.4 KB"}, {"name": "thuc_don_can_bang.html", "title": "thuc don can bang", "rel_path": "thuc_don_can_bang.html", "size_text": "21.8 KB"}, {"name": "thuc_don_dong_y_2.html", "title": "thuc don dong y 2", "rel_path": "thuc_don_dong_y_2.html", "size_text": "22.9 KB"}, {"name": "thuc_don_dong_y_3.html", "title": "thuc don dong y 3", "rel_path": "thuc_don_dong_y_3.html", "size_text": "22.5 KB"}, {"name": "thuc_don_nguoi_linh.html", "title": "thuc don nguoi linh", "rel_path": "thuc_don_nguoi_linh.html", "size_text": "9.3 KB"}, {"name": "thuc_don_nguoi_linh_2.html", "title": "thuc don nguoi linh 2", "rel_path": "thuc_don_nguoi_linh_2.html", "size_text": "39.9 KB"}, {"name": "thuc_don_nguoi_linh_3.html", "title": "thuc don nguoi linh 3", "rel_path": "thuc_don_nguoi_linh_3.html", "size_text": "14.4 KB"}, {"name": "thucdon_dong_y_1.html", "title": "thucdon dong y 1", "rel_path": "thucdon_dong_y_1.html", "size_text": "17.1 KB"}, {"name": "tiet-khi-mon-an.html", "title": "tiet khi mon an", "rel_path": "tiet-khi-mon-an.html", "size_text": "55.4 KB"}, {"name": "tiet-khi.html", "title": "tiet khi", "rel_path": "tiet-khi.html", "size_text": "73.2 KB"}, {"name": "tinh-can-chi-theo-bang.html", "title": "tinh can chi theo bang", "rel_path": "tinh-can-chi-theo-bang.html", "size_text": "49.7 KB"}, {"name": "trieu_chung_thuc_pham.html", "title": "trieu chung thuc pham", "rel_path": "trieu_chung_thuc_pham.html", "size_text": "16.8 KB"}, {"name": "viec-12-con-giap.html", "title": "viec 12 con giap", "rel_path": "viec-12-con-giap.html", "size_text": "21.4 KB"}, {"name": "web1_man_ngot.html", "title": "web1 man ngot", "rel_path": "web1_man_ngot.html", "size_text": "17.3 KB"}, {"name": "web2_chua_cay.html", "title": "web2 chua cay", "rel_path": "web2_chua_cay.html", "size_text": "15.9 KB"}, {"name": "web3_man_dang.html", "title": "web3 man dang", "rel_path": "web3_man_dang.html", "size_text": "15.5 KB"}, {"name": "web4_chua_ngot.html", "title": "web4 chua ngot", "rel_path": "web4_chua_ngot.html", "size_text": "14.1 KB"}, {"name": "web5_dang_cay.html", "title": "web5 dang cay", "rel_path": "web5_dang_cay.html", "size_text": "13.5 KB"}, {"name": "web6_khoaicam.html", "title": "web6 khoaicam", "rel_path": "web6_khoaicam.html", "size_text": "6.9 KB"}, {"name": "web7_dinhduong.html", "title": "web7 dinhduong", "rel_path": "web7_dinhduong.html", "size_text": "11.8 KB"}, {"name": "web8_anuong.html", "title": "web8 anuong", "rel_path": "web8_anuong.html", "size_text": "22.0 KB"}, {"name": "webdinhduong.html", "title": "webdinhduong", "rel_path": "webdinhduong.html", "size_text": "18.3 KB"}, {"name": "xem-cap-bac.html", "title": "xem cap bac", "rel_path": "xem-cap-bac.html", "size_text": "24.0 KB"}, {"name": "Ăn_uống_6_hành.html", "title": "Ăn uống 6 hành", "rel_path": "Ăn_uống_6_hành.html", "size_text": "11.9 KB"}];
+    const grid = document.getElementById("listGrid");
+    const input = document.getElementById("searchInput");
+    const badge = document.getElementById("countBadge");
+    const empty = document.getElementById("emptyState");
+
+    function render(filterText = "") {
+      const q = filterText.trim().toLowerCase();
+      const filtered = q
+        ? ITEMS.filter(x =>
+            x.title.toLowerCase().includes(q) ||
+            x.name.toLowerCase().includes(q) ||
+            x.rel_path.toLowerCase().includes(q)
+          )
+        : ITEMS;
+
+      badge.textContent = `Hiển thị ${filtered.length} / ${ITEMS.length} tệp`;
+      if (!filtered.length) {
+        grid.innerHTML = "";
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+      grid.innerHTML = filtered.map(x => `
+        <a class="item" href="${encodeURI(x.rel_path)}">
+          <div>
+            <div class="item-title">${escapeHtml(x.title)}</div>
+            <div class="item-file">${escapeHtml(x.rel_path)}</div>
+          </div>
+          <div class="item-meta">
+            <span>${escapeHtml(x.size_text)}</span>
+            <span>Mở tệp →</span>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    input.addEventListener("input", e => render(e.target.value));
+    render("");
+  </script>
 </body>
 </html>
