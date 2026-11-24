@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng Dụng Thời Tiết & Quân Lực - Hà Nội (Mặc định)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f9; color: #333; }
+        h1, h2 { color: #2c3e50; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: top; }
+        th { background-color: #2c3e50; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .location-tag { background: #FFD700; padding: 8px 15px; border-radius: 5px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ TRANG THÔNG TIN THỜI TIẾT & THỰC ĐƠN NGƯỜI LÍNH</h1>
+    <div class="location-tag">📍 KHU VỰC ĐANG XEM: HÀ NỘI (MẶC ĐỊNH)</div>
+    
+    <div style="background: #ffffff; padding: 12px 15px; margin-bottom: 20px; border: 1px solid #dcdcdc; border-radius: 8px; display: flex; gap: 10px; align-items: center;">
+        <a href="thuc_don_nguoi_linh.html" style="background: #2c3e50; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">🏠 Thời Tiết</a>
+        <span style="color: #ccc;">|</span>
+        <select onchange="if(this.value) window.location.href=this.value;" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px; background: #f8f9fa; cursor: pointer;">
+            <option value="">📁 Chọn Tệp / Chuyên Đề Khác...</option>
+            <option value="file:///D:/HTML/github_data/001-tim-chu-ra-so-23.html">001-tim-chu-ra-so-23</option>
+<option value="file:///D:/HTML/github_data/002-ket-hop-ai-grok.html">002-ket-hop-ai-grok</option>
+<option value="file:///D:/HTML/github_data/003-lam-affliate-chuyen-nghiep.html">003-lam-affliate-chuyen-nghiep</option>
+<option value="file:///D:/HTML/github_data/005-tim-chu-voi-360-o.html">005-tim-chu-voi-360-o</option>
+<option value="file:///D:/HTML/github_data/007-lam-affliate-gemini.html">007-lam-affliate-gemini</option>
+<option value="file:///D:/HTML/github_data/009-hai-ben-cung-thang.html">009-hai-ben-cung-thang</option>
+<option value="file:///D:/HTML/github_data/011-tinh-can-chi-theo-lich-am.html">011-tinh-can-chi-theo-lich-am</option>
+<option value="file:///D:/HTML/github_data/013-xem-than-so-hoc.html">013-xem-than-so-hoc</option>
+<option value="file:///D:/HTML/github_data/014-tim-muc-ong-bao-hiem.html">014-tim-muc-ong-bao-hiem</option>
+<option value="file:///D:/HTML/github_data/015-than-so-hoc.html">015-than-so-hoc</option>
+<option value="file:///D:/HTML/github_data/016-tim-gio-chu-theo-chu-nhap-vao.html">016-tim-gio-chu-theo-chu-nhap-vao</option>
+<option value="file:///D:/HTML/github_data/017-lam-nguoi-grok.html">017-lam-nguoi-grok</option>
+<option value="file:///D:/HTML/github_data/018-thuc-on-bat-quai.html">018-thuc-on-bat-quai</option>
+<option value="file:///D:/HTML/github_data/019-chon-mau-xe-may-ien.html">019-chon-mau-xe-may-ien</option>
+<option value="file:///D:/HTML/github_data/020-lam-nguoi-gemini.html">020-lam-nguoi-gemini</option>
+<option value="file:///D:/HTML/github_data/021-chon-mau-xe-grok.html">021-chon-mau-xe-grok</option>
+<option value="file:///D:/HTML/github_data/022-tiet-kiem-tien-chat-gpt.html">022-tiet-kiem-tien-chat-gpt</option>
+<option value="file:///D:/HTML/github_data/023-kinh-doanh-4-ai.html">023-kinh-doanh-4-ai</option>
+<option value="file:///D:/HTML/github_data/024-gio-ngay-choi.html">024-gio-ngay-choi</option>
+<option value="file:///D:/HTML/github_data/025-thuc-on-i-linh.html">025-thuc-on-i-linh</option>
+<option value="file:///D:/HTML/github_data/026-cung-hoang-ao-va-nghe.html">026-cung-hoang-ao-va-nghe</option>
+<option value="file:///D:/HTML/github_data/027-gioi-thieu-chat-gpt.html">027-gioi-thieu-chat-gpt</option>
+<option value="file:///D:/HTML/github_data/028-tiet-kiem-tien-grok.html">028-tiet-kiem-tien-grok</option>
+<option value="file:///D:/HTML/github_data/029-thuc-on-cho-oi-truong.html">029-thuc-on-cho-oi-truong</option>
+<option value="file:///D:/HTML/github_data/030-thuc-on-cho-phi-cong.html">030-thuc-on-cho-phi-cong</option>
+<option value="file:///D:/HTML/github_data/031-thuc-on-xe-may.html">031-thuc-on-xe-may</option>
+<option value="file:///D:/HTML/github_data/032-thuc-on-lai-tau-cano.html">032-thuc-on-lai-tau-cano</option>
+<option value="file:///D:/HTML/github_data/033-thuc-on-cho-lai-xe-o-to.html">033-thuc-on-cho-lai-xe-o-to</option>
+<option value="file:///D:/HTML/github_data/034-thuc-on-xem-chieu.html">034-thuc-on-xem-chieu</option>
+<option value="file:///D:/HTML/github_data/035-ghep-danh-sach-va-can-chi.html">035-ghep-danh-sach-va-can-chi</option>
+<option value="file:///D:/HTML/github_data/036-mon-an-4.html">036-mon-an-4</option>
+<option value="file:///D:/HTML/github_data/037-thuc-pham-ky-nhau.html">037-thuc-pham-ky-nhau</option>
+<option value="file:///D:/HTML/github_data/038-che-o-an-it-benh-tat.html">038-che-o-an-it-benh-tat</option>
+<option value="file:///D:/HTML/github_data/039-cap-thuc-pham-ky-nhau.html">039-cap-thuc-pham-ky-nhau</option>
+<option value="file:///D:/HTML/github_data/040-xem-nha-cua.html">040-xem-nha-cua</option>
+<option value="file:///D:/HTML/github_data/041-huong-dan-chon-sp.html">041-huong-dan-chon-sp</option>
+<option value="file:///D:/HTML/github_data/042-bangsinhtraigai.html">042-bangsinhtraigai</option>
+<option value="file:///D:/HTML/github_data/043-tiet-kiem-tien-gemini.html">043-tiet-kiem-tien-gemini</option>
+<option value="file:///D:/HTML/github_data/044-lam-thu-linh.html">044-lam-thu-linh</option>
+<option value="file:///D:/HTML/github_data/045-gioi-thieu-ve-grok.html">045-gioi-thieu-ve-grok</option>
+<option value="file:///D:/HTML/github_data/046-canh-bao-rui-ro.html">046-canh-bao-rui-ro</option>
+<option value="file:///D:/HTML/github_data/047-tinh-trung-tang.html">047-tinh-trung-tang</option>
+<option value="file:///D:/HTML/github_data/048-xem-ngay-lam-viec.html">048-xem-ngay-lam-viec</option>
+<option value="file:///D:/HTML/github_data/049-lay-link-shoppe.html">049-lay-link-shoppe</option>
+<option value="file:///D:/HTML/github_data/050-chon-mat-hang-tiep-thi.html">050-chon-mat-hang-tiep-thi</option>
+<option value="file:///D:/HTML/github_data/051-quan-ly-chi-tieu-gia-inh.html">051-quan-ly-chi-tieu-gia-inh</option>
+<option value="file:///D:/HTML/github_data/052-xem-ngay-gio-viec.html">052-xem-ngay-gio-viec</option>
+<option value="file:///D:/HTML/github_data/053-tu-duy-ky-su.html">053-tu-duy-ky-su</option>
+<option value="file:///D:/HTML/github_data/055-tim-cac-so-lien-quan.html">055-tim-cac-so-lien-quan</option>
+<option value="file:///D:/HTML/github_data/056-xem-noi-o-cua-ban.html">056-xem-noi-o-cua-ban</option>
+<option value="file:///D:/HTML/github_data/057-gio-la-cq-noitang.html">057-gio-la-cq-noitang</option>
+<option value="file:///D:/HTML/github_data/059-chon-mau-xe-gem.html">059-chon-mau-xe-gem</option>
+<option value="file:///D:/HTML/github_data/060-mac-qa-nhiet-o.html">060-mac-qa-nhiet-o</option>
+<option value="file:///D:/HTML/github_data/061-ghep-danh-sach-tim-can-chi.html">061-ghep-danh-sach-tim-can-chi</option>
+<option value="file:///D:/HTML/github_data/062-tinh-ngay-ac-biet.html">062-tinh-ngay-ac-biet</option>
+<option value="file:///D:/HTML/github_data/063-tim-chu-nga-ra-so.html">063-tim-chu-nga-ra-so</option>
+<option value="file:///D:/HTML/github_data/065-tim-so-oi.html">065-tim-so-oi</option>
+<option value="file:///D:/HTML/github_data/066-mon-an-chua-benh-1.html">066-mon-an-chua-benh-1</option>
+<option value="file:///D:/HTML/github_data/067-mon-an-chua-benh-2.html">067-mon-an-chua-benh-2</option>
+<option value="file:///D:/HTML/github_data/068-mon-an-chua-benh-3.html">068-mon-an-chua-benh-3</option>
+<option value="file:///D:/HTML/github_data/069-mon-an-chua-benh-4.html">069-mon-an-chua-benh-4</option>
+<option value="file:///D:/HTML/github_data/070-mon-an-chua-benh-5.html">070-mon-an-chua-benh-5</option>
+<option value="file:///D:/HTML/github_data/071-mon-an-chua-benh-6.html">071-mon-an-chua-benh-6</option>
+<option value="file:///D:/HTML/github_data/072-mon-an-chua-benh-7.html">072-mon-an-chua-benh-7</option>
+<option value="file:///D:/HTML/github_data/073-mon-an-chua-benh-8.html">073-mon-an-chua-benh-8</option>
+<option value="file:///D:/HTML/github_data/074-mon-an-chua-benh-9.html">074-mon-an-chua-benh-9</option>
+<option value="file:///D:/HTML/github_data/075-mon-an-chua-benh-10.html">075-mon-an-chua-benh-10</option>
+<option value="file:///D:/HTML/github_data/076-mon-an-chua-benh-11.html">076-mon-an-chua-benh-11</option>
+<option value="file:///D:/HTML/github_data/077-mon-an-chua-benh-12.html">077-mon-an-chua-benh-12</option>
+<option value="file:///D:/HTML/github_data/078-mon-an-chua-benh-13.html">078-mon-an-chua-benh-13</option>
+<option value="file:///D:/HTML/github_data/079-mon-an-chua-benh-14.html">079-mon-an-chua-benh-14</option>
+<option value="file:///D:/HTML/github_data/080-mon-an-chua-benh-15.html">080-mon-an-chua-benh-15</option>
+<option value="file:///D:/HTML/github_data/081-game-danh-sach-15-phan.html">081-game-danh-sach-15-phan</option>
+<option value="file:///D:/HTML/github_data/082-mon-an-16.html">082-mon-an-16</option>
+<option value="file:///D:/HTML/github_data/083-dung-ien-thoai-lam.html">083-dung-ien-thoai-lam</option>
+<option value="file:///D:/HTML/github_data/084-lam-affliate.html">084-lam-affliate</option>
+<option value="file:///D:/HTML/github_data/085-ngu-hanh-chua-benh.html">085-ngu-hanh-chua-benh</option>
+<option value="file:///D:/HTML/github_data/086-tim-san-pham-theo-chu-deep.html">086-tim-san-pham-theo-chu-deep</option>
+<option value="file:///D:/HTML/github_data/087-xem-can-gio-thu.html">087-xem-can-gio-thu</option>
+<option value="file:///D:/HTML/github_data/088-tim-so-thu-tu-can-chi.html">088-tim-so-thu-tu-can-chi</option>
+<option value="file:///D:/HTML/github_data/089-mon-an-19.html">089-mon-an-19</option>
+<option value="file:///D:/HTML/github_data/090-mon-an-13.html">090-mon-an-13</option>
+<option value="file:///D:/HTML/github_data/091-oc-so-tien.html">091-oc-so-tien</option>
+<option value="file:///D:/HTML/github_data/092-tinh-nam-thang-ngay-gio-can-chi-dl.html">092-tinh-nam-thang-ngay-gio-can-chi-dl</option>
+<option value="file:///D:/HTML/github_data/093-mon-tslc.html">093-mon-tslc</option>
+<option value="file:///D:/HTML/github_data/094-xem-so-thanh-chu.html">094-xem-so-thanh-chu</option>
+<option value="file:///D:/HTML/github_data/095-kinh-nghiem-buon-ban.html">095-kinh-nghiem-buon-ban</option>
+<option value="file:///D:/HTML/github_data/096-lam-viec-nhom.html">096-lam-viec-nhom</option>
+<option value="file:///D:/HTML/github_data/097-tim-gio-theo-so-nhap-vao.html">097-tim-gio-theo-so-nhap-vao</option>
+<option value="file:///D:/HTML/github_data/098-xem-nghe-theo-can.html">098-xem-nghe-theo-can</option>
+<option value="file:///D:/HTML/github_data/099-mon-an-10.html">099-mon-an-10</option>
+<option value="file:///D:/HTML/github_data/100-tu-ong-ang-bai.html">100-tu-ong-ang-bai</option>
+<option value="file:///D:/HTML/github_data/101-mon-an-27.html">101-mon-an-27</option>
+<option value="file:///D:/HTML/github_data/102-xem-ngay-gio-sinh.html">102-xem-ngay-gio-sinh</option>
+<option value="file:///D:/HTML/github_data/107-mon-an-22.html">107-mon-an-22</option>
+<option value="file:///D:/HTML/github_data/108-mon-an-25.html">108-mon-an-25</option>
+<option value="file:///D:/HTML/github_data/110-suc-khoe-tinh-cam.html">110-suc-khoe-tinh-cam</option>
+<option value="file:///D:/HTML/github_data/112-qui-trinh-4ai.html">112-qui-trinh-4ai</option>
+<option value="file:///D:/HTML/github_data/114-lam-tiep-thi.html">114-lam-tiep-thi</option>
+<option value="file:///D:/HTML/github_data/115-tim-chu-trung-uc-ra-so.html">115-tim-chu-trung-uc-ra-so</option>
+<option value="file:///D:/HTML/github_data/116-huong-dan-lam-affliate-shoppe.html">116-huong-dan-lam-affliate-shoppe</option>
+<option value="file:///D:/HTML/github_data/117-tinh-can-chi-lui.html">117-tinh-can-chi-lui</option>
+<option value="file:///D:/HTML/github_data/121-tu-trang-phuc.html">121-tu-trang-phuc</option>
+<option value="file:///D:/HTML/github_data/124-montscl2.html">124-montscl2</option>
+<option value="file:///D:/HTML/github_data/125-mon-an-30.html">125-mon-an-30</option>
+<option value="file:///D:/HTML/github_data/127-gio-i-xe-boi-bay-em.html">127-gio-i-xe-boi-bay-em</option>
+<option value="file:///D:/HTML/github_data/128-gio-i-xe-boi-bay-toi.html">128-gio-i-xe-boi-bay-toi</option>
+<option value="file:///D:/HTML/github_data/129-gio-i-xe-boi-bay-trua.html">129-gio-i-xe-boi-bay-trua</option>
+<option value="file:///D:/HTML/github_data/130-gio-i-xe-boi-bay-chieu.html">130-gio-i-xe-boi-bay-chieu</option>
+<option value="file:///D:/HTML/github_data/131-gio-i-xe-boi-bay-sang.html">131-gio-i-xe-boi-bay-sang</option>
+<option value="file:///D:/HTML/github_data/133-mon-an-33.html">133-mon-an-33</option>
+<option value="file:///D:/HTML/github_data/134-mon-an-6.html">134-mon-an-6</option>
+<option value="file:///D:/HTML/github_data/135-mon-an-36.html">135-mon-an-36</option>
+<option value="file:///D:/HTML/github_data/137-mon-tscl-4.html">137-mon-tscl-4</option>
+<option value="file:///D:/HTML/github_data/140-tim-chu-mo-ra-so.html">140-tim-chu-mo-ra-so</option>
+<option value="file:///D:/HTML/github_data/142-dothicuocdoi.html">142-dothicuocdoi</option>
+<option value="file:///D:/HTML/github_data/143-cam-xuc-1.html">143-cam-xuc-1</option>
+<option value="file:///D:/HTML/github_data/144-o-thi-theo-thang.html">144-o-thi-theo-thang</option>
+<option value="file:///D:/HTML/github_data/145-chon-mau-xe-deep.html">145-chon-mau-xe-deep</option>
+<option value="file:///D:/HTML/github_data/147-tinh-can-chi-theo-bang.html">147-tinh-can-chi-theo-bang</option>
+<option value="file:///D:/HTML/github_data/150-tim-chu-nhat-chau-au-ra-so.html">150-tim-chu-nhat-chau-au-ra-so</option>
+<option value="file:///D:/HTML/github_data/151-mon-tscl-3.html">151-mon-tscl-3</option>
+<option value="file:///D:/HTML/github_data/152-tim-phuong-tien-cong-so.html">152-tim-phuong-tien-cong-so</option>
+<option value="file:///D:/HTML/github_data/155-chon-mau-trang-phuc.html">155-chon-mau-trang-phuc</option>
+<option value="file:///D:/HTML/github_data/157-tim-chu-han-phap-ra-so.html">157-tim-chu-han-phap-ra-so</option>
+<option value="file:///D:/HTML/github_data/159-tim-o-dung-deep.html">159-tim-o-dung-deep</option>
+<option value="file:///D:/HTML/github_data/181-tinh-ngay-ram-1.html">181-tinh-ngay-ram-1</option>
+<option value="file:///D:/HTML/github_data/182-viec-12-con-giap.html">182-viec-12-con-giap</option>
+<option value="file:///D:/HTML/github_data/183-viec-12-cung-hoang-ao.html">183-viec-12-cung-hoang-ao</option>
+<option value="file:///D:/HTML/github_data/185-lam-affliate.html">185-lam-affliate</option>
+<option value="file:///D:/HTML/github_data/186-cach-lam-affliate.html">186-cach-lam-affliate</option>
+<option value="file:///D:/HTML/github_data/195-ngu-hanh-an-uong.html">195-ngu-hanh-an-uong</option>
+<option value="file:///D:/HTML/github_data/286-an-benh-tri.html">286-an-benh-tri</option>
+<option value="file:///D:/HTML/github_data/287-an-uong-can-chi.html">287-an-uong-can-chi</option>
+<option value="file:///D:/HTML/github_data/288-an-uong-am-lich.html">288-an-uong-am-lich</option>
+<option value="file:///D:/HTML/github_data/290-a-nhap-benh-theo-ngay-gio.html">290-a-nhap-benh-theo-ngay-gio</option>
+<option value="file:///D:/HTML/github_data/290-nhap-benh-theo-gio.html">290-nhap-benh-theo-gio</option>
+<option value="file:///D:/HTML/github_data/291-chay-cho-an-uong.html">291-chay-cho-an-uong</option>
+<option value="file:///D:/HTML/github_data/292-ban-co.html">292-ban-co</option>
+<option value="file:///D:/HTML/github_data/293-24-tiet-khi.html">293-24-tiet-khi</option>
+<option value="file:///D:/HTML/github_data/294-ngay-mac-benh.html">294-ngay-mac-benh</option>
+<option value="file:///D:/HTML/github_data/297-tiet-khi-mon-an.html">297-tiet-khi-mon-an</option>
+<option value="file:///D:/HTML/github_data/298-rau-cu-benh.html">298-rau-cu-benh</option>
+<option value="file:///D:/HTML/github_data/299-theo-doi-sk-mua.html">299-theo-doi-sk-mua</option>
+<option value="file:///D:/HTML/github_data/301-mac-qa-nhiet-o.html">301-mac-qa-nhiet-o</option>
+<option value="file:///D:/HTML/github_data/303-tra-mau-quan-ao-ma.html">303-tra-mau-quan-ao-ma</option>
+<option value="file:///D:/HTML/github_data/304-tra-mau-theo-ma.html">304-tra-mau-theo-ma</option>
+<option value="file:///D:/HTML/github_data/307-mau-sac-101-150.html">307-mau-sac-101-150</option>
+<option value="file:///D:/HTML/github_data/308-mau-sac-151-200.html">308-mau-sac-151-200</option>
+<option value="file:///D:/HTML/github_data/309-mau-sac-201-255.html">309-mau-sac-201-255</option>
+<option value="file:///D:/HTML/github_data/310-mau-sac-trang-phuc.html">310-mau-sac-trang-phuc</option>
+<option value="file:///D:/HTML/github_data/311-mau-quang-cao.html">311-mau-quang-cao</option>
+<option value="file:///D:/HTML/github_data/312-mau-phong-canh.html">312-mau-phong-canh</option>
+<option value="file:///D:/HTML/github_data/314-mau-sac-qa.html">314-mau-sac-qa</option>
+<option value="file:///D:/HTML/github_data/320-tu-trang-phuc.html">320-tu-trang-phuc</option>
+<option value="file:///D:/HTML/github_data/321-tu-trang-phuc-tuan.html">321-tu-trang-phuc-tuan</option>
+<option value="file:///D:/HTML/github_data/322-tu-qa-brg.html">322-tu-qa-brg</option>
+<option value="file:///D:/HTML/github_data/4buoictinh.html">4buoictinh</option>
+<option value="file:///D:/HTML/github_data/616-tim-chu-so-24.html">616-tim-chu-so-24</option>
+<option value="file:///D:/HTML/github_data/617-tra-bang-25.html">617-tra-bang-25</option>
+<option value="file:///D:/HTML/github_data/618-tim-tu-trong-bai.html">618-tim-tu-trong-bai</option>
+<option value="file:///D:/HTML/github_data/690-xem-cap-bac.html">690-xem-cap-bac</option>
+<option value="file:///D:/HTML/github_data/691-xem-kd-theo-gpt.html">691-xem-kd-theo-gpt</option>
+<option value="file:///D:/HTML/github_data/692-xem-kd-theo-90.html">692-xem-kd-theo-90</option>
+<option value="file:///D:/HTML/github_data/693-64-thuong-luong.html">693-64-thuong-luong</option>
+<option value="file:///D:/HTML/github_data/694-xem-gio-kd-hd.html">694-xem-gio-kd-hd</option>
+<option value="file:///D:/HTML/github_data/695-xem-ngay-kinh-doanh-hd.html">695-xem-ngay-kinh-doanh-hd</option>
+<option value="file:///D:/HTML/github_data/696-xem-thang-kd-hd.html">696-xem-thang-kd-hd</option>
+<option value="file:///D:/HTML/github_data/699-xem-gio-kinh-doanh.html">699-xem-gio-kinh-doanh</option>
+<option value="file:///D:/HTML/github_data/700-xem-do-thi-nam.html">700-xem-do-thi-nam</option>
+<option value="file:///D:/HTML/github_data/701-xem-ngay-kinh-doanh-cc.html">701-xem-ngay-kinh-doanh-cc</option>
+<option value="file:///D:/HTML/github_data/702-xem-ngay-kinh-doanh.html">702-xem-ngay-kinh-doanh</option>
+<option value="file:///D:/HTML/github_data/704-xem-thang-kinh-doanh.html">704-xem-thang-kinh-doanh</option>
+<option value="file:///D:/HTML/github_data/705-xem-thang-kd-cc.html">705-xem-thang-kd-cc</option>
+<option value="file:///D:/HTML/github_data/706-xem-tuoi-kinh-doanh.html">706-xem-tuoi-kinh-doanh</option>
+<option value="file:///D:/HTML/github_data/707-xem-tuoi-kinh-doanh-cc.html">707-xem-tuoi-kinh-doanh-cc</option>
+<option value="file:///D:/HTML/github_data/708-tinh-ngay-dl-al.html">708-tinh-ngay-dl-al</option>
+<option value="file:///D:/HTML/github_data/709-tinh-thu-theo-dl.html">709-tinh-thu-theo-dl</option>
+<option value="file:///D:/HTML/github_data/710-xem-ngay-gio-xau.html">710-xem-ngay-gio-xau</option>
+<option value="file:///D:/HTML/github_data/711-xem-ngay-am-lich.html">711-xem-ngay-am-lich</option>
+<option value="file:///D:/HTML/github_data/712-xem-do-thi-thang.html">712-xem-do-thi-thang</option>
+<option value="file:///D:/HTML/github_data/713-tinh-can-chi-theodl.html">713-tinh-can-chi-theodl</option>
+<option value="file:///D:/HTML/github_data/714-tinh-kinh-doanh.html">714-tinh-kinh-doanh</option>
+<option value="file:///D:/HTML/github_data/715-xem-do-thi-tuan.html">715-xem-do-thi-tuan</option>
+<option value="file:///D:/HTML/github_data/716-ke-hoach-thang.html">716-ke-hoach-thang</option>
+<option value="file:///D:/HTML/github_data/717-tinh-ngay-gio-chan-le.html">717-tinh-ngay-gio-chan-le</option>
+<option value="file:///D:/HTML/github_data/718-xem-ngay-sinh-chan-le.html">718-xem-ngay-sinh-chan-le</option>
+<option value="file:///D:/HTML/github_data/719-do-thi-cuoc-doi-quy.html">719-do-thi-cuoc-doi-quy</option>
+<option value="file:///D:/HTML/github_data/720-dothicuocdoithangtuanngay.html">720-dothicuocdoithangtuanngay</option>
+<option value="file:///D:/HTML/github_data/737 tìm can chi .html">737 tìm can chi </option>
+<option value="file:///D:/HTML/github_data/750-gio-xe-1-5-em.html">750-gio-xe-1-5-em</option>
+<option value="file:///D:/HTML/github_data/751-gio-xe-5-10-sang.html">751-gio-xe-5-10-sang</option>
+<option value="file:///D:/HTML/github_data/752-gio-xe-10-15-trua.html">752-gio-xe-10-15-trua</option>
+<option value="file:///D:/HTML/github_data/753-gio-xe-15-20-chieu.html">753-gio-xe-15-20-chieu</option>
+<option value="file:///D:/HTML/github_data/754-gio-xe-20-25-toi.html">754-gio-xe-20-25-toi</option>
+<option value="file:///D:/HTML/github_data/800-tinh-iem-tot-nha.html">800-tinh-iem-tot-nha</option>
+<option value="file:///D:/HTML/github_data/801-xem-vi-tri-nha.html">801-xem-vi-tri-nha</option>
+<option value="file:///D:/HTML/github_data/900-uong-i-kinh-doanh.html">900-uong-i-kinh-doanh</option>
+<option value="file:///D:/HTML/github_data/Affiliate Marketing.html">Affiliate Marketing</option>
+<option value="file:///D:/HTML/github_data/AP DUNG BAI TOAN DEM NGUOI LAM NHA.html">AP DUNG BAI TOAN DEM NGUOI LAM NHA</option>
+<option value="file:///D:/HTML/github_data/AP DUNG DEM NGUOI TRONG CUOC SONG.html">AP DUNG DEM NGUOI TRONG CUOC SONG</option>
+<option value="file:///D:/HTML/github_data/BANG DU SINH TRAI GAI.html">BANG DU SINH TRAI GAI</option>
+<option value="file:///D:/HTML/github_data/buancaibalo.html">buancaibalo</option>
+<option value="file:///D:/HTML/github_data/CAC AI MANH ME CHO CONG VIEC.html">CAC AI MANH ME CHO CONG VIEC</option>
+<option value="file:///D:/HTML/github_data/CACH BINH PHUONG SO # CHU SO.html">CACH BINH PHUONG SO # CHU SO</option>
+<option value="file:///D:/HTML/github_data/CACH TINH CHO BAN SHOPPE KHONG LO.html">CACH TINH CHO BAN SHOPPE KHONG LO</option>
+<option value="file:///D:/HTML/github_data/CACH TINH GIA BAN BANH.html">CACH TINH GIA BAN BANH</option>
+<option value="file:///D:/HTML/github_data/CACH TINH GIA BAN TAP HOA .html">CACH TINH GIA BAN TAP HOA </option>
+<option value="file:///D:/HTML/github_data/CACH TINH GIA BANH MY.html">CACH TINH GIA BANH MY</option>
+<option value="file:///D:/HTML/github_data/CACH TINH GIA VON MON AN NHA HANG.html">CACH TINH GIA VON MON AN NHA HANG</option>
+<option value="file:///D:/HTML/github_data/CACH TINH HOA VON NHIEU MAT HANG.html">CACH TINH HOA VON NHIEU MAT HANG</option>
+<option value="file:///D:/HTML/github_data/CACH TINH NGOAI CHO.html">CACH TINH NGOAI CHO</option>
+<option value="file:///D:/HTML/github_data/CACH TINH NHAM NHANH.html">CACH TINH NHAM NHANH</option>
+<option value="file:///D:/HTML/github_data/cachtinhlanhdao.html">cachtinhlanhdao</option>
+<option value="file:///D:/HTML/github_data/CAUHOITRUOCKHIXAYNHA.html">CAUHOITRUOCKHIXAYNHA</option>
+<option value="file:///D:/HTML/github_data/CAUHOITRUOCKHIXAYNHAGEMINI.html">CAUHOITRUOCKHIXAYNHAGEMINI</option>
+<option value="file:///D:/HTML/github_data/CAUHOITRUOCKHIXAYNHAGROK.html">CAUHOITRUOCKHIXAYNHAGROK</option>
+<option value="file:///D:/HTML/github_data/chuchay.html">chuchay</option>
+<option value="file:///D:/HTML/github_data/CO HUM.html">CO HUM</option>
+<option value="file:///D:/HTML/github_data/CO QUAN SU.html">CO QUAN SU</option>
+<option value="file:///D:/HTML/github_data/CO TU LENH.html">CO TU LENH</option>
+<option value="file:///D:/HTML/github_data/COTUONG.html">COTUONG</option>
+<option value="file:///D:/HTML/github_data/cotuong_binary.html">cotuong_binary</option>
+<option value="file:///D:/HTML/github_data/cpheptinhlanhdao.html">cpheptinhlanhdao</option>
+<option value="file:///D:/HTML/github_data/DO THI CUOC DOI THANG.html">DO THI CUOC DOI THANG</option>
+<option value="file:///D:/HTML/github_data/dung-ien-thoai-lam.html">dung-ien-thoai-lam</option>
+<option value="file:///D:/HTML/github_data/GAME TREX.html">GAME TREX</option>
+<option value="file:///D:/HTML/github_data/ghep chu nang cao.html">ghep chu nang cao</option>
+<option value="file:///D:/HTML/github_data/ghep chu.html">ghep chu</option>
+<option value="file:///D:/HTML/github_data/GOI Y MAU YUONG PHAN.html">GOI Y MAU YUONG PHAN</option>
+<option value="file:///D:/HTML/github_data/HAN TRINH AI deepseek.html">HAN TRINH AI deepseek</option>
+<option value="file:///D:/HTML/github_data/hanh_trinh.html">hanh_trinh</option>
+<option value="file:///D:/HTML/github_data/HUONG DAN CHAT GPT GAME .html">HUONG DAN CHAT GPT GAME </option>
+<option value="file:///D:/HTML/github_data/HUONG DAN DEEPSEEK.html">HUONG DAN DEEPSEEK</option>
+<option value="file:///D:/HTML/github_data/HUONG DAN GEMINI.html">HUONG DAN GEMINI</option>
+<option value="file:///D:/HTML/github_data/HUONG DAN GROK.html">HUONG DAN GROK</option>
+<option value="file:///D:/HTML/github_data/index.html">index</option>
+<option value="file:///D:/HTML/github_data/Lưu link Github .html">Lưu link Github </option>
+<option value="file:///D:/HTML/github_data/NHIP SH 10.html">NHIP SH 10</option>
+<option value="file:///D:/HTML/github_data/result.html">result</option>
+<option value="file:///D:/HTML/github_data/robot.html">robot</option>
+<option value="file:///D:/HTML/github_data/TC GAME GD.html">TC GAME GD</option>
+<option value="file:///D:/HTML/github_data/TC GD HT.html">TC GD HT</option>
+<option value="file:///D:/HTML/github_data/TC GD VE SD KTD.html">TC GD VE SD KTD</option>
+<option value="file:///D:/HTML/github_data/TCDN CO TUONG.html">TCDN CO TUONG</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG 34 RA QUYET DINH DOI THAT.html">TCDN QUANG TRUNG 34 RA QUYET DINH DOI THAT</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG 56 PHAN 34.html">TCDN QUANG TRUNG 56 PHAN 34</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG 78.html">TCDN QUANG TRUNG 78</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c1 TONG QUAN.html">TCDN QUANG TRUNG c1 TONG QUAN</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 CHUA BTTT P1.html">TCDN QUANG TRUNG c2 CHUA BTTT P1</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 CHUA BTTT P2.html">TCDN QUANG TRUNG c2 CHUA BTTT P2</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 CHUA BTTT P3.html">TCDN QUANG TRUNG c2 CHUA BTTT P3</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 CHUA BTTT P4.html">TCDN QUANG TRUNG c2 CHUA BTTT P4</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 DTDHP1.html">TCDN QUANG TRUNG c2 DTDHP1</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 P1.html">TCDN QUANG TRUNG c2 P1</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 P2.html">TCDN QUANG TRUNG c2 P2</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 P3.html">TCDN QUANG TRUNG c2 P3</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 P4.html">TCDN QUANG TRUNG c2 P4</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P1.html">TCDN QUANG TRUNG c2 UD EXCEL P1</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P2.html">TCDN QUANG TRUNG c2 UD EXCEL P2</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P3.html">TCDN QUANG TRUNG c2 UD EXCEL P3</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P4.html">TCDN QUANG TRUNG c2 UD EXCEL P4</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P5.html">TCDN QUANG TRUNG c2 UD EXCEL P5</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P6.html">TCDN QUANG TRUNG c2 UD EXCEL P6</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c2 UD EXCEL P7.html">TCDN QUANG TRUNG c2 UD EXCEL P7</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P10.html">TCDN QUANG TRUNG c3 DTDH P10</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P2.html">TCDN QUANG TRUNG c3 DTDH P2</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P3.html">TCDN QUANG TRUNG c3 DTDH P3</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P4.html">TCDN QUANG TRUNG c3 DTDH P4</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P5.html">TCDN QUANG TRUNG c3 DTDH P5</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P6.html">TCDN QUANG TRUNG c3 DTDH P6</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P7.html">TCDN QUANG TRUNG c3 DTDH P7</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P8.html">TCDN QUANG TRUNG c3 DTDH P8</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 DTDH P9.html">TCDN QUANG TRUNG c3 DTDH P9</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p1.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p1</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p2.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p2</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p3.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p3</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p4.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p4</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p5.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p5</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p6.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p6</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c3 TONG ON CHUA BAI p7.html">TCDN QUANG TRUNG c3 TONG ON CHUA BAI p7</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c4 Quản trị tài sản ngắn hạn phần 1 (siêu dễ hiểu) ♥️ Quang Trung TV.html">TCDN QUANG TRUNG c4 Quản trị tài sản ngắn hạn phần 1 (siêu dễ hiểu) ♥️ Quang Trung TV</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c4 vi du.html">TCDN QUANG TRUNG c4 vi du</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG c4 vidu co lai van chet.html">TCDN QUANG TRUNG c4 vidu co lai van chet</option>
+<option value="file:///D:/HTML/github_data/TCDN QUANG TRUNG SO DO TU DUY.html">TCDN QUANG TRUNG SO DO TU DUY</option>
+<option value="file:///D:/HTML/github_data/tin thoi gian gem.html">tin thoi gian gem</option>
+<option value="file:///D:/HTML/github_data/TINH BINH PHUONG.html">TINH BINH PHUONG</option>
+<option value="file:///D:/HTML/github_data/TINH GIA VON HANG BAN.html">TINH GIA VON HANG BAN</option>
+<option value="file:///D:/HTML/github_data/TINH NGUOI XAY NHA.html">TINH NGUOI XAY NHA</option>
+<option value="file:///D:/HTML/github_data/TINH NHAM PHAN TRAM.html">TINH NHAM PHAN TRAM</option>
+<option value="file:///D:/HTML/github_data/TINH PHAN TRAM.html">TINH PHAN TRAM</option>
+<option value="file:///D:/HTML/github_data/tinh thoi gian chat gpt.html">tinh thoi gian chat gpt</option>
+<option value="file:///D:/HTML/github_data/tinh thoi gian deep.html">tinh thoi gian deep</option>
+<option value="file:///D:/HTML/github_data/tinh thoi gian GROK.html">tinh thoi gian GROK</option>
+<option value="file:///D:/HTML/github_data/TINHGIAXAYNHADEEP.html">TINHGIAXAYNHADEEP</option>
+<option value="file:///D:/HTML/github_data/TINHGIAXAYNHAGEMINI.html">TINHGIAXAYNHAGEMINI</option>
+<option value="file:///D:/HTML/github_data/TINHGIAXAYNHAGROK.html">TINHGIAXAYNHAGROK</option>
+<option value="file:///D:/HTML/github_data/TINHGIẪYNHA.CHATGPT.html">TINHGIẪYNHA.CHATGPT</option>
+<option value="file:///D:/HTML/github_data/TOANCAOCAP.html">TOANCAOCAP</option>
+<option value="file:///D:/HTML/github_data/TOANCAOCAPDEEPSEEK.html">TOANCAOCAPDEEPSEEK</option>
+<option value="file:///D:/HTML/github_data/TOANCAOCAPGEMINI.html">TOANCAOCAPGEMINI</option>
+<option value="file:///D:/HTML/github_data/TOANCAOCAPGROK.html">TOANCAOCAPGROK</option>
+<option value="file:///D:/HTML/github_data/TRA MAU THEO DUONG LIC.html">TRA MAU THEO DUONG LIC</option>
+<option value="file:///D:/HTML/github_data/Triệu chứng thực phẩm .html">Triệu chứng thực phẩm </option>
+<option value="file:///D:/HTML/github_data/TRO CHOI XAY DUNG CUOC SONG CHAT.html">TRO CHOI XAY DUNG CUOC SONG CHAT</option>
+<option value="file:///D:/HTML/github_data/TRO CHOI XAY DUNG CUOC SONG DEEP.html">TRO CHOI XAY DUNG CUOC SONG DEEP</option>
+<option value="file:///D:/HTML/github_data/TUTIMTHUATTOANPHUHOP.html">TUTIMTHUATTOANPHUHOP</option>
+<option value="file:///D:/HTML/github_data/Tìm số can chi .html">Tìm số can chi </option>
+<option value="file:///D:/HTML/github_data/UNG DUNG QUAN LY DU LICH.html">UNG DUNG QUAN LY DU LICH</option>
+<option value="file:///D:/HTML/github_data/viec hang ngay.html">viec hang ngay</option>
+<option value="file:///D:/HTML/github_data/web1_man_ngot.html">web1_man_ngot</option>
+<option value="file:///D:/HTML/github_data/web2_chua_cay.html">web2_chua_cay</option>
+<option value="file:///D:/HTML/github_data/web3_man_dang.html">web3_man_dang</option>
+<option value="file:///D:/HTML/github_data/web4_chua_ngot.html">web4_chua_ngot</option>
+<option value="file:///D:/HTML/github_data/web5_dang_cay.html">web5_dang_cay</option>
+<option value="file:///D:/HTML/github_data/web6_khoaicam.html">web6_khoaicam</option>
+<option value="file:///D:/HTML/github_data/web7_dinhduong.html">web7_dinhduong</option>
+<option value="file:///D:/HTML/github_data/web8_anuong.html">web8_anuong</option>
+<option value="file:///D:/HTML/github_data/webdunnuoscdem.html">webdunnuoscdem</option>
+<option value="file:///D:/HTML/github_data/xem ngay hoang dao.html">xem ngay hoang dao</option>
+<option value="file:///D:/HTML/github_data/XEM SO DU NGAY THANG.html">XEM SO DU NGAY THANG</option>
+<option value="file:///D:/HTML/github_data/XEM TUOI GIO THEO MA THANG.html">XEM TUOI GIO THEO MA THANG</option>
+<option value="file:///D:/HTML/github_data/Ăn_uống_6_hành .html">Ăn_uống_6_hành </option>
+<option value="file:///D:/HTML/github_data/Đọc_not_nhac_sang_NP.html">Đọc_not_nhac_sang_NP</option>
+
+        </select>
+    </div>
+
+    <div class="card">
+        <h2>📊 Bảng Dự Báo Thời Tiết Tuần Này (Hà Nội (Mặc định))</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Dự Báo (Max/Min)</th>
+                    <th>Mưa</th>
+                    <th>Khung Giờ Mưa</th>
+                    <th>Lịch Sử</th>
+                    <th>Gợi Ý Dinh Dưỡng</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td><b>2026-10-23</b></td>
+            <td>32.6/26.0°C</td>
+            <td>0.0mm</td>
+            <td>Không có mưa</td>
+            <td>Chưa có</td>
+            <td><pre style="font-family:inherit; margin:0;">--- TRỜI NÓNG ---
+Thực đơn: Canh chua, canh mướp đắng nhồi thịt.</pre></td>
+        </tr>
+        
+        <tr>
+            <td><b>2026-10-24</b></td>
+            <td>32.6/25.9°C</td>
+            <td>0.0mm</td>
+            <td>Không có mưa</td>
+            <td>Chưa có</td>
+            <td><pre style="font-family:inherit; margin:0;">--- TRỜI NÓNG ---
+Thực đơn: Canh chua, canh mướp đắng nhồi thịt.</pre></td>
+        </tr>
+        
+        <tr>
+            <td><b>2026-10-25</b></td>
+            <td>32.1/25.3°C</td>
+            <td>0.0mm</td>
+            <td>Không có mưa</td>
+            <td>Chưa có</td>
+            <td><pre style="font-family:inherit; margin:0;">--- TRỜI NÓNG ---
+Thực đơn: Canh chua, canh mướp đắng nhồi thịt.</pre></td>
+        </tr>
+        
+        <tr>
+            <td><b>2026-10-26</b></td>
+            <td>34.4/26.1°C</td>
+            <td>1.8mm</td>
+            <td>15:00 (0.45mm), 18:00 (0.66mm), 21:00 (0.68mm)</td>
+            <td>Chưa có</td>
+            <td><pre style="font-family:inherit; margin:0;">--- TRỜI MƯA ---
+Thực đơn: Cháo gừng, khoai luộc, súp nóng, thịt nướng.</pre></td>
+        </tr>
+        
+        <tr>
+            <td><b>2026-10-27</b></td>
+            <td>33.6/25.1°C</td>
+            <td>4.2mm</td>
+            <td>00:00 (0.80mm), 03:00 (0.95mm), 18:00 (0.83mm), 21:00 (1.62mm)</td>
+            <td>Chưa có</td>
+            <td><pre style="font-family:inherit; margin:0;">--- TRỜI MƯA ---
+Thực đơn: Cháo gừng, khoai luộc, súp nóng, thịt nướng.</pre></td>
+        </tr>
+        
+        <tr>
+            <td><b>2026-10-28</b></td>
+            <td>24.6/24.6°C</td>
+            <td>0.3mm</td>
+            <td>00:00 (0.27mm)</td>
+            <td>Chưa có</td>
+            <td><pre style="font-family:inherit; margin:0;">--- TRỜI MƯA ---
+Thực đơn: Cháo gừng, khoai luộc, súp nóng, thịt nướng.</pre></td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </div>
+
+<!-- AUTO-SCROLL INJECTED SCRIPT -->
+<style>
+  #auto-scroll-bar {
+    position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 18, 0.95); color: #fff;
+    padding: 10px 20px; display: flex; justify-content: center; align-items: center; gap: 15px;
+    z-index: 99999; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); font-family: sans-serif; font-size: 14px;
+    backdrop-filter: blur(5px);
+  }
+  #auto-scroll-bar button, #auto-scroll-bar input {
+    background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 6px 12px; cursor: pointer; border-radius: 4px;
+  }
+  #auto-scroll-bar button:hover { background: #3a3a3a; }
+  #auto-scroll-bar input[type="range"] { cursor: pointer; }
+</style>
+<div id="auto-scroll-bar">
+  <button id="btn-toggle" onclick="toggleScroll()">⏸ Tạm dừng</button>
+  <button onclick="rewindScroll()">↺ Về đầu</button>
+  <label>Tốc độ: <span id="speed-val">1x</span></label>
+  <input type="range" id="speed-range" min="0.5" max="5" step="0.5" value="1" oninput="changeSpeed(this.value)">
+</div>
+<script>
+  let isScrolling = true;
+  let scrollSpeed = 1;
+  let scrollInterval = null;
+
+  function startAutoScroll() {
+    if (scrollInterval) clearInterval(scrollInterval);
+    scrollInterval = setInterval(() => {
+      if (!isScrolling) return;
+      window.scrollBy(0, scrollSpeed);
+      // Khi cuộn gần đến cuối trang, tự động lặp lại mượt mà về đầu
+      if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 5) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }, 30);
+  }
+
+  function toggleScroll() {
+    isScrolling = !isScrolling;
+    document.getElementById('btn-toggle').innerText = isScrolling ? '⏸ Tạm dừng' : '▶ Tiếp tục';
+  }
+
+  function rewindScroll() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeSpeed(val) {
+    scrollSpeed = parseFloat(val);
+    document.getElementById('speed-val').innerText = val + 'x';
+  }
+
+  // Chạm/Click bất kỳ đâu (trừ thanh điều khiển) để Tạm dừng hoặc Tiếp tục
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#auto-scroll-bar')) {
+      toggleScroll();
+    }
+  });
+
+  // Tự động chạy sau khi tải trang 1 giây
+  window.onload = () => {
+    setTimeout(startAutoScroll, 1000);
+  };
+</script>
+<!-- END AUTO-SCROLL -->
+
+</body>
+</html>

@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Tay Dinh Dưỡng Gia Đình - Chuẩn VDD & WHO</title>
+    <!-- Tải Tailwind CSS qua CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Font Inter hỗ trợ tiếng Việt sắc nét -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tải Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            color: #1e293b;
+        }
+        /* Tùy chỉnh thanh cuộn mượt mà */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Hiệu ứng chuyển tab mượt */
+        .tab-content {
+            animation: fadeIn 0.25s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Thông báo Toast (Thay thế alert/confirm) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full px-4 pointer-events-none"></div>
+
+    <!-- Modal Hộp thoại Xác nhận (Thay thế confirm) -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-100">
+            <div class="flex items-center gap-3 text-amber-600 mb-3">
+                <i data-lucide="alert-triangle" class="w-7 h-7"></i>
+                <h3 class="text-lg font-bold text-slate-800" id="confirm-title">Xác nhận thao tác</h3>
+            </div>
+            <p class="text-slate-600 text-base mb-6" id="confirm-message">Bạn có chắc chắn muốn thực hiện thao tác này?</p>
+            <div class="flex justify-end gap-3">
+                <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition">Hủy bỏ</button>
+                <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-sm">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Chính -->
+    <header class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <!-- Logo & Tiêu đề -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm">
+                            <i data-lucide="salad" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">Sổ Tay Dinh Dưỡng</h1>
+                            <p class="text-emerald-100 text-xs sm:text-sm font-medium">Chuẩn Viện Dinh Dưỡng Quốc Gia & WHO</p>
+                        </div>
+                    </div>
+                    <!-- Nút Xuất/Nhập nhanh trên mobile -->
+                    <div class="flex md:hidden items-center gap-1.5">
+                        <button onclick="exportData()" title="Sao lưu JSON" class="p-2 bg-white/15 hover:bg-white/25 rounded-xl text-white transition">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                        </button>
+                        <label title="Khôi phục JSON" class="p-2 bg-white/15 hover:bg-white/25 rounded-xl text-white transition cursor-pointer">
+                            <i data-lucide="upload" class="w-5 h-5"></i>
+                            <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bộ chọn Thành viên & Ngày + Sao lưu -->
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <!-- Chọn thành viên -->
+                    <div class="flex items-center bg-white/15 rounded-xl px-3 py-1.5 backdrop-blur-sm border border-white/20 flex-1 sm:flex-initial">
+                        <i data-lucide="user-check" class="w-4 h-4 text-emerald-100 mr-2 shrink-0"></i>
+                        <select id="member-select" onchange="handleMemberChange()" class="bg-transparent text-white font-semibold text-sm sm:text-base focus:outline-none w-full cursor-pointer">
+                            <!-- Render bằng JS -->
+                        </select>
+                    </div>
+
+                    <!-- Chọn ngày -->
+                    <div class="flex items-center bg-white/15 rounded-xl px-3 py-1.5 backdrop-blur-sm border border-white/20">
+                        <button onclick="changeDate(-1)" class="p-1 hover:bg-white/20 rounded-lg transition" title="Ngày trước">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <input type="date" id="date-picker" onchange="handleDateChange()" class="bg-transparent text-white font-semibold text-sm sm:text-base px-1.5 focus:outline-none cursor-pointer [color-scheme:dark]">
+                        <button onclick="changeDate(1)" class="p-1 hover:bg-white/20 rounded-lg transition" title="Ngày sau">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Nút Xuất/Nhập Desktop -->
+                    <div class="hidden md:flex items-center gap-2">
+                        <button onclick="exportData()" class="flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 rounded-xl text-sm font-semibold transition border border-white/20">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Sao lưu</span>
+                        </button>
+                        <label class="flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 rounded-xl text-sm font-semibold transition border border-white/20 cursor-pointer">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            <span>Khôi phục</span>
+                            <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thanh Điều Hướng Tab -->
+        <nav class="bg-white text-slate-700 border-b border-slate-200 shadow-sm overflow-x-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-2">
+                <button onclick="switchTab('diary')" id="tab-btn-diary" class="tab-btn flex items-center gap-2 px-4 py-3.5 text-sm sm:text-base font-bold border-b-4 border-emerald-600 text-emerald-700 whitespace-nowrap transition">
+                    <i data-lucide="utensils" class="w-5 h-5"></i>
+                    <span>1. Ghi Chép Bữa Ăn</span>
+                </button>
+                <button onclick="switchTab('analysis')" id="tab-btn-analysis" class="tab-btn flex items-center gap-2 px-4 py-3.5 text-sm sm:text-base font-semibold border-b-4 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span>2. So Sánh Chuẩn & Bù Đắp</span>
+                    <span id="deficit-badge" class="hidden bg-rose-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">!</span>
+                </button>
+                <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn flex items-center gap-2 px-4 py-3.5 text-sm sm:text-base font-semibold border-b-4 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    <span>3. Kho Món Ăn Việt</span>
+                </button>
+                <button onclick="switchTab('members')" id="tab-btn-members" class="tab-btn flex items-center gap-2 px-4 py-3.5 text-sm sm:text-base font-semibold border-b-4 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span>4. Thành Viên & Tiêu Chuẩn</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: GHI CHÉP BỮA ĂN HÀNG NGÀY                         -->
+        <!-- ========================================================= -->
+        <section id="tab-diary" class="tab-content space-y-6">
+            <!-- Thẻ Tóm tắt nhanh trong ngày -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <span>Tổng quan dinh dưỡng ngày</span>
+                            <span id="summary-date-label" class="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg text-base"></span>
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-0.5" id="summary-member-info">Đang xem hồ sơ: ...</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyYesterdayMenu()" class="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                            <span>Chép thực đơn hôm qua</span>
+                        </button>
+                        <button onclick="switchTab('analysis')" class="flex items-center gap-1.5 px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-sm font-semibold transition">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-amber-600"></i>
+                            <span>Xem thiếu chất gì</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Chỉ số chính (Progress Cards) -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" id="daily-quick-cards">
+                    <!-- Render bằng JS -->
+                </div>
+            </div>
+
+            <!-- Khu vực Thêm món ăn nhanh & Danh sách 4 bữa -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Cột trái: Form thêm món vào bữa -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 sticky top-36">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span class="bg-emerald-100 text-emerald-700 p-1.5 rounded-lg">
+                                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                            </span>
+                            <span>Thêm Món Ăn Đã Dùng</span>
+                        </h3>
+
+                        <form id="add-meal-form" onsubmit="handleAddMealLog(event)" class="space-y-4">
+                            <!-- Chọn Bữa ăn -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1.5">1. Chọn bữa ăn</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="mealType" value="sang" checked class="peer sr-only">
+                                        <div class="p-2.5 text-center rounded-xl border border-slate-200 font-semibold text-sm peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 hover:bg-slate-50 transition">
+                                            🌅 Bữa Sáng
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="mealType" value="trua" class="peer sr-only">
+                                        <div class="p-2.5 text-center rounded-xl border border-slate-200 font-semibold text-sm peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 hover:bg-slate-50 transition">
+                                            ☀️ Bữa Trưa
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="mealType" value="toi" class="peer sr-only">
+                                        <div class="p-2.5 text-center rounded-xl border border-slate-200 font-semibold text-sm peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 hover:bg-slate-50 transition">
+                                            🌙 Bữa Tối
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="mealType" value="phu" class="peer sr-only">
+                                        <div class="p-2.5 text-center rounded-xl border border-slate-200 font-semibold text-sm peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 hover:bg-slate-50 transition">
+                                            🍎 Bữa Phụ
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Lọc nhóm món -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1.5">2. Tìm & chọn món ăn</label>
+                                <div class="flex gap-2 mb-2">
+                                    <select id="food-category-filter" onchange="filterFoodSelect()" class="w-1/3 px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <option value="all">Tất cả nhóm</option>
+                                        <option value="Tinh bột">Tinh bột / Cơm / Phở</option>
+                                        <option value="Thịt & Trứng">Thịt & Trứng</option>
+                                        <option value="Cá & Hải sản">Cá & Hải sản</option>
+                                        <option value="Rau & Canh">Rau củ & Canh</option>
+                                        <option value="Đậu & Sữa">Đậu phụ & Sữa</option>
+                                        <option value="Trái cây & Phụ">Trái cây & Đồ uống</option>
+                                    </select>
+                                    <div class="relative flex-1">
+                                        <input type="text" id="food-search-input" oninput="filterFoodSelect()" placeholder="Gõ tên món (vd: cơm, thịt, rau...)" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                                    </div>
+                                </div>
+
+                                <select id="food-select" onchange="updateSelectedFoodPreview()" required class="w-full px-3.5 py-3 bg-white border border-slate-300 rounded-xl text-base font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <!-- Render bằng JS -->
+                                </select>
+                            </div>
+
+                            <!-- Số lượng / Định lượng -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1.5">3. Số lượng đã ăn</label>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center border border-slate-300 rounded-xl overflow-hidden bg-slate-50">
+                                        <button type="button" onclick="adjustQuantity(-0.5)" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 font-bold text-lg text-slate-700 transition">-</button>
+                                        <input type="number" id="food-quantity" value="1" min="0.1" max="20" step="0.1" oninput="updateSelectedFoodPreview()" required class="w-20 text-center bg-white py-2.5 font-bold text-base text-slate-800 focus:outline-none">
+                                        <button type="button" onclick="adjustQuantity(0.5)" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 font-bold text-lg text-slate-700 transition">+</button>
+                                    </div>
+                                    <span id="food-unit-label" class="text-base font-bold text-emerald-700 bg-emerald-50 px-3.5 py-2.5 rounded-xl border border-emerald-200">Bát</span>
+                                </div>
+                                <!-- Các nút chọn nhanh khẩu phần -->
+                                <div class="flex gap-2 mt-2">
+                                    <button type="button" onclick="setQuantity(0.5)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600">0.5 suất</button>
+                                    <button type="button" onclick="setQuantity(1)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600">1 suất</button>
+                                    <button type="button" onclick="setQuantity(1.5)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600">1.5 suất</button>
+                                    <button type="button" onclick="setQuantity(2)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600">2 suất</button>
+                                </div>
+                            </div>
+
+                            <!-- Xem trước dinh dưỡng món sắp thêm -->
+                            <div id="selected-food-preview" class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 text-xs sm:text-sm text-slate-600 space-y-1">
+                                <!-- Render bằng JS -->
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                                <span>Lưu Vào Thực Đơn Hôm Nay</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Nhật ký 4 bữa ăn trong ngày -->
+                <div class="lg:col-span-7 space-y-4" id="daily-meals-list">
+                    <!-- Render 4 thẻ Bữa Sáng, Trưa, Tối, Phụ bằng JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: SO SÁNH TIÊU CHUẨN & GỢI Ý BÙ ĐẮP (HÔM SAU/TUẦN SAU) -->
+        <!-- ========================================================= -->
+        <section id="tab-analysis" class="tab-content hidden space-y-6">
+            <!-- Bộ chuyển đổi chế độ xem Ngày / 7 Ngày -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Đối Chiếu Tiêu Chuẩn Dinh Dưỡng & Kế Hoạch Bù Đắp</h2>
+                    <p class="text-sm text-slate-500 mt-1">So sánh dữ liệu thực tế với Nhu cầu khuyến nghị của Viện Dinh dưỡng Quốc gia Việt Nam & WHO.</p>
+                </div>
+                <div class="inline-flex bg-slate-100 p-1.5 rounded-xl self-start">
+                    <button onclick="setAnalysisPeriod('day')" id="period-btn-day" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-emerald-700 shadow-sm transition">
+                        Hôm Nay (1 Ngày)
+                    </button>
+                    <button onclick="setAnalysisPeriod('week')" id="period-btn-week" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition">
+                        7 Ngày Gần Nhất (Tuần)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Khối Cảnh báo Thiếu hụt Kéo dài & Gợi ý Bù đắp Thông minh -->
+            <div class="bg-gradient-to-br from-amber-50 via-orange-50/70 to-rose-50/50 rounded-2xl p-5 sm:p-6 border border-amber-200 shadow-sm">
+                <div class="flex items-start gap-3 mb-4">
+                    <div class="bg-amber-500 text-white p-2.5 rounded-xl shrink-0 shadow-sm">
+                        <i data-lucide="stethoscope" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-800">Chẩn Đoán Thiếu Hụt & Thực Đơn Bù Đắp</h3>
+                        <p class="text-sm text-slate-600 mt-0.5" id="diagnosis-subtitle">Hệ thống tự động quét lịch sử 7 ngày qua để tính toán lượng chất còn thiếu và thời gian thiếu liên tục.</p>
+                    </div>
+                </div>
+
+                <!-- Danh sách các chất đang thiếu hụt & thời gian thiếu -->
+                <div id="deficit-alerts-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- Render bằng JS -->
+                </div>
+
+                <!-- Đề xuất món ăn bù đắp cụ thể cho Hôm sau / Tuần sau -->
+                <div class="bg-white/90 backdrop-blur rounded-xl p-4 sm:p-5 border border-amber-200/80">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <h4 class="font-bold text-base sm:text-lg text-emerald-800 flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-emerald-600"></i>
+                            <span>Gợi Ý Món Ăn Bổ Sung Ngay Cho Hôm Sau / Tuần Sau</span>
+                        </h4>
+                        <span class="text-xs font-semibold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full self-start">Nhấn "+ Thêm vào ngày mai" để lên lịch nhanh</span>
+                    </div>
+                    <div id="recommended-foods-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng Chi Tiết 9 Chỉ Số Dinh Dưỡng (Đã nạp vs Chuẩn vs Thiếu/Thừa) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+                <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h3 class="text-lg font-bold text-slate-800" id="table-analysis-title">Bảng Phân Tích Chi Tiết 9 Vi Chất & Đa Lượng</h3>
+                    <span class="text-xs font-medium text-slate-500">* Mức đạt chuẩn lý tưởng: 85% - 115% nhu cầu khuyến nghị</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs sm:text-sm uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-3.5 px-4 font-bold">Nhóm chất dinh dưỡng</th>
+                                <th class="py-3.5 px-4 font-bold text-right">Đã nạp</th>
+                                <th class="py-3.5 px-4 font-bold text-right">Tiêu chuẩn</th>
+                                <th class="py-3.5 px-4 font-bold text-right">Thiếu / Thừa</th>
+                                <th class="py-3.5 px-4 font-bold w-44">Tỷ lệ đạt (%)</th>
+                                <th class="py-3.5 px-4 font-bold">Đánh giá</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nutrient-comparison-tbody" class="divide-y divide-slate-100 text-sm sm:text-base">
+                            <!-- Render bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Biểu đồ lịch sử 7 ngày gần nhất -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                <h3 class="text-lg font-bold text-slate-800 mb-1">Biểu Đồ Năng Lượng (Calo) 7 Ngày Gần Nhất</h3>
+                <p class="text-sm text-slate-500 mb-5">Giúp theo dõi sự ổn định ăn uống trong tuần so với vạch tiêu chuẩn khuyến nghị.</p>
+                <div id="weekly-chart-container" class="h-56 flex items-end justify-between gap-2 sm:gap-4 pt-6 pb-2 px-2 border-b border-slate-200">
+                    <!-- Render biểu đồ cột bằng JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: KHO DỮ LIỆU MÓN ĂN VIỆT NAM & THÊM MÓN MỚI         -->
+        <!-- ========================================================= -->
+        <section id="tab-foods" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Form thêm món ăn mới vào từ điển -->
+                <div class="lg:col-span-4">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 sticky top-36">
+                        <h3 class="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+                            <i data-lucide="plus-square" class="w-5 h-5 text-emerald-600"></i>
+                            <span>Thêm Món Ăn Mới Vào Kho</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-4">Nhập thông tin dinh dưỡng cho 1 đơn vị khẩu phần chuẩn (ví dụ: 1 bát, 1 đĩa, 100g).</p>
+
+                        <form id="new-food-form" onsubmit="handleCreateCustomFood(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Tên món ăn *</label>
+                                <input type="text" id="nf-name" required placeholder="VD: Cháo lươn đậu xanh" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Phân nhóm *</label>
+                                    <select id="nf-category" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <option value="Tinh bột">Tinh bột</option>
+                                        <option value="Thịt & Trứng">Thịt & Trứng</option>
+                                        <option value="Cá & Hải sản">Cá & Hải sản</option>
+                                        <option value="Rau & Canh">Rau & Canh</option>
+                                        <option value="Đậu & Sữa">Đậu & Sữa</option>
+                                        <option value="Trái cây & Phụ">Trái cây & Phụ</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Đơn vị tính *</label>
+                                    <input type="text" id="nf-unit" required placeholder="Bát / Đĩa / 100g / Ly" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Năng lượng (kcal) *</label>
+                                    <input type="number" id="nf-cal" required min="0" step="1" placeholder="250" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Chất Đạm / Protein (g) *</label>
+                                    <input type="number" id="nf-pro" required min="0" step="0.1" placeholder="15" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Chất Béo / Lipid (g)</label>
+                                    <input type="number" id="nf-fat" min="0" step="0.1" value="5" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tinh bột / Glucid (g)</label>
+                                    <input type="number" id="nf-carb" min="0" step="0.1" value="30" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Chất xơ (g)</label>
+                                    <input type="number" id="nf-fiber" min="0" step="0.1" value="2" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Canxi (mg)</label>
+                                    <input type="number" id="nf-calcium" min="0" step="1" value="40" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Sắt (mg)</label>
+                                    <input type="number" id="nf-iron" min="0" step="0.1" value="1.5" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Vitamin C (mg)</label>
+                                    <input type="number" id="nf-vitc" min="0" step="1" value="5" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Vitamin A (mcg RAE)</label>
+                                    <input type="number" id="nf-vita" min="0" step="1" value="50" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow transition mt-2">
+                                + Lưu Món Ăn Mới
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Danh sách kho món ăn Việt Nam -->
+                <div class="lg:col-span-8">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Danh Mục Món Ăn Việt Nam (<span id="food-count-label">0</span> món)</h3>
+                                <p class="text-xs text-slate-500">Số liệu tham chiếu theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh dưỡng).</p>
+                            </div>
+                            <input type="text" id="db-search-input" oninput="renderFoodDatabase()" placeholder="Tìm kiếm trong kho..." class="px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none sm:w-64">
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
+                                        <th class="py-3 px-3 font-bold">Tên món & Khẩu phần</th>
+                                        <th class="py-3 px-2 font-bold text-right">Calo</th>
+                                        <th class="py-3 px-2 font-bold text-right">Đạm</th>
+                                        <th class="py-3 px-2 font-bold text-right">Xơ</th>
+                                        <th class="py-3 px-2 font-bold text-right">Canxi</th>
+                                        <th class="py-3 px-2 font-bold text-right">Sắt</th>
+                                        <th class="py-3 px-2 font-bold text-right">Vit C</th>
+                                        <th class="py-3 px-2 font-bold text-center">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="food-db-tbody" class="divide-y divide-slate-100">
+                                    <!-- Render bằng JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: QUẢN LÝ THÀNH VIÊN & TIÊU CHUẨN KHUYẾN NGHỊ         -->
+        <!-- ========================================================= -->
+        <section id="tab-members" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Form Thêm Thành Viên -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                        <h3 class="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-5 h-5 text-emerald-600"></i>
+                            <span>Thêm Thành Viên Gia Đình</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-4">Hệ thống tự động tính định mức chuẩn Viện Dinh dưỡng & WHO theo độ tuổi, giới tính và mức độ vận động.</p>
+
+                        <form id="new-member-form" onsubmit="handleCreateMember(event)" class="space-y-3.5">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Tên gọi / Biệt danh *</label>
+                                <input type="text" id="nm-name" required placeholder="VD: Ông Nội, Mẹ, Bé Bông..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Giới tính *</label>
+                                    <select id="nm-gender" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Tuổi *</label>
+                                    <input type="number" id="nm-age" required min="1" max="110" value="35" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Mức độ vận động hàng ngày</label>
+                                <select id="nm-activity" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="light">Nhẹ (Văn phòng, ít đi lại, nghỉ ngơi)</option>
+                                    <option value="moderate" selected>Trung bình (Đi bộ, làm việc nhà, tập nhẹ)</option>
+                                    <option value="heavy">Nặng (Lao động chân tay, chơi thể thao nhiều)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow transition">
+                                + Thêm Hồ Sơ Thành Viên
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Danh sách thành viên & Bảng tiêu chuẩn áp dụng -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                        <h3 class="text-lg font-bold text-slate-800 mb-3">Danh Sách Thành Viên & Định Mức Chuẩn</h3>
+                        <div id="members-list-container" class="space-y-3">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+
+                    <!-- Khôi phục dữ liệu mẫu -->
+                    <div class="bg-slate-100 rounded-2xl p-4 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-700">Dữ liệu mẫu trải nghiệm nhanh</h4>
+                            <p class="text-xs text-slate-500">Nạp thử dữ liệu ăn uống 7 ngày mẫu để xem ngay tính năng phát hiện thiếu chất.</p>
+                        </div>
+                        <button onclick="seedSampleDataConfirm()" class="px-4 py-2 bg-white hover:bg-slate-50 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold shadow-sm transition shrink-0">
+                            Nạp dữ liệu mẫu 7 ngày
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-10 py-5 text-center text-xs sm:text-sm text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-medium text-slate-600">Sổ Tay Dinh Dưỡng Gia Đình — Dữ liệu lưu trữ an toàn ngay trên trình duyệt của bạn.</p>
+            <p class="mt-1">Tham chiếu: Nhu cầu dinh dưỡng khuyến nghị cho người Việt Nam (Viện Dinh dưỡng Quốc gia) & Tổ chức Y tế Thế giới (WHO).</p>
+        </div>
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- JAVASCRIPT LOGIC & DỮ LIỆU CHUẨN                          -->
+    <!-- ========================================================= -->
+    <script>
+        // 1. KHO DỮ LIỆU MÓN ĂN VIỆT NAM CHUẨN (Theo 1 khẩu phần phổ biến)
+        // Các chỉ số: cal (kcal), pro (g), fat (g), carb (g), fiber (g), calcium (mg), iron (mg), vitc (mg), vita (mcg)
+        const DEFAULT_FOODS = [
+            // Tinh bột
+            { id: 'f1', name: 'Cơm trắng (1 bát vừa ~150g)', category: 'Tinh bột', unit: 'Bát', cal: 200, pro: 4.2, fat: 0.4, carb: 44.0, fiber: 0.6, calcium: 15, iron: 0.8, vitc: 0, vita: 0 },
+            { id: 'f2', name: 'Cơm gạo lứt (1 bát vừa ~150g)', category: 'Tinh bột', unit: 'Bát', cal: 170, pro: 4.0, fat: 1.4, carb: 36.0, fiber: 2.8, calcium: 20, iron: 1.1, vitc: 0, vita: 0 },
+            { id: 'f3', name: 'Phở bò tái chín (1 tô đầy đủ)', category: 'Tinh bột', unit: 'Tô', cal: 450, pro: 24.0, fat: 12.0, carb: 60.0, fiber: 2.0, calcium: 45, iron: 3.8, vitc: 8, vita: 45 },
+            { id: 'f4', name: 'Bún riêu cua đồng (1 tô)', category: 'Tinh bột', unit: 'Tô', cal: 410, pro: 21.0, fat: 11.0, carb: 56.0, fiber: 3.2, calcium: 320, iron: 3.5, vitc: 15, vita: 110 },
+            { id: 'f5', name: 'Bún chả Hà Nội (1 suất)', category: 'Tinh bột', unit: 'Suất', cal: 520, pro: 25.0, fat: 20.0, carb: 58.0, fiber: 3.0, calcium: 40, iron: 2.5, vitc: 12, vita: 60 },
+            { id: 'f6', name: 'Bánh mì trứng ốp la (1 ổ)', category: 'Tinh bột', unit: 'Ổ', cal: 380, pro: 14.5, fat: 14.0, carb: 48.0, fiber: 2.2, calcium: 55, iron: 2.4, vitc: 5, vita: 140 },
+            { id: 'f7', name: 'Xôi xéo / Xôi đỗ xanh (1 gói vừa)', category: 'Tinh bột', unit: 'Gói', cal: 390, pro: 9.5, fat: 8.5, carb: 68.0, fiber: 3.5, calcium: 30, iron: 1.8, vitc: 0, vita: 10 },
+            { id: 'f8', name: 'Khoai lang luộc (1 củ vừa ~150g)', category: 'Tinh bột', unit: 'Củ', cal: 130, pro: 2.0, fat: 0.2, carb: 30.0, fiber: 4.5, calcium: 45, iron: 0.9, vitc: 22, vita: 960 },
+
+            // Thịt & Trứng
+            { id: 'f9', name: 'Thịt lợn kho tàu / kho tiêu (100g)', category: 'Thịt & Trứng', unit: 'Lạng (100g)', cal: 260, pro: 19.0, fat: 19.5, carb: 2.5, fiber: 0, calcium: 12, iron: 1.6, vitc: 0, vita: 15 },
+            { id: 'f10', name: 'Thịt lợn nạc luộc / rang (100g)', category: 'Thịt & Trứng', unit: 'Lạng (100g)', cal: 190, pro: 22.0, fat: 11.0, carb: 0, fiber: 0, calcium: 10, iron: 1.8, vitc: 0, vita: 10 },
+            { id: 'f11', name: 'Thịt gà ta luộc / rang gừng (100g)', category: 'Thịt & Trứng', unit: 'Lạng (100g)', cal: 195, pro: 24.5, fat: 10.5, carb: 0, fiber: 0, calcium: 15, iron: 1.4, vitc: 0, vita: 35 },
+            { id: 'f12', name: 'Thịt bò xào hành cần / lúc lắc (100g)', category: 'Thịt & Trứng', unit: 'Lạng (100g)', cal: 210, pro: 23.0, fat: 11.5, carb: 3.0, fiber: 1.2, calcium: 18, iron: 3.6, vitc: 8, vita: 30 },
+            { id: 'f13', name: 'Trứng gà rán / ốp la (1 quả)', category: 'Thịt & Trứng', unit: 'Quả', cal: 110, pro: 7.0, fat: 8.8, carb: 0.6, fiber: 0, calcium: 28, iron: 1.3, vitc: 0, vita: 160 },
+            { id: 'f14', name: 'Trứng vịt lộn (1 quả)', category: 'Thịt & Trứng', unit: 'Quả', cal: 182, pro: 13.6, fat: 12.4, carb: 4.0, fiber: 0, calcium: 82, iron: 3.2, vitc: 2, vita: 435 },
+            { id: 'f15', name: 'Giò lụa / Chả quế (100g)', category: 'Thịt & Trứng', unit: 'Lạng (100g)', cal: 235, pro: 21.5, fat: 16.0, carb: 1.0, fiber: 0, calcium: 14, iron: 1.2, vitc: 0, vita: 5 },
+
+            // Cá & Hải sản
+            { id: 'f16', name: 'Cá thu / Cá nục kho tộ (1 khúc ~100g)', category: 'Cá & Hải sản', unit: 'Khúc (100g)', cal: 185, pro: 21.0, fat: 10.2, carb: 2.0, fiber: 0, calcium: 45, iron: 1.5, vitc: 0, vita: 55 },
+            { id: 'f17', name: 'Cá chép / Cá rô phi rán hoặc hấp (100g)', category: 'Cá & Hải sản', unit: 'Lạng (100g)', cal: 165, pro: 20.0, fat: 9.0, carb: 0.5, fiber: 0, calcium: 65, iron: 1.3, vitc: 0, vita: 40 },
+            { id: 'f18', name: 'Tôm đồng / Tôm sú rang (100g)', category: 'Cá & Hải sản', unit: 'Lạng (100g)', cal: 135, pro: 21.5, fat: 4.5, carb: 1.5, fiber: 0, calcium: 320, iron: 2.2, vitc: 0, vita: 60 },
+            { id: 'f19', name: 'Cua đồng nấu canh (1 bát canh cua rau đay)', category: 'Cá & Hải sản', unit: 'Bát', cal: 95, pro: 8.5, fat: 3.2, carb: 7.5, fiber: 2.8, calcium: 480, iron: 2.8, vitc: 25, vita: 240 },
+            { id: 'f20', name: 'Nghêu / Ngao hấp sả (1 bát)', category: 'Cá & Hải sản', unit: 'Bát', cal: 85, pro: 13.0, fat: 1.5, carb: 4.0, fiber: 0.2, calcium: 110, iron: 6.5, vitc: 4, vita: 90 },
+
+            // Rau & Canh
+            { id: 'f21', name: 'Rau muống luộc / xào tỏi (1 đĩa vừa)', category: 'Rau & Canh', unit: 'Đĩa', cal: 65, pro: 3.2, fat: 2.5, carb: 7.0, fiber: 3.8, calcium: 115, iron: 2.4, vitc: 32, vita: 380 },
+            { id: 'f22', name: 'Rau cải xanh / Cải ngọt luộc (1 đĩa)', category: 'Rau & Canh', unit: 'Đĩa', cal: 45, pro: 2.8, fat: 0.5, carb: 6.5, fiber: 3.5, calcium: 145, iron: 1.9, vitc: 45, vita: 410 },
+            { id: 'f23', name: 'Bông cải xanh (Súp lơ) luộc/xào (1 đĩa)', category: 'Rau & Canh', unit: 'Đĩa', cal: 55, pro: 3.8, fat: 1.2, carb: 8.0, fiber: 4.2, calcium: 70, iron: 1.2, vitc: 85, vita: 120 },
+            { id: 'f24', name: 'Canh bí đỏ nấu thịt bằm (1 bát)', category: 'Rau & Canh', unit: 'Bát', cal: 85, pro: 4.5, fat: 3.2, carb: 9.5, fiber: 2.1, calcium: 35, iron: 1.0, vitc: 14, vita: 520 },
+            { id: 'f25', name: 'Canh chua cá lóc / cá basa (1 bát)', category: 'Rau & Canh', unit: 'Bát', cal: 115, pro: 11.0, fat: 4.0, carb: 8.5, fiber: 2.2, calcium: 55, iron: 1.2, vitc: 28, vita: 130 },
+            { id: 'f26', name: 'Cà rốt & Su hào xào/luộc (1 đĩa)', category: 'Rau & Canh', unit: 'Đĩa', cal: 60, pro: 1.8, fat: 1.5, carb: 10.0, fiber: 3.6, calcium: 48, iron: 0.9, vitc: 38, vita: 680 },
+
+            // Đậu & Sữa
+            { id: 'f27', name: 'Đậu phụ rán / sốt cà chua (2 bìa ~150g)', category: 'Đậu & Sữa', unit: 'Suất (2 bìa)', cal: 165, pro: 14.5, fat: 10.0, carb: 4.5, fiber: 1.5, calcium: 240, iron: 2.6, vitc: 4, vita: 15 },
+            { id: 'f28', name: 'Sữa tươi không đường / ít đường (1 hộp 180ml)', category: 'Đậu & Sữa', unit: 'Hộp/Ly', cal: 115, pro: 5.8, fat: 6.0, carb: 9.0, fiber: 0, calcium: 215, iron: 0.1, vitc: 2, vita: 95 },
+            { id: 'f29', name: 'Sữa chua ăn có đường/ít đường (1 hộp 100g)', category: 'Đậu & Sữa', unit: 'Hộp', cal: 95, pro: 3.8, fat: 2.8, carb: 13.5, fiber: 0, calcium: 130, iron: 0.1, vitc: 1, vita: 35 },
+            { id: 'f30', name: 'Sữa đậu nành (1 ly 250ml)', category: 'Đậu & Sữa', unit: 'Ly', cal: 110, pro: 7.5, fat: 4.0, carb: 11.0, fiber: 1.2, calcium: 65, iron: 1.4, vitc: 0, vita: 10 },
+
+            // Trái cây & Phụ
+            { id: 'f31', name: 'Cam sành / Cam ngọt (1 quả vừa ~150g)', category: 'Trái cây & Phụ', unit: 'Quả', cal: 68, pro: 1.3, fat: 0.2, carb: 16.5, fiber: 3.1, calcium: 58, iron: 0.3, vitc: 72, vita: 32 },
+            { id: 'f32', name: 'Chuối tiêu chín (1 quả vừa ~100g)', category: 'Trái cây & Phụ', unit: 'Quả', cal: 92, pro: 1.1, fat: 0.3, carb: 22.8, fiber: 2.6, calcium: 8, iron: 0.4, vitc: 10, vita: 8 },
+            { id: 'f33', name: 'Ổi tươi (1 quả vừa ~150g)', category: 'Trái cây & Phụ', unit: 'Quả', cal: 75, pro: 1.5, fat: 0.5, carb: 16.0, fiber: 5.4, calcium: 25, iron: 0.5, vitc: 180, vita: 45 },
+            { id: 'f34', name: 'Đu đủ chín (1 miếng vừa ~150g)', category: 'Trái cây & Phụ', unit: 'Miếng', cal: 62, pro: 0.8, fat: 0.2, carb: 15.0, fiber: 2.5, calcium: 32, iron: 0.4, vitc: 88, vita: 145 },
+            { id: 'f35', name: 'Hạt điều / Lạc rang (1 nắm nhỏ ~30g)', category: 'Trái cây & Phụ', unit: 'Nắm (30g)', cal: 170, pro: 6.5, fat: 14.0, carb: 7.5, fiber: 2.1, calcium: 18, iron: 1.6, vitc: 0, vita: 0 }
+        ];
+
+        // 2. CẤU HÌNH THÀNH VIÊN MẶC ĐỊNH
+        const DEFAULT_MEMBERS = [
+            { id: 'm1', name: 'Bố (Nam trung niên)', gender: 'male', age: 45, activity: 'moderate' },
+            { id: 'm2', name: 'Mẹ (Nữ trung niên)', gender: 'female', age: 42, activity: 'moderate' },
+            { id: 'm3', name: 'Ông/Bà (Người cao tuổi)', gender: 'male', age: 68, activity: 'light' },
+            { id: 'm4', name: 'Con (Thanh thiếu niên)', gender: 'male', age: 15, activity: 'moderate' }
+        ];
+
+        // 3. DANH MỤC 9 CHỈ SỐ DINH DƯỠNG & MÔ TẢ
+        const NUTRIENT_META = [
+            { key: 'cal', label: 'Năng lượng (Calo)', unit: 'kcal', desc: 'Cung cấp năng lượng hoạt động cho toàn cơ thể' },
+            { key: 'pro', label: 'Chất Đạm (Protein)', unit: 'g', desc: 'Xây dựng cơ bắp, tế bào và hệ miễn dịch' },
+            { key: 'fat', label: 'Chất Béo (Lipid)', unit: 'g', desc: 'Hấp thu vitamin tan trong dầu (A, D, E, K)' },
+            { key: 'carb', label: 'Tinh Bột (Glucid)', unit: 'g', desc: 'Nguồn năng lượng chính cho não bộ và vận động' },
+            { key: 'fiber', label: 'Chất Xơ', unit: 'g', desc: 'Hỗ trợ tiêu hóa, chống táo bón và ổn định đường huyết' },
+            { key: 'calcium', label: 'Canxi', unit: 'mg', desc: 'Chắc khỏe xương khớp, răng và dẫn truyền thần kinh' },
+            { key: 'iron', label: 'Sắt', unit: 'mg', desc: 'Tạo hồng cầu, phòng ngừa thiếu máu và hoa mắt chóng mặt' },
+            { key: 'vitc', label: 'Vitamin C', unit: 'mg', desc: 'Tăng sức đề kháng, chống oxy hóa và hỗ trợ hấp thu sắt' },
+            { key: 'vita', label: 'Vitamin A', unit: 'mcg', desc: 'Sáng mắt, bảo vệ niêm mạc và tăng cường miễn dịch' }
+        ];
+
+        // 4. TRẠNG THÁI ỨNG DỤNG (STATE)
+        let appState = {
+            members: [],
+            foods: [],
+            logs: {}, // Cấu trúc: { "memberId_YYYY-MM-DD": [ { id, mealType, foodId, quantity } ] }
+            selectedMemberId: 'm1',
+            selectedDate: getTodayStr(),
+            analysisPeriod: 'week' // 'day' | 'week'
+        };
+
+        // Hàm lấy ngày hôm nay định dạng YYYY-MM-DD theo giờ địa phương
+        function getTodayStr() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset();
+            const local = new Date(now.getTime() - (offset * 60 * 1000));
+            return local.toISOString().split('T')[0];
+        }
+
+        // Cộng/trừ ngày từ chuỗi YYYY-MM-DD
+        function addDaysToDateStr(dateStr, days) {
+            const parts = dateStr.split('-');
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            d.setDate(d.getDate() + days);
+            const offset = d.getTimezoneOffset();
+            const local = new Date(d.getTime() - (offset * 60 * 1000));
+            return local.toISOString().split('T')[0];
+        }
+
+        // Định dạng ngày hiển thị DD/MM/YYYY
+        function formatDisplayDate(dateStr) {
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        // 5. TÍNH TIÊU CHUẨN DINH DƯỠNG THEO VIỆN DINH DƯỠNG QUỐC GIA VN & WHO
+        function getRDAForMember(member) {
+            const { gender, age, activity } = member;
+            let cal = 2000;
+            let pro = 60;
+            let calcium = 800;
+            let iron = 12;
+            let vitc = 90;
+            let vita = 600;
+            let fiber = 25;
+
+            // Tính theo độ tuổi & giới tính (Tham chiếu Bảng Nhu cầu dinh dưỡng khuyến nghị cho người Việt Nam)
+            if (age < 10) {
+                cal = 1500; pro = 45; calcium = 700; iron = 10; vitc = 60; vita = 450; fiber = 18;
+            } else if (age >= 10 && age <= 18) {
+                cal = gender === 'male' ? 2400 : 2100;
+                pro = gender === 'male' ? 72 : 65;
+                calcium = 1000; // Tuổi dậy thì cần nhiều Canxi phát triển chiều cao
+                iron = gender === 'male' ? 15 : 22; // Nữ tuổi dậy thì cần nhiều sắt
+                vitc = 85;
+                vita = gender === 'male' ? 650 : 550;
+                fiber = 25;
+            } else if (age > 18 && age < 60) {
+                cal = gender === 'male' ? 2250 : 1850;
+                pro = gender === 'male' ? 68 : 58;
+                calcium = 800;
+                iron = gender === 'male' ? 12 : 24; // Phụ nữ tuổi sinh đẻ cần 24mg sắt/ngày theo chuẩn VN
+                vitc = 100;
+                vita = gender === 'male' ? 650 : 500;
+                fiber = gender === 'male' ? 28 : 24;
+            } else {
+                // Người cao tuổi (>= 60 tuổi)
+                cal = gender === 'male' ? 1900 : 1650;
+                pro = gender === 'male' ? 65 : 55;
+                calcium = 1000; // Người cao tuổi cần 1000mg Canxi chống loãng xương
+                iron = 11;
+                vitc = 100;
+                vita = gender === 'male' ? 600 : 500;
+                fiber = 25;
+            }
+
+            // Điều chỉnh theo mức độ vận động
+            const actFactor = activity === 'light' ? 0.92 : (activity === 'heavy' ? 1.15 : 1.0);
+            cal = Math.round(cal * actFactor);
+            pro = Math.round(pro * (activity === 'heavy' ? 1.15 : 1.0));
+
+            // Tỷ lệ đa lượng chuẩn Viện Dinh dưỡng VN: Đạm 13-15%, Béo 20-25%, Tinh bột 60-65%
+            const fat = Math.round((cal * 0.22) / 9);
+            const carb = Math.round((cal - (pro * 4) - (fat * 9)) / 4);
+
+            return { cal, pro, fat, carb, fiber, calcium, iron, vitc, vita };
+        }
+
+        // 6. LƯU TRỮ & TẢI DỮ LIỆU LOCALSTORAGE
+        const STORAGE_KEY = 'vdd_nutrition_app_v1';
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    members: appState.members,
+                    foods: appState.foods,
+                    logs: appState.logs,
+                    selectedMemberId: appState.selectedMemberId
+                }));
+            } catch (e) {
+                showToast('Không thể lưu dữ liệu vào trình duyệt!', 'error');
+            }
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    appState.members = parsed.members && parsed.members.length ? parsed.members : [...DEFAULT_MEMBERS];
+                    appState.foods = parsed.foods && parsed.foods.length ? parsed.foods : [...DEFAULT_FOODS];
+                    appState.logs = parsed.logs || {};
+                    appState.selectedMemberId = parsed.selectedMemberId || appState.members[0].id;
+                } else {
+                    appState.members = [...DEFAULT_MEMBERS];
+                    appState.foods = [...DEFAULT_FOODS];
+                    // Tự động nạp sẵn 5 ngày dữ liệu mẫu cho người dùng lần đầu để thấy ngay hiệu quả
+                    generateSampleLogs(false);
+                }
+            } catch (e) {
+                appState.members = [...DEFAULT_MEMBERS];
+                appState.foods = [...DEFAULT_FOODS];
+            }
+        }
+
+        // 7. TẠO DỮ LIỆU MẪU 7 NGÀY (CÓ CHỦ ĐÍCH THIẾU CANXI & CHẤT XƠ ĐỂ DEMO TÍNH NĂNG GỢI Ý)
+        function generateSampleLogs(notify = true) {
+            const today = getTodayStr();
+            const mId = appState.selectedMemberId || 'm1';
+
+            // Tạo thực đơn 5 ngày gần đây (thiếu rau xanh, trái cây và sữa -> thiếu Canxi, Chất xơ, Vitamin C)
+            const samplePatterns = [
+                [
+                    { mealType: 'sang', foodId: 'f3', quantity: 1 }, // Phở bò
+                    { mealType: 'trua', foodId: 'f1', quantity: 2 }, // 2 bát cơm
+                    { mealType: 'trua', foodId: 'f9', quantity: 1.5 }, // Thịt kho
+                    { mealType: 'toi', foodId: 'f1', quantity: 1.5 },
+                    { mealType: 'toi', foodId: 'f13', quantity: 2 } // 2 trứng rán
+                ],
+                [
+                    { mealType: 'sang', foodId: 'f6', quantity: 1 }, // Bánh mì trứng
+                    { mealType: 'trua', foodId: 'f1', quantity: 2 },
+                    { mealType: 'trua', foodId: 'f11', quantity: 1.5 }, // Gà rang
+                    { mealType: 'trua', foodId: 'f21', quantity: 0.5 }, // Ít rau
+                    { mealType: 'toi', foodId: 'f1', quantity: 1.5 },
+                    { mealType: 'toi', foodId: 'f16', quantity: 1 } // Cá kho
+                ],
+                [
+                    { mealType: 'sang', foodId: 'f7', quantity: 1 }, // Xôi xéo
+                    { mealType: 'trua', foodId: 'f5', quantity: 1 }, // Bún chả
+                    { mealType: 'toi', foodId: 'f1', quantity: 2 },
+                    { mealType: 'toi', foodId: 'f10', quantity: 1.5 } // Thịt luộc
+                ],
+                [
+                    { mealType: 'sang', foodId: 'f3', quantity: 1 },
+                    { mealType: 'trua', foodId: 'f1', quantity: 2 },
+                    { mealType: 'trua', foodId: 'f12', quantity: 1.2 }, // Thịt bò xào
+                    { mealType: 'toi', foodId: 'f1', quantity: 1.5 },
+                    { mealType: 'toi', foodId: 'f27', quantity: 1 }, // Đậu phụ
+                    { mealType: 'phu', foodId: 'f32', quantity: 1 } // 1 quả chuối
+                ],
+                [
+                    { mealType: 'sang', foodId: 'f6', quantity: 1 },
+                    { mealType: 'trua', foodId: 'f1', quantity: 2 },
+                    { mealType: 'trua', foodId: 'f9', quantity: 1.2 },
+                    { mealType: 'toi', foodId: 'f1', quantity: 1.5 },
+                    { mealType: 'toi', foodId: 'f17', quantity: 1 } // Cá rán
+                ]
+            ];
+
+            for (let i = 0; i < samplePatterns.length; i++) {
+                const dateKey = addDaysToDateStr(today, -i);
+                const logKey = `${mId}_${dateKey}`;
+                appState.logs[logKey] = samplePatterns[i].map((item, idx) => ({
+                    id: `sample_${dateKey}_${idx}_${Date.now()}`,
+                    ...item
+                }));
+            }
+
+            saveState();
+            renderAll();
+            if (notify) {
+                showToast('Đã nạp thực đơn mẫu 5 ngày gần nhất! Hãy mở tab "So Sánh Chuẩn & Bù Đắp" để xem kết quả.', 'success');
+            }
+        }
+
+        function seedSampleDataConfirm() {
+            openConfirmModal(
+                'Nạp dữ liệu mẫu 7 ngày',
+                'Thao tác này sẽ ghi đè thực đơn 5 ngày gần nhất của thành viên đang chọn bằng dữ liệu mẫu để bạn kiểm tra tính năng phân tích thiếu chất. Tiếp tục?',
+                () => generateSampleLogs(true)
+            );
+        }
+
+        // 8. TÍNH TOÁN DINH DƯỠNG CHO 1 NGÀY CỤ THỂ
+        function calculateDayNutrients(memberId, dateStr) {
+            const logKey = `${memberId}_${dateStr}`;
+            const entries = appState.logs[logKey] || [];
+            const totals = { cal: 0, pro: 0, fat: 0, carb: 0, fiber: 0, calcium: 0, iron: 0, vitc: 0, vita: 0 };
+
+            entries.forEach(entry => {
+                const food = appState.foods.find(f => f.id === entry.foodId);
+                if (food) {
+                    const q = Number(entry.quantity) || 0;
+                    totals.cal += food.cal * q;
+                    totals.pro += food.pro * q;
+                    totals.fat += food.fat * q;
+                    totals.carb += food.carb * q;
+                    totals.fiber += food.fiber * q;
+                    totals.calcium += food.calcium * q;
+                    totals.iron += food.iron * q;
+                    totals.vitc += food.vitc * q;
+                    totals.vita += food.vita * q;
+                }
+            });
+
+            return totals;
+        }
+
+        // 9. PHÂN TÍCH THIẾU HỤT 7 NGÀY & GỢI Ý BÙ ĐẮP THÔNG MINH
+        function analyzeDeficitsAndRecommendations(memberId, refDateStr) {
+            const member = appState.members.find(m => m.id === memberId) || appState.members[0];
+            const rda = getRDAForMember(member);
+
+            // Lấy dữ liệu 7 ngày kết thúc vào refDateStr
+            const daysData = [];
+            let loggedDaysCount = 0;
+
+            for (let i = 6; i >= 0; i--) {
+                const dStr = addDaysToDateStr(refDateStr, -i);
+                const logKey = `${memberId}_${dStr}`;
+                const hasLogs = (appState.logs[logKey] || []).length > 0;
+                if (hasLogs) loggedDaysCount++;
+                daysData.push({
+                    date: dStr,
+                    hasLogs,
+                    nutrients: calculateDayNutrients(memberId, dStr)
+                });
+            }
+
+            // Tính trung bình của những ngày có ghi chép (nếu chưa ghi ngày nào thì lấy 1 ngày 0)
+            const activeDays = daysData.filter(d => d.hasLogs);
+            const divisor = activeDays.length > 0 ? activeDays.length : 1;
+
+            const avg7Days = { cal: 0, pro: 0, fat: 0, carb: 0, fiber: 0, calcium: 0, iron: 0, vitc: 0, vita: 0 };
+            activeDays.forEach(d => {
+                NUTRIENT_META.forEach(n => {
+                    avg7Days[n.key] += d.nutrients[n.key];
+                });
+            });
+            NUTRIENT_META.forEach(n => {
+                avg7Days[n.key] = avg7Days[n.key] / divisor;
+            });
+
+            // Quét từng chất xem thiếu bao nhiêu ngày trong 7 ngày qua và chuỗi thiếu liên tiếp
+            const deficits = [];
+            NUTRIENT_META.forEach(n => {
+                const target = rda[n.key];
+                const avgVal = avg7Days[n.key];
+                const pct = target > 0 ? (avgVal / target) * 100 : 100;
+
+                // Đếm số ngày dưới 80% chuẩn trong những ngày có ghi chép
+                let daysBelow = 0;
+                let consecutiveDays = 0;
+                activeDays.forEach(d => {
+                    if (d.nutrients[n.key] < target * 0.8) {
+                        daysBelow++;
+                        consecutiveDays++;
+                    } else {
+                        consecutiveDays = 0;
+                    }
+                });
+
+                // Nếu trung bình tuần đạt dưới 85% chuẩn thì đưa vào danh sách cần bù đắp
+                if (pct < 85 && activeDays.length > 0) {
+                    const dailyShortfall = Math.max(0, target - avgVal);
+                    const weeklyTotalShortfall = dailyShortfall * activeDays.length;
+                    deficits.push({
+                        key: n.key,
+                        label: n.label,
+                        unit: n.unit,
+                        desc: n.desc,
+                        avgVal,
+                        target,
+                        pct: Math.round(pct),
+                        dailyShortfall,
+                        weeklyTotalShortfall,
+                        daysBelow,
+                        consecutiveDays,
+                        totalTrackedDays: activeDays.length
+                    });
+                }
+            });
+
+            // Sắp xếp mức độ thiếu hụt từ nghiêm trọng nhất (% thấp nhất)
+            deficits.sort((a, b) => a.pct - b.pct);
+
+            // Chấm điểm từng món ăn trong kho để tìm món bù đắp tốt nhất cho các chất đang thiếu
+            const topDeficits = deficits.slice(0, 4);
+            let recommendedFoods = [];
+
+            if (topDeficits.length > 0) {
+                const scoredFoods = appState.foods.map(food => {
+                    let score = 0;
+                    let matchedNutrients = [];
+
+                    topDeficits.forEach((def, index) => {
+                        const weight = 4 - index; // Ưu tiên chất thiếu trầm trọng nhất
+                        const contributionRatio = food[def.key] / def.target;
+                        if (contributionRatio >= 0.12) { // Đóng góp ít nhất 12% nhu cầu ngày
+                            score += contributionRatio * weight * 100;
+                            matchedNutrients.push(`${def.label.split(' ')[0]} (+${Math.round(contributionRatio * 100)}%)`);
+                        }
+                    });
+
+                    return { food, score, matchedNutrients };
+                })
+                .filter(item => item.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 6);
+
+                recommendedFoods = scoredFoods;
+            }
+
+            return {
+                member,
+                rda,
+                daysData,
+                loggedDaysCount,
+                avg7Days,
+                deficits,
+                recommendedFoods
+            };
+        }
+
+        // 10. RENDER GIAO DIỆN NGƯỜI DÙNG
+        function renderAll() {
+            renderHeaderSelectors();
+            renderDiaryTab();
+            renderAnalysisTab();
+            renderFoodDatabase();
+            renderMembersTab();
+            lucide.createIcons();
+        }
+
+        function renderHeaderSelectors() {
+            const memberSelect = document.getElementById('member-select');
+            memberSelect.innerHTML = appState.members.map(m =>
+                `<option value="${m.id}" class="text-slate-800" ${m.id === appState.selectedMemberId ? 'selected' : ''}>${m.name} (${m.age}t)</option>`
+            ).join('');
+
+            document.getElementById('date-picker').value = appState.selectedDate;
+        }
+
+        // Render Tab 1: Ghi chép bữa ăn
+        function renderDiaryTab() {
+            const member = appState.members.find(m => m.id === appState.selectedMemberId) || appState.members[0];
+            const rda = getRDAForMember(member);
+            const dayTotals = calculateDayNutrients(member.id, appState.selectedDate);
+
+            // Cập nhật tiêu đề tóm tắt
+            const isToday = appState.selectedDate === getTodayStr();
+            document.getElementById('summary-date-label').textContent = `${formatDisplayDate(appState.selectedDate)} ${isToday ? '(Hôm nay)' : ''}`;
+            document.getElementById('summary-member-info').textContent =
+                `Thành viên: ${member.name} • ${member.gender === 'male' ? 'Nam' : 'Nữ'}, ${member.age} tuổi • Tiêu chuẩn: ${rda.cal} kcal/ngày`;
+
+            // 4 thẻ tóm tắt nhanh (Calo, Đạm, Chất xơ, Canxi)
+            const quickKeys = [
+                { key: 'cal', title: 'Năng lượng', color: 'emerald' },
+                { key: 'pro', title: 'Chất Đạm', color: 'blue' },
+                { key: 'fiber', title: 'Chất Xơ', color: 'teal' },
+                { key: 'calcium', title: 'Canxi', color: 'amber' }
+            ];
+
+            const quickCardsEl = document.getElementById('daily-quick-cards');
+            quickCardsEl.innerHTML = quickKeys.map(item => {
+                const meta = NUTRIENT_META.find(n => n.key === item.key);
+                const val = Math.round(dayTotals[item.key] * 10) / 10;
+                const target = rda[item.key];
+                const pct = Math.min(100, Math.round((val / target) * 100));
+                const realPct = Math.round((val / target) * 100);
+
+                let barColor = 'bg-emerald-500';
+                let badgeClass = 'bg-emerald-100 text-emerald-800';
+                if (realPct < 75) {
+                    barColor = 'bg-amber-500';
+                    badgeClass = 'bg-amber-100 text-amber-800';
+                } else if (realPct > 120) {
+                    barColor = 'bg-rose-500';
+                    badgeClass = 'bg-rose-100 text-rose-800';
+                }
+
+                return `
+                    <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/70">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs sm:text-sm font-bold text-slate-600">${item.title}</span>
+                            <span class="text-xs font-extrabold px-2 py-0.5 rounded-full ${badgeClass}">${realPct}%</span>
+                        </div>
+                        <div class="text-base sm:text-lg font-extrabold text-slate-800">
+                            ${val} <span class="text-xs font-normal text-slate-500">/ ${target} ${meta.unit}</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 mt-2 overflow-hidden">
+                            <div class="${barColor} h-2 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render danh sách chọn món ăn
+            filterFoodSelect();
+
+            // Render 4 bữa ăn trong ngày
+            const mealTypes = [
+                { key: 'sang', label: '🌅 Bữa Sáng', bg: 'bg-amber-50/70', border: 'border-amber-200/80' },
+                { key: 'trua', label: '☀️ Bữa Trưa', bg: 'bg-emerald-50/60', border: 'border-emerald-200/80' },
+                { key: 'toi', label: '🌙 Bữa Tối', bg: 'bg-indigo-50/50', border: 'border-indigo-200/80' },
+                { key: 'phu', label: '🍎 Bữa Phụ & Tráng Miệng', bg: 'bg-rose-50/50', border: 'border-rose-200/80' }
+            ];
+
+            const logKey = `${member.id}_${appState.selectedDate}`;
+            const dayLogs = appState.logs[logKey] || [];
+
+            const mealsContainer = document.getElementById('daily-meals-list');
+            mealsContainer.innerHTML = mealTypes.map(meal => {
+                const items = dayLogs.filter(l => l.mealType === meal.key);
+                let mealCal = 0;
+
+                const itemsHtml = items.length === 0
+                    ? `<p class="text-sm text-slate-400 italic py-2">Chưa ghi nhận món nào cho bữa này.</p>`
+                    : `<ul class="divide-y divide-slate-200/70">
+                        ${items.map(entry => {
+                            const food = appState.foods.find(f => f.id === entry.foodId);
+                            if (!food) return '';
+                            const c = Math.round(food.cal * entry.quantity);
+                            const p = Math.round(food.pro * entry.quantity * 10) / 10;
+                            const ca = Math.round(food.calcium * entry.quantity);
+                            mealCal += c;
+
+                            return `
+                                <li class="py-2.5 flex items-center justify-between gap-2">
+                                    <div>
+                                        <div class="font-bold text-slate-800 text-sm sm:text-base">${food.name}</div>
+                                        <div class="text-xs text-slate-500 mt-0.5">
+                                            Số lượng: <strong class="text-emerald-700">${entry.quantity} ${food.unit}</strong>
+                                            • <span class="font-semibold text-slate-700">${c} kcal</span>
+                                            • Đạm: ${p}g • Canxi: ${ca}mg
+                                        </div>
+                                    </div>
+                                    <button onclick="deleteMealLog('${entry.id}')" title="Xóa món này" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition shrink-0">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>`;
+
+                return `
+                    <div class="bg-white rounded-2xl shadow-sm border ${meal.border} overflow-hidden">
+                        <div class="${meal.bg} px-5 py-3 border-b ${meal.border} flex items-center justify-between">
+                            <h4 class="font-bold text-slate-800 text-base">${meal.label}</h4>
+                            <span class="text-xs sm:text-sm font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg shadow-xs">
+                                ${mealCal} kcal
+                            </span>
+                        </div>
+                        <div class="px-5 py-2">
+                            ${itemsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Lọc dropdown chọn món ăn
+        function filterFoodSelect() {
+            const cat = document.getElementById('food-category-filter').value;
+            const query = document.getElementById('food-search-input').value.toLowerCase().trim();
+            const selectEl = document.getElementById('food-select');
+
+            const filtered = appState.foods.filter(f => {
+                const matchCat = cat === 'all' || f.category === cat;
+                const matchName = f.name.toLowerCase().includes(query);
+                return matchCat && matchName;
+            });
+
+            if (filtered.length === 0) {
+                selectEl.innerHTML = `<option value="">Không tìm thấy món phù hợp...</option>`;
+            } else {
+                selectEl.innerHTML = filtered.map(f =>
+                    `<option value="${f.id}">${f.name} — (${f.cal} kcal / ${f.unit})</option>`
+                ).join('');
+            }
+            updateSelectedFoodPreview();
+        }
+
+        function updateSelectedFoodPreview() {
+            const foodId = document.getElementById('food-select').value;
+            const qty = parseFloat(document.getElementById('food-quantity').value) || 0;
+            const food = appState.foods.find(f => f.id === foodId);
+            const unitLabel = document.getElementById('food-unit-label');
+            const previewEl = document.getElementById('selected-food-preview');
+
+            if (!food) {
+                unitLabel.textContent = 'Suất';
+                previewEl.innerHTML = 'Vui lòng chọn một món ăn hợp lệ.';
+                return;
+            }
+
+            unitLabel.textContent = food.unit;
+            previewEl.innerHTML = `
+                <div class="font-bold text-slate-700 mb-1">Giá trị dinh dưỡng cho ${qty} ${food.unit}:</div>
+                <div class="grid grid-cols-3 gap-1.5 text-xs">
+                    <span>🔥 Calo: <strong>${Math.round(food.cal * qty)}</strong> kcal</span>
+                    <span>🥩 Đạm: <strong>${(food.pro * qty).toFixed(1)}</strong> g</span>
+                    <span>🌿 Xơ: <strong>${(food.fiber * qty).toFixed(1)}</strong> g</span>
+                    <span>🦴 Canxi: <strong>${Math.round(food.calcium * qty)}</strong> mg</span>
+                    <span>🩸 Sắt: <strong>${(food.iron * qty).toFixed(1)}</strong> mg</span>
+                    <span>🍊 Vit C: <strong>${Math.round(food.vitc * qty)}</strong> mg</span>
+                </div>
+            `;
+        }
+
+        // Render Tab 2: So sánh tiêu chuẩn & Gợi ý bù đắp
+        function renderAnalysisTab() {
+            const analysis = analyzeDeficitsAndRecommendations(appState.selectedMemberId, appState.selectedDate);
+            const { member, rda, daysData, loggedDaysCount, avg7Days, deficits, recommendedFoods } = analysis;
+
+            // Cập nhật badge cảnh báo trên thanh tab
+            const badge = document.getElementById('deficit-badge');
+            if (deficits.length > 0) {
+                badge.textContent = deficits.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // 1. Render Cảnh báo thiếu hụt
+            const alertsContainer = document.getElementById('deficit-alerts-container');
+            if (loggedDaysCount === 0) {
+                alertsContainer.innerHTML = `
+                    <div class="col-span-full bg-white p-4 rounded-xl border border-slate-200 text-slate-600 text-sm">
+                        Chưa có dữ liệu ăn uống nào trong 7 ngày gần nhất cho <strong>${member.name}</strong>. Hãy ghi chép bữa ăn ở Tab 1 để hệ thống phân tích.
+                    </div>
+                `;
+            } else if (deficits.length === 0) {
+                alertsContainer.innerHTML = `
+                    <div class="col-span-full bg-emerald-100/80 p-4 rounded-xl border border-emerald-300 text-emerald-900 flex items-center gap-3">
+                        <i data-lucide="award" class="w-8 h-8 text-emerald-600 shrink-0"></i>
+                        <div>
+                            <div class="font-bold text-base">Tuyệt vời! Chế độ ăn của ${member.name} rất cân đối!</div>
+                            <div class="text-sm mt-0.5">Trong ${loggedDaysCount} ngày theo dõi gần đây, tất cả 9 nhóm chất dinh dưỡng đều đạt từ 85% tiêu chuẩn khuyến nghị trở lên.</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alertsContainer.innerHTML = deficits.map(def => {
+                    const durationText = def.consecutiveDays >= 2
+                        ? `Thiếu liên tiếp ${def.consecutiveDays} ngày gần đây`
+                        : `Thiếu ${def.daysBelow}/${def.totalTrackedDays} ngày đã ghi`;
+
+                    const unitRound = (def.key === 'cal' || def.key === 'calcium' || def.key === 'vitc' || def.key === 'vita') ? 0 : 1;
+                    const dailyMissing = def.dailyShortfall.toFixed(unitRound);
+                    const totalMissing = def.weeklyTotalShortfall.toFixed(unitRound);
+
+                    return `
+                        <div class="bg-white rounded-xl p-4 border-l-4 border-rose-500 shadow-xs">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="font-extrabold text-slate-800 text-base">Thiếu ${def.label}</span>
+                                <span class="text-xs font-bold bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full">Đạt ${def.pct}% chuẩn</span>
+                            </div>
+                            <div class="text-xs font-semibold text-amber-700 flex items-center gap-1 mb-2">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                <span>${durationText}</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-2">${def.desc}.</p>
+                            <div class="bg-rose-50/70 rounded-lg p-2.5 text-xs text-slate-700 space-y-1">
+                                <div>• Mỗi ngày đang thiếu trung bình: <strong class="text-rose-700">${dailyMissing} ${def.unit}</strong></div>
+                                <div>• Tổng thiếu hụt tích lũy (${def.totalTrackedDays} ngày): <strong class="text-rose-700">${totalMissing} ${def.unit}</strong></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 2. Render Món ăn gợi ý bù đắp cho hôm sau / tuần sau
+            const recContainer = document.getElementById('recommended-foods-container');
+            if (recommendedFoods.length === 0) {
+                recContainer.innerHTML = `<p class="col-span-full text-sm text-slate-500 italic">Duy trì thực đơn đa dạng như hiện tại để đảm bảo sức khỏe tốt nhất.</p>`;
+            } else {
+                recContainer.innerHTML = recommendedFoods.map(item => {
+                    const { food, matchedNutrients } = item;
+                    return `
+                        <div class="bg-slate-50 hover:bg-emerald-50/50 rounded-xl p-3.5 border border-slate-200 flex flex-col justify-between transition">
+                            <div>
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="font-bold text-slate-800 text-sm">${food.name}</span>
+                                </div>
+                                <div class="text-xs text-slate-500 mt-1">Khẩu phần: 1 ${food.unit} (${food.cal} kcal)</div>
+                                <div class="flex flex-wrap gap-1 mt-2">
+                                    ${matchedNutrients.map(tag =>
+                                        `<span class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">${tag}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                            <button onclick="quickScheduleForTomorrow('${food.id}')" class="mt-3 w-full py-2 px-3 bg-white hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-300 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
+                                <span>+ Thêm vào thực đơn ngày mai</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 3. Render Bảng so sánh chi tiết (Theo Ngày hoặc Trung bình Tuần)
+            const isWeek = appState.analysisPeriod === 'week';
+            const currentValues = isWeek ? avg7Days : calculateDayNutrients(member.id, appState.selectedDate);
+
+            document.getElementById('table-analysis-title').textContent = isWeek
+                ? `Bảng Đối Chiếu Trung Bình 7 Ngày Gần Nhất (${loggedDaysCount} ngày có dữ liệu)`
+                : `Bảng Đối Chiếu Chi Tiết Ngày ${formatDisplayDate(appState.selectedDate)}`;
+
+            const tbody = document.getElementById('nutrient-comparison-tbody');
+            tbody.innerHTML = NUTRIENT_META.map(n => {
+                const target = rda[n.key];
+                const actual = currentValues[n.key];
+                const diff = actual - target;
+                const pct = target > 0 ? Math.round((actual / target) * 100) : 0;
+                const barWidth = Math.min(100, pct);
+
+                const dec = (n.key === 'cal' || n.key === 'calcium' || n.key === 'vitc' || n.key === 'vita') ? 0 : 1;
+
+                let statusBadge = '';
+                let barColor = 'bg-emerald-500';
+                let diffText = '';
+
+                if (pct < 85) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">Thiếu hụt</span>`;
+                    barColor = 'bg-rose-500';
+                    diffText = `<span class="text-rose-600 font-bold">-${Math.abs(diff).toFixed(dec)} ${n.unit}</span>`;
+                } else if (pct > 120) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Dư thừa</span>`;
+                    barColor = 'bg-amber-500';
+                    diffText = `<span class="text-amber-600 font-bold">+${diff.toFixed(dec)} ${n.unit}</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Đạt chuẩn</span>`;
+                    barColor = 'bg-emerald-500';
+                    diffText = `<span class="text-emerald-600 font-semibold">${diff >= 0 ? '+' : ''}${diff.toFixed(dec)} ${n.unit}</span>`;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-slate-800">${n.label}</div>
+                            <div class="text-xs text-slate-400 hidden sm:block">${n.desc}</div>
+                        </td>
+                        <td class="py-3.5 px-4 text-right font-extrabold text-slate-800">${actual.toFixed(dec)} ${n.unit}</td>
+                        <td class="py-3.5 px-4 text-right text-slate-600 font-medium">${target} ${n.unit}</td>
+                        <td class="py-3.5 px-4 text-right">${diffText}</td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                                    <div class="${barColor} h-2.5 rounded-full" style="width: ${barWidth}%"></div>
+                                </div>
+                                <span class="text-xs font-bold w-10 text-right">${pct}%</span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4">${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // 4. Render Biểu đồ 7 ngày
+            const chartEl = document.getElementById('weekly-chart-container');
+            const maxCal = Math.max(rda.cal * 1.3, ...daysData.map(d => d.nutrients.cal));
+
+            chartEl.innerHTML = daysData.map(d => {
+                const calVal = Math.round(d.nutrients.cal);
+                const heightPct = maxCal > 0 ? Math.min(100, Math.round((calVal / maxCal) * 100)) : 0;
+                const [, m, day] = d.date.split('-');
+                const isSelected = d.date === appState.selectedDate;
+
+                let colColor = 'bg-emerald-500';
+                if (calVal === 0) colColor = 'bg-slate-200';
+                else if (calVal < rda.cal * 0.8) colColor = 'bg-amber-400';
+                else if (calVal > rda.cal * 1.2) colColor = 'bg-rose-400';
+
+                return `
+                    <div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer" onclick="selectDateFromChart('${d.date}')">
+                        <div class="text-xs font-bold text-slate-700 mb-1">${calVal > 0 ? calVal : '-'}</div>
+                        <div class="w-full max-w-[44px] bg-slate-100 rounded-t-xl h-40 flex items-end overflow-hidden p-0.5 ${isSelected ? 'ring-2 ring-emerald-600' : ''}">
+                            <div class="${colColor} w-full rounded-t-lg transition-all duration-300" style="height: ${Math.max(4, heightPct)}%"></div>
+                        </div>
+                        <div class="text-xs font-semibold mt-2 ${isSelected ? 'text-emerald-700 font-extrabold' : 'text-slate-500'}">${day}/${m}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render Tab 3: Kho món ăn
+        function renderFoodDatabase() {
+            const query = document.getElementById('db-search-input').value.toLowerCase().trim();
+            const list = appState.foods.filter(f =>
+                f.name.toLowerCase().includes(query) || f.category.toLowerCase().includes(query)
+            );
+
+            document.getElementById('food-count-label').textContent = list.length;
+            const tbody = document.getElementById('food-db-tbody');
+
+            tbody.innerHTML = list.map(f => {
+                const isCustom = f.id.startsWith('custom_');
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 px-3">
+                            <div class="font-bold text-slate-800">${f.name}</div>
+                            <span class="text-[11px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${f.category} • 1 ${f.unit}</span>
+                        </td>
+                        <td class="py-2.5 px-2 text-right font-bold text-emerald-700">${f.cal}</td>
+                        <td class="py-2.5 px-2 text-right font-medium">${f.pro}g</td>
+                        <td class="py-2.5 px-2 text-right text-slate-600">${f.fiber}g</td>
+                        <td class="py-2.5 px-2 text-right text-slate-600">${f.calcium}mg</td>
+                        <td class="py-2.5 px-2 text-right text-slate-600">${f.iron}mg</td>
+                        <td class="py-2.5 px-2 text-right text-slate-600">${f.vitc}mg</td>
+                        <td class="py-2.5 px-2 text-center">
+                            ${isCustom
+                                ? `<button onclick="deleteCustomFood('${f.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg" title="Xóa món tự tạo"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`
+                                : `<span class="text-xs text-slate-300">Chuẩn</span>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // Render Tab 4: Thành viên
+        function renderMembersTab() {
+            const container = document.getElementById('members-list-container');
+            container.innerHTML = appState.members.map(m => {
+                const rda = getRDAForMember(m);
+                const isSelected = m.id === appState.selectedMemberId;
+                const actText = m.activity === 'light' ? 'Vận động nhẹ' : (m.activity === 'heavy' ? 'Vận động nặng' : 'Vận động trung bình');
+
+                return `
+                    <div class="p-4 rounded-xl border ${isSelected ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-200 bg-white'} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-slate-800 text-base">${m.name}</span>
+                                ${isSelected ? '<span class="text-xs font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">Đang chọn</span>' : ''}
+                            </div>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                ${m.gender === 'male' ? 'Nam' : 'Nữ'} • ${m.age} tuổi • ${actText}
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-2 text-xs font-semibold text-slate-700">
+                                <span class="bg-slate-100 px-2 py-1 rounded">Calo: ${rda.cal} kcal</span>
+                                <span class="bg-slate-100 px-2 py-1 rounded">Đạm: ${rda.pro}g</span>
+                                <span class="bg-slate-100 px-2 py-1 rounded">Xơ: ${rda.fiber}g</span>
+                                <span class="bg-slate-100 px-2 py-1 rounded">Canxi: ${rda.calcium}mg</span>
+                                <span class="bg-slate-100 px-2 py-1 rounded">Sắt: ${rda.iron}mg</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-center">
+                            ${!isSelected ? `<button onclick="selectMember('${m.id}')" class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg text-xs font-bold transition">Chọn hồ sơ</button>` : ''}
+                            ${appState.members.length > 1 ? `<button onclick="deleteMember('${m.id}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Xóa thành viên"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // 11. XỬ LÝ SỰ KIỆN TƯƠNG TÁC
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-600', 'text-emerald-700', 'font-bold');
+                btn.classList.add('border-transparent', 'text-slate-500', 'font-semibold');
+            });
+
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            activeBtn.classList.remove('border-transparent', 'text-slate-500', 'font-semibold');
+            activeBtn.classList.add('border-emerald-600', 'text-emerald-700', 'font-bold');
+
+            if (tabName === 'analysis') renderAnalysisTab();
+            lucide.createIcons();
+        }
+
+        function handleMemberChange() {
+            appState.selectedMemberId = document.getElementById('member-select').value;
+            saveState();
+            renderAll();
+        }
+
+        function selectMember(id) {
+            appState.selectedMemberId = id;
+            saveState();
+            renderAll();
+            showToast('Đã chuyển sang hồ sơ thành viên mới.', 'success');
+        }
+
+        function handleDateChange() {
+            const val = document.getElementById('date-picker').value;
+            if (val) {
+                appState.selectedDate = val;
+                renderAll();
+            }
+        }
+
+        function changeDate(offsetDays) {
+            appState.selectedDate = addDaysToDateStr(appState.selectedDate, offsetDays);
+            renderAll();
+        }
+
+        function selectDateFromChart(dateStr) {
+            appState.selectedDate = dateStr;
+            appState.analysisPeriod = 'day';
+            setAnalysisPeriod('day');
+            renderHeaderSelectors();
+        }
+
+        function setAnalysisPeriod(period) {
+            appState.analysisPeriod = period;
+            const btnDay = document.getElementById('period-btn-day');
+            const btnWeek = document.getElementById('period-btn-week');
+
+            if (period === 'day') {
+                btnDay.className = 'px-4 py-2 rounded-lg text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
+                btnWeek.className = 'px-4 py-2 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+            } else {
+                btnWeek.className = 'px-4 py-2 rounded-lg text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
+                btnDay.className = 'px-4 py-2 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+            }
+            renderAnalysisTab();
+            lucide.createIcons();
+        }
+
+        function adjustQuantity(delta) {
+            const input = document.getElementById('food-quantity');
+            let val = parseFloat(input.value) || 1;
+            val = Math.max(0.1, Math.round((val + delta) * 10) / 10);
+            input.value = val;
+            updateSelectedFoodPreview();
+        }
+
+        function setQuantity(val) {
+            document.getElementById('food-quantity').value = val;
+            updateSelectedFoodPreview();
+        }
+
+        function handleAddMealLog(e) {
+            e.preventDefault();
+            const mealType = document.querySelector('input[name="mealType"]:checked').value;
+            const foodId = document.getElementById('food-select').value;
+            const quantity = parseFloat(document.getElementById('food-quantity').value);
+
+            if (!foodId || quantity <= 0) {
+                showToast('Vui lòng chọn món ăn và số lượng hợp lệ.', 'error');
+                return;
+            }
+
+            const logKey = `${appState.selectedMemberId}_${appState.selectedDate}`;
+            if (!appState.logs[logKey]) appState.logs[logKey] = [];
+
+            appState.logs[logKey].push({
+                id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                mealType,
+                foodId,
+                quantity
+            });
+
+            saveState();
+            renderAll();
+            showToast('Đã lưu món ăn vào nhật ký!', 'success');
+        }
+
+        function deleteMealLog(entryId) {
+            const logKey = `${appState.selectedMemberId}_${appState.selectedDate}`;
+            if (appState.logs[logKey]) {
+                appState.logs[logKey] = appState.logs[logKey].filter(item => item.id !== entryId);
+                saveState();
+                renderAll();
+                showToast('Đã xóa món ăn khỏi bữa.', 'info');
+            }
+        }
+
+        function copyYesterdayMenu() {
+            const yesterday = addDaysToDateStr(appState.selectedDate, -1);
+            const yKey = `${appState.selectedMemberId}_${yesterday}`;
+            const tKey = `${appState.selectedMemberId}_${appState.selectedDate}`;
+            const yLogs = appState.logs[yKey] || [];
+
+            if (yLogs.length === 0) {
+                showToast('Ngày hôm trước chưa có dữ liệu thực đơn để sao chép.', 'error');
+                return;
+            }
+
+            if (!appState.logs[tKey]) appState.logs[tKey] = [];
+            yLogs.forEach((item, idx) => {
+                appState.logs[tKey].push({
+                    id: `copy_${Date.now()}_${idx}`,
+                    mealType: item.mealType,
+                    foodId: item.foodId,
+                    quantity: item.quantity
+                });
+            });
+
+            saveState();
+            renderAll();
+            showToast(`Đã chép ${yLogs.length} món từ ngày ${formatDisplayDate(yesterday)} sang!`, 'success');
+        }
+
+        function quickScheduleForTomorrow(foodId) {
+            const tomorrow = addDaysToDateStr(appState.selectedDate, 1);
+            const tKey = `${appState.selectedMemberId}_${tomorrow}`;
+            if (!appState.logs[tKey]) appState.logs[tKey] = [];
+
+            const food = appState.foods.find(f => f.id === foodId);
+            const defaultMeal = (food && food.category === 'Trái cây & Phụ') ? 'phu' : 'trua';
+
+            appState.logs[tKey].push({
+                id: `rec_${Date.now()}`,
+                mealType: defaultMeal,
+                foodId: foodId,
+                quantity: 1
+            });
+
+            saveState();
+            showToast(`Đã thêm "${food.name}" vào thực đơn ngày mai (${formatDisplayDate(tomorrow)})!`, 'success');
+        }
+
+        function handleCreateCustomFood(e) {
+            e.preventDefault();
+            const newFood = {
+                id: `custom_${Date.now()}`,
+                name: document.getElementById('nf-name').value.trim(),
+                category: document.getElementById('nf-category').value,
+                unit: document.getElementById('nf-unit').value.trim(),
+                cal: parseFloat(document.getElementById('nf-cal').value) || 0,
+                pro: parseFloat(document.getElementById('nf-pro').value) || 0,
+                fat: parseFloat(document.getElementById('nf-fat').value) || 0,
+                carb: parseFloat(document.getElementById('nf-carb').value) || 0,
+                fiber: parseFloat(document.getElementById('nf-fiber').value) || 0,
+                calcium: parseFloat(document.getElementById('nf-calcium').value) || 0,
+                iron: parseFloat(document.getElementById('nf-iron').value) || 0,
+                vitc: parseFloat(document.getElementById('nf-vitc').value) || 0,
+                vita: parseFloat(document.getElementById('nf-vita').value) || 0
+            };
+
+            appState.foods.unshift(newFood);
+            saveState();
+            e.target.reset();
+            renderAll();
+            showToast(`Đã thêm món "${newFood.name}" vào kho dữ liệu!`, 'success');
+        }
+
+        function deleteCustomFood(foodId) {
+            openConfirmModal(
+                'Xóa món ăn khỏi kho',
+                'Bạn có chắc chắn muốn xóa món ăn tự tạo này khỏi danh mục?',
+                () => {
+                    appState.foods = appState.foods.filter(f => f.id !== foodId);
+                    saveState();
+                    renderAll();
+                    showToast('Đã xóa món ăn.', 'info');
+                }
+            );
+        }
+
+        function handleCreateMember(e) {
+            e.preventDefault();
+            const newMember = {
+                id: `m_${Date.now()}`,
+                name: document.getElementById('nm-name').value.trim(),
+                gender: document.getElementById('nm-gender').value,
+                age: parseInt(document.getElementById('nm-age').value, 10) || 30,
+                activity: document.getElementById('nm-activity').value
+            };
+
+            appState.members.push(newMember);
+            appState.selectedMemberId = newMember.id;
+            saveState();
+            e.target.reset();
+            renderAll();
+            showToast(`Đã tạo hồ sơ cho "${newMember.name}"!`, 'success');
+        }
+
+        function deleteMember(memberId) {
+            openConfirmModal(
+                'Xóa hồ sơ thành viên',
+                'Toàn bộ lịch sử ăn uống của thành viên này cũng sẽ bị xóa. Bạn chắc chắn chứ?',
+                () => {
+                    appState.members = appState.members.filter(m => m.id !== memberId);
+                    if (appState.selectedMemberId === memberId) {
+                        appState.selectedMemberId = appState.members[0].id;
+                    }
+                    saveState();
+                    renderAll();
+                    showToast('Đã xóa hồ sơ thành viên.', 'info');
+                }
+            );
+        }
+
+        // 12. XUẤT / NHẬP FILE JSON SAO LƯU
+        function exportData() {
+            const dataStr = JSON.stringify({
+                app: 'SoTayDinhDuong_VDD_WHO',
+                exportedAt: new Date().toISOString(),
+                members: appState.members,
+                foods: appState.foods,
+                logs: appState.logs
+            }, null, 2);
+
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sotay_dinhduong_${getTodayStr()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Đã tải tệp sao lưu JSON về máy!', 'success');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.members && imported.logs) {
+                        appState.members = imported.members;
+                        if (imported.foods) appState.foods = imported.foods;
+                        appState.logs = imported.logs;
+                        appState.selectedMemberId = appState.members[0].id;
+                        saveState();
+                        renderAll();
+                        showToast('Khôi phục dữ liệu từ file JSON thành công!', 'success');
+                    } else {
+                        showToast('Tệp JSON không đúng định dạng của ứng dụng.', 'error');
+                    }
+                } catch (err) {
+                    showToast('Lỗi đọc tệp sao lưu JSON.', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // 13. TIỆN ÍCH THÔNG BÁO TOAST & MODAL XÁC NHẬN
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const styles = {
+                success: 'bg-emerald-800 text-white border-emerald-600',
+                error: 'bg-rose-700 text-white border-rose-500',
+                info: 'bg-slate-800 text-white border-slate-600'
+            };
+
+            toast.className = `${styles[type] || styles.info} px-4 py-3 rounded-xl shadow-lg border text-sm font-medium flex items-center justify-between gap-3 pointer-events-auto transition-all duration-300`;
+            toast.innerHTML = `<span>${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function openConfirmModal(title, message, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const close = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+
+            document.getElementById('confirm-cancel-btn').onclick = close;
+            document.getElementById('confirm-ok-btn').onclick = () => {
+                close();
+                onConfirm();
+            };
+        }
+
+        // KHỞI CHẠY ỨNG DỤNG KHI TẢI TRANG
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderAll();
+        });
+    </script>
+</body>
+</html>

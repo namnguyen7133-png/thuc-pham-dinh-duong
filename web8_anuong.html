@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Thực Đơn, Sổ Nợ & Định Lượng Cái Balo</title>
+    <style>
+        :root {
+            --primary: #1b4d3e;
+            --secondary: #27ae60;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --danger: #e74c3c;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        header h1 { margin: 0 0 10px 0; font-size: 20pt; }
+        header p { margin: 0; opacity: 0.9; font-size: 14px; }
+        
+        .section-box {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .section-box h2 {
+            color: var(--primary);
+            border-left: 4px solid var(--secondary);
+            padding-left: 10px;
+            margin-top: 0;
+            font-size: 14pt;
+        }
+        
+        .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 12px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.5; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px; }
+        th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 13.5px; }
+        th { background: #e9ecef; color: #2c3e50; }
+        
+        .input-group { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        input[type="text"], input[type="number"], input[type="date"] { padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13.5px; }
+        .btn { background: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-del { background: var(--danger); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+        
+        .highlight { font-weight: bold; color: var(--primary); }
+        .input-main { font-size: 16px; font-weight: bold; color: var(--secondary); text-align: center; width: 150px; padding: 8px; }
+        
+        .result-box { padding: 18px; border-radius: 8px; margin-top: 15px; }
+        .safe-box { background: #e8f8f5; border-left: 5px solid #27ae60; color: #0e6251; }
+        .warn-box { background: #fdf2f2; border-left: 5px solid #e74c3c; color: #900c3f; }
+        .bound-item { color: var(--secondary); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Hệ Thống Quản Lý Thực Đơn, Sổ Nợ & Định Lượng "Cái Balo"</h1>
+        <p>Kiểm soát sức chứa dạ dày chuẩn tỷ lệ & Quản lý khẩu phần Người lớn / Trẻ em</p>
+    </header>
+
+    <!-- PHẦN 1: TÍNH TOÁN "CÁI BALO" -->
+    <div class="section-box">
+        <h2>⚖️ 1. Máy Tính Định Lượng "Cái Balo" (Tối đa 30 thìa = 3 cốc/bữa)</h2>
+        <div class="note">
+            <b>Nguyên tắc vàng:</b> 1 thìa cơm đi kèm tự động với <b>1 thìa thịt/cá + 2 thìa rau</b>. Khi ăn mì tôm, bánh mì, sữa hoặc trái cây thay thế, hãy quy đổi ra số thìa tương đương để kiểm soát dung tích dạ dày không bị quá tải.
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 10px;">
+            <label for="soThiaCom" style="font-weight: 600; margin:0;">Nhập số THÌA CƠM chính (hoặc quy đổi):</label>
+            <input type="number" id="soThiaCom" class="input-main" value="5" min="0" oninput="tinhToanBalo()">
+        </div>
+
+        <p style="margin-bottom:5px; font-size:14px;"><b>Tự động đi kèm theo định lượng (Gam sống & Chín):</b></p>
+        <ul style="margin-top:0; padding-left:20px;" id="danhSachRangBuoc"></ul>
+
+        <h3 style="font-size: 13pt; color: var(--primary); margin-top: 15px;">Món bổ sung & Thay thế (Mì tôm, Bánh mì, Sữa, Trái cây...):</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên món ăn / Đồ thay thế</th>
+                    <th style="width: 120px; text-align: center;">Số thìa (Dung tích)</th>
+                    <th style="width: 80px; text-align: center;">Xóa</th>
+                </tr>
+            </thead>
+            <tbody id="bangMonTuDo"></tbody>
+        </table>
+        
+        <div class="input-group">
+            <input type="text" id="tenMonDo" placeholder="Tên món (VD: Mì tôm 1 gói, Bánh mì sandwich, Sữa 240ml...)" style="flex: 2;">
+            <input type="number" id="soThiaDo" placeholder="Số thìa" min="1" value="6" style="flex: 1;">
+            <button class="btn" onclick="themMonTuDo()">+ Thêm món thay thế</button>
+        </div>
+
+        <div id="ketQuaBox" class="result-box safe-box"></div>
+    </div>
+
+    <!-- PHẦN 2: THỰC ĐƠN MỞ RỘNG -->
+    <div class="section-box">
+        <h2>📅 2. Gợi Ý Thực Đơn Mở Rộng (Chuẩn 1 Ngày 1 Đạm - Có Hải Sản)</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 10px;">
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <b style="color:var(--primary);">Ngày 1: Thịt Bò</b><br>Trưa: Cơm + Bò xào + Canh rau ngót
+            </div>
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <b style="color:var(--primary);">Ngày 2: Tôm & Mực</b><br>Trưa: Cơm + Tôm rim + Canh bầu nấu tôm
+            </div>
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <b style="color:var(--primary);">Ngày 3: Hàu & Nghêu</b><br>Trưa: Cơm + Nghêu hấp sả + Canh chua hàu
+            </div>
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <b style="color:var(--primary);">Ngày 4: Thịt Heo Nạc</b><br>Trưa: Cơm lứt + Thịt luộc + Canh bí đỏ
+            </div>
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <b style="color:var(--primary);">Ngày 5: Ức Gà</b><br>Trưa: Cơm + Gà xào nấm + Canh rau ngót
+            </div>
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <b style="color:var(--primary);">Ngày 6: Cá Rô Phi / Cá Hồi</b><br>Trưa: Cơm + Cá sốt cà + Canh chua dọc mùng
+            </div>
+        </div>
+    </div>
+
+    <!-- PHẦN 3: SỔ KẾ TOÁN CÔNG NỢ -->
+    <div class="section-box">
+        <h2>📊 3. Sổ Kế Toán Chi Tiết Công Nợ Mua Hàng</h2>
+        <div class="note">Ghi chép chi tiết từng khoản phát sinh mua hàng thiếu. Tổng số tiền nợ sẽ tự động cộng dồn chính xác ở dưới bảng.</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 110px;">Ngày mua</th>
+                    <th>Tên Thực Phẩm / Hàng Hóa</th>
+                    <th style="width: 130px;">Định lượng mua</th>
+                    <th style="width: 140px;">Thành tiền (VNĐ)</th>
+                    <th style="width: 70px; text-align: center;">Xóa</th>
+                </tr>
+            </thead>
+            <tbody id="bangSoNo"></tbody>
+        </table>
+
+        <div class="input-group">
+            <input type="date" id="ngayMua" style="flex: 1;">
+            <input type="text" id="tenHang" placeholder="Tên thực phẩm (Gạo, Thịt, Hàu, Mì tôm...)" style="flex: 2;">
+            <input type="text" id="dinhLuongHang" placeholder="Định lượng (VD: 1.5 kg, 2 gói...)" style="flex: 1.5;">
+            <input type="number" id="thanhTienHang" placeholder="Thành tiền (VNĐ)" min="0" style="flex: 1.5;">
+            <button class="btn" onclick="themKhoanNo()">+ Ghi Nợ Mới</button>
+        </div>
+
+        <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 6px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 15px; font-weight: bold; color: var(--primary);">TỔNG CỘNG TIỀN NỢ:</span>
+            <span id="tongTienNo" style="font-size: 20px; font-weight: bold; color: var(--danger);">0 đ</span>
+        </div>
+    </div>
+
+    <!-- PHẦN 4: MÁY TÍNH THÊM NGƯỜI (CÓ TÙY CHỈNH TRẺ EM KHÔNG ĂN RAU) -->
+    <div class="section-box">
+        <h2>👥 4. Máy Tính Mua Thêm Thực Phẩm Theo Số Lượng Người (Cả ngày 3 bữa)</h2>
+        <div class="note">
+            <b>Đặc thù:</b> Người lớn tính chuẩn tỷ lệ (Cơm + Đạm + Rau). <b>Trẻ em không ăn rau</b>, hệ thống tự động quy đổi phần rau sang bù bằng <b>Cơm, Trứng hoặc Xúc xích</b> với thể tích tương đương để đảm bảo đủ năng lượng!
+        </div>
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px;">
+            <div style="flex: 1; min-width: 250px;">
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">Thêm số lượng Người Lớn:</label>
+                <input type="number" id="themNguoiLon" class="input-main" value="1" min="0" oninput="tinhThemNguoi()" style="width: 100%;">
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">Thêm số lượng Trẻ Em (Không ăn rau - Ăn Cơm/Trứng/Xúc xích):</label>
+                <input type="number" id="themTreEm" class="input-main" value="1" min="0" oninput="tinhThemNguoi()" style="width: 100%;">
+            </div>
+        </div>
+
+        <div style="background: #e8f8f5; padding: 15px; border-radius: 6px; border-left: 5px solid var(--secondary);">
+            <h3 style="margin-top: 0; color: var(--primary);">🛒 Tổng Khối Lượng Thực Phẩm Cần Mua Thêm (Cho cả 3 bữa):</h3>
+            <ul style="margin-bottom: 0; padding-left: 20px; font-size: 15px; line-height: 1.8;" id="ketQuaThemNguoi"></ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let monTuDo = JSON.parse(localStorage.getItem('monTuDo_Balo_V3')) || [
+        { ten: "Mì tôm (1 gói nấu)", thia: 7 },
+        { ten: "Bánh mì sandwich pate", thia: 6 },
+        { ten: "Sữa tươi hộp (240ml)", thia: 10 },
+        { ten: "Hoa quả thay rau (Chuối/Táo)", thia: 4 }
+    ];
+
+    let luuThiaCom = localStorage.getItem('thiaCom_Balo_V3');
+    if (luuThiaCom !== null) {
+        document.getElementById('soThiaCom').value = luuThiaCom;
+    }
+
+    function luuDuLieuBalo() {
+        localStorage.setItem('monTuDo_Balo_V3', JSON.stringify(monTuDo));
+        localStorage.setItem('thiaCom_Balo_V3', document.getElementById('soThiaCom').value);
+    }
+
+    function hienThiMonTuDo() {
+        let tbody = document.getElementById('bangMonTuDo');
+        tbody.innerHTML = '';
+        monTuDo.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${item.ten}</b></td>
+                    <td style="text-align:center;">
+                        <input type="number" value="${item.thia}" min="0" style="width:70px; text-align:center;" onchange="suaThiaTuDo(${index}, this.value)"> thìa
+                    </td>
+                    <td style="text-align:center;">
+                        <button class="btn-del" onclick="xoaMonTuDo(${index})">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        });
+        tinhToanBalo();
+    }
+
+    function themMonTuDo() {
+        let ten = document.getElementById('tenMonDo').value.trim();
+        let thia = parseFloat(document.getElementById('soThiaDo').value) || 0;
+        if (!ten || thia <= 0) return;
+        
+        monTuDo.push({ ten: ten, thia: thia });
+        document.getElementById('tenMonDo').value = '';
+        document.getElementById('soThiaDo').value = '6';
+        luuDuLieuBalo();
+        hienThiMonTuDo();
+    }
+
+    function suaThiaTuDo(index, val) {
+        monTuDo[index].thia = parseFloat(val) || 0;
+        luuDuLieuBalo();
+        tinhToanBalo();
+    }
+
+    function xoaMonTuDo(index) {
+        monTuDo.splice(index, 1);
+        luuDuLieuBalo();
+        hienThiMonTuDo();
+    }
+
+    function tinhToanBalo() {
+        let thiaCom = parseFloat(document.getElementById('soThiaCom').value) || 0;
+        luuDuLieuBalo();
+        
+        let thiaThitCa = thiaCom * 1;
+        let thiaRau = thiaCom * 2;
+        
+        let gao1Bua = thiaCom * 10;
+        let dam1Bua = thiaThitCa * 15;
+        let rau1Bua = thiaRau * 10;
+
+        let gao3Bua = gao1Bua * 3;
+        let dam3Bua = dam1Bua * 3;
+        let rau3Bua = rau1Bua * 3;
+
+        document.getElementById('danhSachRangBuoc').innerHTML = `
+            <li class="bound-item">Gạo nấu cơm: ${thiaCom} thìa ➔ <b>${gao1Bua}g gạo sống/bữa</b> (Cả ngày 3 bữa: <b>${gao3Bua}g</b>)</li>
+            <li class="bound-item">Thịt / Đạm: ${thiaThitCa} thìa ➔ <b>${dam1Bua}g thịt/cá sống/bữa</b> (Cả ngày 3 bữa: <b>${dam3Bua}g</b>)</li>
+            <li class="bound-item">Rau củ: ${thiaRau} thìa ➔ <b>${rau1Bua}g rau tươi/bữa</b> (Cả ngày 3 bữa: <b>${rau3Bua}g</b>)</li>
+        `;
+
+        let tongThiaTuDo = 0;
+        monTuDo.forEach(item => tongThiaTuDo += item.thia);
+
+        let tongThiaComVaKiem = thiaCom + thiaThitCa + thiaRau;
+        let tongThiaTatCa = tongThiaComVaKiem + tongThiaTuDo;
+        let hanMucThia = 30; 
+        let soCocHienTai = (tongThiaTatCa / 10).toFixed(1);
+        let soMlHienTai = tongThiaTatCa * 24; 
+
+        let kqDiv = document.getElementById('ketQuaBox');
+
+        if (tongThiaTatCa <= hanMucThia) {
+            let thiaConTrong = hanMucThia - tongThiaTatCa;
+            kqDiv.className = "result-box safe-box";
+            kqDiv.innerHTML = `
+                <h3 style="margin-top:0;">✅ BỮA ĂN AN TOÀN TRONG SỨC CHỨA DẠ DÀY</h3>
+                <p>• Tổng dung tích nạp vào: <b>${tongThiaTatCa} thìa</b> / 30 thìa giới hạn.</p>
+                <p>• Quy đổi thể tích: <b>${soCocHienTai} cốc</b> (~${soMlHienTai} ml).</p>
+                <p>• Sức chứa dạ dày còn trống: <b>${thiaConTrong} thìa</b> (${thiaConTrong * 24} ml).</p>
+            `;
+        } else {
+            let thiaVuot = tongThiaTatCa - hanMucThia;
+            let thiaComCanGiam = Math.ceil(thiaVuot / 4);
+            let goiYSua = thiaCom >= thiaComCanGiam 
+                ? `👉 Để vừa khít hạn mức 30 thìa, bạn nên <b>giảm ${thiaComCanGiam} thìa cơm</b> (chỉ ăn <b>${thiaCom - thiaComCanGiam} thìa cơm</b>), hệ thống sẽ tự bớt thịt và rau đi kèm!`
+                : `👉 Cần giảm bớt các món ăn nhanh / đồ thay thế ở bảng trên xuống khoảng <b>${thiaVuot} thìa</b>!`;
+
+            kqDiv.className = "result-box warn-box";
+            kqDiv.innerHTML = `
+                <h3 style="margin-top:0;">⚠️ CẢNH BÁO: VƯỢT QUÁ SỨC CHỨA 3 CỐC (30 THÌA)!</h3>
+                <p>• Tổng dung tích hiện tại: <b style="font-size:17px;">${tongThiaTatCa} thìa</b> (~ ${soCocHienTai} cốc / ${soMlHienTai} ml).</p>
+                <p>• Quá tải dạ dày: <b style="color:red;">${thiaVuot} thìa</b> (${thiaVuot * 24} ml).</p>
+                <hr style="border:0.5px solid #ff7675;">
+                <p style="font-size:14.5px; margin-bottom:0;">${goiYSua}</p>
+            `;
+        }
+    }
+
+    // --- 2. LOGIC SỔ KẾ TOÁN CÔNG NỢ ---
+    let soNo = JSON.parse(localStorage.getItem('soNoChiTiet_V7')) || [
+        { ngay: "2026-09-01", hang: "Gạo các loại", dinhLuong: "1.3 kg", tien: 40000 },
+        { ngay: "2026-09-02", hang: "Thịt bò nạc", dinhLuong: "1.2 kg", tien: 170000 },
+        { ngay: "2026-09-03", hang: "Nghêu tươi & Hàu", dinhLuong: "1.0 kg", tien: 75000 }
+    ];
+
+    function hienThiSoNo() {
+        let tbody = document.getElementById('bangSoNo');
+        tbody.innerHTML = '';
+        let tongTien = 0;
+
+        soNo.forEach((item, index) => {
+            let tienNum = Number(item.tien) || 0;
+            tongTien += tienNum;
+            tbody.innerHTML += `
+                <tr>
+                    <td><input type="date" value="${item.ngay}" style="width:100%; border:none; background:transparent;" onchange="suaNo(${index}, 'ngay', this.value)"></td>
+                    <td><input type="text" value="${item.hang}" style="width:100%; border:none; background:transparent;" onchange="suaNo(${index}, 'hang', this.value)"></td>
+                    <td><input type="text" value="${item.dinhLuong}" style="width:100%; border:none; background:transparent;" onchange="suaNo(${index}, 'dinhLuong', this.value)"></td>
+                    <td><input type="number" value="${item.tien}" style="width:100%; border:none; background:transparent; font-weight:bold;" onchange="suaNo(${index}, 'tien', this.value)"> đ</td>
+                    <td style="text-align: center;"><button class="btn-del" onclick="xoaNo(${index})">Xóa</button></td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('tongTienNo').innerText = tongTien.toLocaleString('vi-VN') + " đ";
+        localStorage.setItem('soNoChiTiet_V7', JSON.stringify(soNo));
+    }
+
+    function themKhoanNo() {
+        let ngay = document.getElementById('ngayMua').value || new Date().toISOString().split('T')[0];
+        let hang = document.getElementById('tenHang').value.trim();
+        let dinhLuong = document.getElementById('dinhLuongHang').value.trim();
+        let tien = parseFloat(document.getElementById('thanhTienHang').value) || 0;
+
+        if (!hang || tien <= 0) {
+            alert("Vui lòng nhập tên thực phẩm và số tiền thành tiền hợp lệ!");
+            return;
+        }
+
+        soNo.push({ ngay, hang, dinhLuong, tien });
+        document.getElementById('tenHang').value = '';
+        document.getElementById('dinhLuongHang').value = '';
+        document.getElementById('thanhTienHang').value = '';
+        hienThiSoNo();
+    }
+
+    function suaNo(index, field, val) {
+        soNo[index][field] = field === 'tien' ? (parseFloat(val) || 0) : val;
+        hienThiSoNo();
+    }
+
+    function xoaNo(index) {
+        soNo.splice(index, 1);
+        hienThiSoNo();
+    }
+
+    // --- 3. LOGIC TÍNH TOÁN THÊM NGƯỜI (CÓ TRẺ EM KHÔNG ĂN RAU) ---
+    function tinhThemNguoi() {
+        let soNguoiLon = parseInt(document.getElementById('themNguoiLon').value) || 0;
+        let soTreEm = parseInt(document.getElementById('themTreEm').value) || 0;
+
+        // Người lớn (3 bữa): 150g gạo, 225g đạm, 300g rau
+        let gaoNguoiLon = soNguoiLon * 150;
+        let damNguoiLon = soNguoiLon * 225;
+        let rauNguoiLon = soNguoiLon * 300;
+
+        // Trẻ em (3 bữa, mức 60% ~ 3 thìa cơm, 3 thìa đạm, 6 thìa rau không ăn rau mà quy đổi sang cơm/trứng/xúc xích)
+        // Thay vì 180g rau, quy đổi tương đương năng lượng/thể tích sang: thêm gạo, trứng hoặc xúc xích
+        let gaoTreEm = (soTreEm * 90) + (soTreEm * 60); // Gạo gốc + phần rau quy đổi thành cơm
+        let damTreEm = soTreEm * 135;                  // Đạm gốc (thịt/cá)
+        let trungTreEm = Math.round((soTreEm * 60) / 50); // Quy đổi phần dư thành số quả trứng (1 quả ~ 50g) hoặc xúc xích
+        let xucXichTreEm = Math.round((soTreEm * 60) / 40); // Quy đổi thành số cây xúc xích (~40g/cây)
+
+        let tongGao = gaoNguoiLon + gaoTreEm;
+        let tongDam = damNguoiLon + damTreEm;
+        let tongRau = rauNguoiLon; // Trẻ em không ăn rau nên rau = 0 cho phần trẻ em
+
+        document.getElementById('ketQuaThemNguoi').innerHTML = `
+            <li>🌾 <b>Gạo sống:</b> Mua thêm <b style="color:var(--primary);">${tongGao}g</b> (${(tongGao/1000).toFixed(2)} kg) <i>(Đã cộng phần cơm bù do trẻ em không ăn rau)</i></li>
+            <li>🥩 <b>Thịt / Đạm sống:</b> Mua thêm <b style="color:var(--primary);">${tongDam}g</b> (${(tongDam/1000).toFixed(2)} kg)</li>
+            <li>🥬 <b>Rau củ tươi:</b> Mua thêm <b style="color:var(--primary);">${tongRau}g</b> (${(tongRau/1000).toFixed(2)} kg) <i>(Chỉ tính cho người lớn, trẻ em không ăn rau)</i></li>
+            <li style="margin-top: 5px; border-top: 1px dashed #ccc; padding-top: 5px;">🍳🌭 <b>Thay thế cho trẻ em (Không ăn rau):</b> Cần chuẩn bị khoảng <b>${trungTreEm} quả trứng</b> hoặc <b>${xucXichTreEm} cây xúc xích</b> cho cả ngày (3 bữa) để bù thể tích thay thế rau.</li>
+        `;
+    }
+
+    document.getElementById('ngayMua').value = new Date().toISOString().split('T')[0];
+
+    hienThiMonTuDo();
+    hienThiSoNo();
+    tinhThemNguoi();
+</script>
+
+</body>
+</html>

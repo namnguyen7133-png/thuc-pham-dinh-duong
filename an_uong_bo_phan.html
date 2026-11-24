@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ Thống Dưỡng Sinh Luân Chuyển 28</title>
+    <style>
+        :root { --dark: #2c3e50; --gold: #d4af37; --gas: #e74c3c; --land: #27ae60; }
+        body { font-family: 'Arial', sans-serif; background: #f4f7f6; padding: 10px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
+        
+        /* Bảng kinh tế */
+        .market-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; background: #fff3e0; padding: 15px; border-radius: 10px; border: 1px solid var(--gold); }
+        .market-item { text-align: center; }
+        .market-item label { font-size: 11px; font-weight: bold; display: block; color: #666; }
+        .market-item input { width: 80%; padding: 5px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; color: var(--gas); }
+
+        /* Lịch trình */
+        .day-card { margin-bottom: 20px; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; }
+        .day-header { background: var(--dark); color: white; padding: 10px; display: flex; justify-content: space-between; font-weight: bold; }
+        .meal { display: grid; grid-template-columns: 80px 1fr 130px; border-top: 1px solid #eee; padding: 15px; align-items: center; }
+        
+        .target-name { font-weight: bold; color: #d35400; font-size: 1.1rem; }
+        .food-desc { font-size: 0.9rem; color: #444; margin-top: 5px; }
+        .price-tag { font-size: 0.85rem; color: #27ae60; font-weight: bold; text-align: right; border-left: 1px solid #eee; padding-left: 10px; }
+        
+        .highlight-sat { background: #8e44ad !important; }
+        button { width: 100%; padding: 15px; background: var(--dark); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center;">📊 DƯỠNG SINH LUÂN CHUYỂN (KHÔNG TRÙNG)</h2>
+
+    <div class="market-panel">
+        <div class="market-item">
+            <label>GIÁ XĂNG (Lít)</label>
+            <input type="number" id="gasPrice" value="24500">
+        </div>
+        <div class="market-item">
+            <label>GIÁ VÀNG (Chỉ)</label>
+            <input type="number" id="goldPrice" value="8200000">
+        </div>
+        <div class="market-item">
+            <label>ĐẤT (m2/Triệu)</label>
+            <input type="number" id="landPrice" value="50">
+        </div>
+    </div>
+
+    <button onclick="renderAll()">CẬP NHẬT THỨ TỰ MỚI NHẤT</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    // Danh sách 28 món (Anh có thể thêm đủ 28 mục vào đây)
+    const list28 = [
+        { name: "0. Não & Óc", baseFood: "Óc lợn hấp ngải cứu", price: 45000 },
+        { name: "1. Tóc & Lông", baseFood: "Trứng vịt lộn già", price: 25000 },
+        { name: "2. Mắt", baseFood: "Mắt cá ngừ/mắt lợn", price: 35000 },
+        { name: "3. Pín (Sinh lực)", baseFood: "Pín bò hầm thuốc bắc", price: 120000 },
+        { name: "4. Tràng (Nội tiết)", baseFood: "Tràng lợn luộc", price: 80000 },
+        { name: "5. Đuôi (Xương sống)", baseFood: "Đuôi bò hầm đỗ trọng", price: 95000 },
+        { name: "6. Tiết (Máu)", baseFood: "Tiết canh luộc/dồi", price: 20000 },
+        { name: "7. Bóng (Da/Khớp)", baseFood: "Bóng cá hầm súp", price: 150000 },
+        { name: "8. Sách (Tỳ vị)", baseFood: "Sách bò xào khế", price: 60000 },
+        { name: "9. Gan & Mật", baseFood: "Gan lợn luộc/patê", price: 30000 },
+        { name: "10. Thận & Tai", baseFood: "Cật lợn cháy tỏi", price: 40000 },
+        { name: "11. Dạ dày & Bụng", baseFood: "Bao tử hầm tiêu", price: 75000 },
+        { name: "12. Đầu gối & Khớp", baseFood: "Chân gà hầm đậu bắp", price: 35000 },
+        { name: "13. Móng & Ngón", baseFood: "Móng giò hầm măng", price: 55000 }
+    ];
+
+    function getExtraFood(dayOfWeek, base) {
+        if (dayOfWeek === 6) return "Thứ 7 đãi tiệc: " + base + " kèm Rượu vang";
+        if (dayOfWeek === 0) return "Chủ Nhật nghỉ ngơi: " + base + " nấu cháo súp";
+        return "Ngày thường: " + base + " kèm rau luộc";
+    }
+
+    function renderAll() {
+        const gas = document.getElementById('gasPrice').value;
+        const gold = document.getElementById('goldPrice').value;
+        let html = "";
+        let today = new Date();
+        
+        // Mốc thời gian cố định để tính số dư không trùng lặp
+        const startDate = new Date("2026-01-01");
+
+        for (let i = 0; i < 7; i++) {
+            let date = new Date();
+            date.setDate(today.getDate() + i);
+            
+            let dayOfWeek = date.getDay();
+            let dayName = date.toLocaleDateString('vi-VN', { weekday: 'long' });
+            let isSat = dayOfWeek === 6 ? "highlight-sat" : "";
+
+            // Tính số ngày chênh lệch kể từ ngày mốc
+            let diffDays = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
+            
+            // Công thức: Mỗi ngày lấy 3 món tiếp theo trong danh sách
+            let dailyBaseIndex = (diffDays * 3) % list28.length;
+
+            html += `<div class="day-card">
+                <div class="day-header ${isSat}">
+                    <span>${dayName}</span> 
+                    <span>${date.getDate()}/${date.getMonth()+1}</span>
+                </div>`;
+
+            const khungGio = ["08:00", "12:00", "16:00"];
+            khungGio.forEach((gio, index) => {
+                // menuIndex tăng dần theo từng giờ, không trùng lặp
+                let menuIndex = (dailyBaseIndex + index) % list28.length;
+                let item = list28[menuIndex];
+                
+                let customFood = getExtraFood(dayOfWeek, item.baseFood);
+                let gasEquiv = (item.price / gas).toFixed(1);
+                let goldEquiv = (item.price / gold).toFixed(4);
+
+                html += `
+                    <div class="meal">
+                        <div style="font-weight:bold">${gio}</div>
+                        <div class="info">
+                            <span class="target-name">${item.name}</span>
+                            <div class="food-desc">${customFood}</div>
+                        </div>
+                        <div class="price-tag">
+                            ~${item.price.toLocaleString()}đ<br>
+                            <small>⛽ ${gasEquiv} Lít</small><br>
+                            <small>🟡 ${goldEquiv} Chỉ</small>
+                        </div>
+                    </div>`;
+            });
+            html += `</div>`;
+        }
+        document.getElementById('result').innerHTML = html;
+    }
+
+    // Tự động chạy khi mở trang
+    window.onload = renderAll;
+</script>
+</body>
+</html>

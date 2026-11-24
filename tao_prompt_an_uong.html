@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Web Tạo Prompt Tự Động Cho Món Ăn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-stone-100 text-stone-800 font-sans leading-relaxed p-4 md:p-10">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-stone-200">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-red-800 mb-2 text-center">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Công Cụ Tạo Prompt Nấu Ăn Tự Động
+        </h1>
+        <p class="text-stone-600 text-center text-sm mb-6">Tự do thay đổi chủ đề và tên các món ăn bên dưới, prompt sẽ tự động cập nhật!</p>
+
+        <!-- KHU VỰC NHẬP LIỆU -->
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block font-bold text-sm text-stone-700 mb-1">Chủ đề hương vị (Ví dụ: chua cay, mặn ngọt, béo ngậy...):</label>
+                <input type="text" id="chuDe" class="w-full p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold text-red-700" value="chua cay" oninput="taoPrompt()">
+            </div>
+
+            <div>
+                <label class="block font-bold text-sm text-stone-700 mb-1">1. Các món ăn mặn / Lẩu (bữa chính):</label>
+                <input type="text" id="monChinh" class="w-full p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm" value="Lẩu Thái (Tom Yum), Bún thái hải sản, Bún bò Huế, Canh chua nấu cay" oninput="taoPrompt()">
+            </div>
+
+            <div>
+                <label class="block font-bold text-sm text-stone-700 mb-1">2. Các món ăn vặt, gỏi và bánh:</label>
+                <input type="text" id="monVat" class="w-full p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm" value="Gỏi đu đủ Thái Lan, Gỏi xoài hải sản, Chân gà ngâm sả tắc, Chân gà sốt thái, Bánh tráng trộn, Bánh tráng cuốn sốt me cay" oninput="taoPrompt()">
+            </div>
+
+            <div>
+                <label class="block font-bold text-sm text-stone-700 mb-1">3. Thức uống:</label>
+                <input type="text" id="thucUong" class="w-full p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm" value="Trà tắc / Trà chanh giã tay (Thêm ớt), Đồ uống detox / Nước ép trái cây nhiệt đới lắc muối ớt" oninput="taoPrompt()">
+            </div>
+        </div>
+
+        <!-- NÚT SAO CHÉP -->
+        <div class="mb-4">
+            <button onclick="saoChepPrompt()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2 shadow-md">
+                <i class="fa-regular fa-copy"></i> Sao Chép Cả Cụm Prompt
+            </button>
+        </div>
+        <p id="thongBao" class="text-center text-xs text-green-600 font-semibold h-4 mb-4"></p>
+
+        <!-- KHUNG HIỂN THỊ PROMPT ĐỂ COPY -->
+        <div>
+            <label class="block font-bold text-sm text-stone-700 mb-1">Khung Prompt Hoàn Chỉnh (Tự động thay đổi khi bạn gõ):</label>
+            <textarea id="ketQuaPrompt" rows="11" readonly class="w-full p-4 bg-stone-950 text-green-400 font-mono text-xs rounded-xl focus:outline-none shadow-inner resize-none"></textarea>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT XỬ LÝ TỰ ĐỘNG -->
+    <script>
+        function taoPrompt() {
+            let cD = document.getElementById('chuDe').value;
+            let mChinh = document.getElementById('monChinh').value;
+            let mVat = document.getElementById('monVat').value;
+            let tUong = document.getElementById('thucUong').value;
+
+            let promptHoanChinh = `Hãy viết một trang web hoàn chỉnh bằng một file HTML duy nhất (sử dụng Tailwind CSS qua CDN và FontAwesome để làm icon đẹp mắt) với nội dung chi tiết về các món ăn và thức uống có vị ${cD}.
+
+Yêu cầu cụ thể bao gồm:
+1. Phần Thống Kê / Tổng Hợp: Trình bày đầy đủ danh sách các món ăn thức uống vị ${cD} chia thành 3 nhóm rõ ràng:
+   - Các món ăn mặn / Lẩu (dùng trong bữa chính): ${mChinh}.
+   - Các món ăn vặt, gỏi và bánh: ${mVat}.
+   - Thức uống: ${tUong}.
+2. Phần Hướng Dẫn Công Thức & Video YouTube: Viết công thức chi tiết (nguyên liệu và cách làm cơ bản) kèm theo nút bấm hoặc liên kết dẫn trực tiếp đến các video YouTube hướng dẫn tương ứng cho các món trên.
+3. Phần Thời Tiết & Khí Hậu: Hướng dẫn chi tiết loại món ăn/thức uống nào nên dùng vào mùa nào phù hợp với hương vị ${cD}.
+4. Phần Dịp Lễ Tết: Gợi ý các dịp lễ tết hoặc họp mặt phù hợp để thưởng thức.
+5. Giao diện thiết kế: Tông màu ấm áp, bố cục hiện đại, thân thiện, dễ đọc để lưu trữ và sử dụng xem trực tiếp tại nhà.`;
+
+            document.getElementById('ketQuaPrompt').value = promptHoanChinh;
+        }
+
+        function saoChepPrompt() {
+            let copyText = document.getElementById("ketQuaPrompt");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+
+            let tb = document.getElementById("thongBao");
+            tb.innerText = "Đã sao chép thành công! Giờ bạn chỉ cần dán (Paste) vào khung chat của AI.";
+            setTimeout(() => { tb.innerText = ""; }, 4000);
+        }
+
+        // Tự động chạy khi mở trang
+        window.onload = taoPrompt;
+    </script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cẩm Nang Sức Khỏe & Thực Phẩm</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --surface-hover: #2a2a2a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #aaaaaa;
+            --accent-green: #4ade80;
+            --accent-orange: #fb923c;
+            --border-color: #333333;
+            --font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: var(--font-size);
+            line-height: 1.6;
+            padding-bottom: 90px; /* Space for fixed bottom bar */
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        h1.main-title {
+            font-size: 1.3rem;
+            text-align: center;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-green);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        /* Seamless Scrolling Container wrapper */
+        .scroll-viewport {
+            width: 100%;
+        }
+
+        .section-group {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--accent-orange);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table th, .data-table td {
+            padding: 14px 12px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 3 Column Structure styling */
+        .col-price {
+            width: 22%;
+            color: var(--accent-green);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .col-stt {
+            width: 10%;
+            color: var(--accent-orange);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .col-content {
+            width: 68%;
+            color: var(--text-primary);
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .item-desc {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        /* Fixed Bottom Control Bar */
+        .control-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 1000;
+            flex-wrap: wrap;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+        }
+
+        .control-btn {
+            background-color: #333333;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .control-btn:hover {
+            background-color: #444444;
+        }
+
+        .control-btn.active {
+            background-color: #166534;
+            border-color: var(--accent-green);
+            color: #ffffff;
+        }
+
+        .control-btn.paused {
+            background-color: #7f1d1d;
+            border-color: #f87171;
+            color: #ffffff;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .speed-control input[type="range"] {
+            accent-color: var(--accent-green);
+            width: 80px;
+            cursor: pointer;
+        }
+
+        .font-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .font-btn {
+            background-color: #333333;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            width: 32px;
+            height: 34px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .font-btn:hover {
+            background-color: #444444;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-style: italic;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .control-bar {
+                padding: 8px 10px;
+                gap: 8px;
+            }
+            .control-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .col-price {
+                width: 25%;
+                font-size: 0.85rem;
+            }
+            .col-stt {
+                width: 12%;
+            }
+            .data-table th, .data-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="main-title">Cẩm Nang Sức Khỏe & Thực Phẩm Tổng Hợp</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Tìm kiếm món ăn, thức uống, triệu chứng...">
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="noResults" class="no-results">Không tìm thấy kết quả phù hợp với từ khóa của bạn.</div>
+        <div class="scroll-viewport" id="viewport">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+        <!-- Duplicate wrapper for seamless infinite scroll looping -->
+        <div class="scroll-viewport" id="viewportClone" aria-hidden="true"></div>
+    </div>
+
+    <!-- Fixed Bottom Bar -->
+    <div class="control-bar" id="controlBar">
+        <button id="togglePlayBtn" class="control-btn paused">⏸ Tạm dừng</button>
+        <button id="rewindBtn" class="control-btn">↺ Tua lại</button>
+        <button id="restartBtn" class="control-btn">▶ Chạy lại từ đầu</button>
+        
+        <div class="speed-control">
+            <span>Tốc độ: <span id="speedValue">1.0x</span></span>
+            <input type="range" id="speedRange" min="0.5" max="5" step="0.1" value="1">
+        </div>
+
+        <div class="font-controls">
+            <button class="font-btn" id="fontDecrease" title="Giảm cỡ chữ">A-</button>
+            <button class="font-btn" id="fontIncrease" title="Tăng cỡ chữ">A+</button>
+        </div>
+    </div>
+
+    <script>
+        // Database structured by groups
+        const dataGroups = [
+            {
+                group: "8 Loại Đồ Ăn Giúp Giảm Mỡ Nội Tạng (Sau 30 Ngày)",
+                items: [
+                    { stt: 1, price: "45.000đ - 70.000đ/100g", name: "Cá béo (Cá hồi, cá thu, cá trích, cá nục)", desc: "Cung cấp protein chất lượng cao cùng axit béo omega-3, đặc biệt là EPA và DHA. Những chất béo này được quan tâm nhờ vai trò đối với sức khỏe tim mạch và chuyển hóa. Nên ưu tiên hấp, luộc, kho hoặc áp chảo với ít dầu thay vì chiên ngập dầu." },
+                    { stt: 2, price: "25.000đ - 40.000đ/túi", name: "Yến mạch", desc: "Giàu chất xơ, trong đó có beta-glucan, một dạng chất xơ hòa tan giúp kéo dài cảm giác no và làm chậm quá trình tiêu hóa. Đưa yến mạch vào bữa ăn giúp kiểm soát lượng thức ăn nạp vào, hỗ trợ quá trình giảm cân và giảm lượng mỡ tích tụ ở vùng bụng." },
+                    { stt: 3, price: "30.000đ - 50.000đ/kg", name: "Các loại đậu (Đậu đen, đậu đỏ, đậu xanh, đậu nành)", desc: "Cung cấp đồng thời protein thực vật và chất xơ, giúp bữa ăn tạo cảm giác no tốt hơn, làm chậm quá trình tiêu hóa và hỗ trợ kiểm soát lượng đường huyết cũng như mỡ nội tạng." },
+                    { stt: 4, price: "60.000đ - 120.000đ hộp", name: "Quả mọng (Dâu tây, việt quất, mâm xôi, dâu đen)", desc: "Cung cấp chất xơ cùng nhiều hợp chất thực vật như polyphenol và anthocyanin hỗ trợ sức khỏe chuyển hóa, đồng thời giúp tăng cảm giác no hiệu quả." },
+                    { stt: 5, price: "25.000đ - 40.000đ quả", name: "Quả bơ", desc: "Chứa chất béo không bão hòa đơn cùng chất xơ, hai thành phần giúp tăng cảm giác no khi sử dụng với khẩu phần phù hợp, có lợi cho sức khỏe tim mạch và chuyển hóa." },
+                    { stt: 6, price: "15.000đ - 30.000đ/kg", name: "Rau lá xanh (Rau bina, cải xanh, cải bó xôi, xà lách)", desc: "Chứa nhiều nước, chất xơ, vitamin và khoáng chất nhưng không cung cấp quá nhiều năng lượng. Tăng lượng rau giúp tăng thể tích khẩu phần, tạo cảm giác no sâu." },
+                    { stt: 7, price: "35.000đ - 50.000đ hũ", name: "Sữa chua Hy Lạp", desc: "Có hàm lượng protein cao giúp hỗ trợ kiểm soát cảm giác đói giữa các bữa, duy trì khối lượng cơ khi giảm cân và duy trì hệ vi sinh đường ruột khỏe mạnh." },
+                    { stt: 8, price: "20.000đ - 35.000đ/vỉ", name: "Trứng", desc: "Cung cấp nguồn protein hoàn chỉnh chất lượng cao, giúp tăng cường cảm giác no lâu và hỗ trợ ổn định năng lượng cho cơ thể suốt cả ngày." }
+                ]
+            },
+            {
+                group: "Thực Phẩm & Đồ Uống Tốt Cho Thận / Tim Mạch",
+                items: [
+                    { stt: 9, price: "Miễn phí / Rẻ", name: "Nước lọc, cà phê đen và trà không đường", desc: "Được chuyên gia tim mạch và thận học khuyến nghị là những đồ uống tốt nhất giúp thanh lọc cơ thể và bảo vệ hệ tuần hoàn." },
+                    { stt: 10, price: "15.000đ - 25.000đ/kg", name: "Ớt chuông đỏ", desc: "Giàu vitamin C, vitamin A và chất xơ, đồng thời có hàm lượng kali tương đối thấp, rất tốt cho người cần bảo vệ chức năng thận." },
+                    { stt: 11, price: "10.000đ - 20.000đ/kg", name: "Bắp cải", desc: "Cung cấp vitamin C, vitamin K và chất xơ, phù hợp hoàn hảo với thực đơn ăn uống đa dạng, cân đối mỗi ngày." },
+                    { stt: 12, price: "15.000đ - 25.000đ cái", name: "Súp lơ (Bông cải)", desc: "Chứa nhiều vitamin C, folate và chất xơ, giúp bổ sung dưỡng chất thiết yếu cho cơ thể mà không gây áp lực cho nội tạng." },
+                    { stt: 13, price: "40.000đ - 60.000đ/kg", name: "Tỏi", desc: "Giúp tăng hương vị thơm ngon cho món ăn tự nhiên, hỗ trợ giảm nhu cầu sử dụng nhiều muối trong chế biến." },
+                    { stt: 14, price: "25.000đ - 35.000đ/kg", name: "Hành tây", desc: "Chứa quercetin và các hợp chất chống oxy hóa mạnh mẽ có lợi tuyệt vời cho sức khỏe tim mạch." },
+                    { stt: 15, price: "35.000đ - 60.000đ/kg", name: "Táo", desc: "Giàu chất xơ và các hợp chất thực vật tự nhiên, hỗ trợ đắc lực cho sức khỏe tiêu hóa và quá trình chuyển hóa chất." },
+                    { stt: 16, price: "40.000đ - 80.000đ/vỉ", name: "Lòng trắng trứng", desc: "Là nguồn protein chất lượng cao nhưng chứa ít phốt pho hơn hẳn lòng đỏ trứng, lý tưởng cho người cần kiêng khem." }
+                ]
+            },
+            {
+                group: "Các Nhóm Đồ Uống & Thực Phẩm Cần Hạn Chế",
+                items: [
+                    { stt: 17, price: "10.000đ - 15.000đ lon", name: "Nước ngọt có gas và nước tăng lực", desc: "Chứa nhiều đường và chất kích thích, nếu dùng thường xuyên dễ gây béo phì, rối loạn chuyển hóa và tăng gánh nặng cho thận." },
+                    { stt: 18, price: "Tùy loại", name: "Đồ uống có cồn (Rượu, bia)", desc: "Gây tổn thương tế bào gan, thận và làm tăng huyết áp nếu lạm dụng trong thời gian dài." },
+                    { stt: 19, price: "50.000đ - 100.000đ/kg", name: "Thịt chế biến sẵn (Xúc xích, lạp xưởng, thịt xông khói)", desc: "Chứa nhiều natri (muối) và phụ gia bảo quản, làm tăng huyết áp và gây tổn hại nghiêm trọng đến hệ bài tiết của thận." }
+                ]
+            }
+        ];
+
+        // Render content into viewports
+        function renderContent(filterText = "") {
+            const viewport = document.getElementById('viewport');
+            const viewportClone = document.getElementById('viewportClone');
+            const noResults = document.getElementById('noResults');
+            
+            let htmlContent = "";
+            let totalMatched = 0;
+
+            dataGroups.forEach(groupObj => {
+                const filteredItems = groupObj.items.filter(item => {
+                    const query = filterText.toLowerCase();
+                    return item.name.toLowerCase().includes(query) || 
+                           item.desc.toLowerCase().includes(query) || 
+                           item.price.toLowerCase().includes(query) ||
+                           item.stt.toString().includes(query);
+                });
+
+                if (filteredItems.length > 0) {
+                    totalMatched += filteredItems.length;
+                    htmlContent += `
+                        <div class="section-group">
+                            <h2 class="section-title">${groupObj.group}</h2>
+                            <table class="data-table">
+                                <tbody>
+                    `;
+                    filteredItems.forEach(item => {
+                        htmlContent += `
+                            <tr>
+                                <td class="col-price">${item.price}</td>
+                                <td class="col-stt">${item.stt}</td>
+                                <td class="col-content">
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-desc">${item.desc}</div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    htmlContent += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            });
+
+            if (totalMatched === 0) {
+                noResults.style.display = "block";
+                viewport.innerHTML = "";
+                viewportClone.innerHTML = "";
+            } else {
+                noResults.style.display = "none";
+                viewport.innerHTML = htmlContent;
+                // Clone content for smooth infinite seamless scroll loop effect
+                viewportClone.innerHTML = htmlContent;
+            }
+        }
+
+        // Initial render
+        renderContent();
+
+        // Auto Scroll Engine Variables
+        let isPlaying = false;
+        let scrollSpeed = 1.0; // pixels per frame base multiplier
+        let animationFrameId = null;
+
+        const togglePlayBtn = document.getElementById('togglePlayBtn');
+        const rewindBtn = document.getElementById('rewindBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const speedRange = document.getElementById('speedRange');
+        const speedValue = document.getElementById('speedValue');
+        const fontDecrease = document.getElementById('fontDecrease');
+        const fontIncrease = document.getElementById('fontIncrease');
+        const searchInput = document.getElementById('searchInput');
+
+        // Scroll step logic with seamless wrap around
+        function stepScroll() {
+            if (!isPlaying) return;
+
+            // Scroll down
+            window.scrollBy(0, scrollSpeed);
+
+            const viewport = document.getElementById('viewport');
+            const viewportHeight = viewport.offsetHeight;
+
+            // When scrolled past the first full viewport height, instantly jump back to top seamlessly
+            if (window.scrollY >= viewportHeight) {
+                window.scrollTo(0, window.scrollY - viewportHeight);
+            }
+
+            animationFrameId = requestAnimationFrame(stepScroll);
+        }
+
+        function startScroll() {
+            if (isPlaying) return;
+            isPlaying = true;
+            togglePlayBtn.textContent = "⏸ Tạm dừng";
+            togglePlayBtn.className = "control-btn active";
+            animationFrameId = requestAnimationFrame(stepScroll);
+        }
+
+        function pauseScroll() {
+            if (!isPlaying) return;
+            isPlaying = false;
+            togglePlayBtn.textContent = "▶ Tiếp tục";
+            togglePlayBtn.className = "control-btn paused";
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        }
+
+        // Toggle Play/Pause button handler
+        togglePlayBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                pauseScroll();
+            } else {
+                startScroll();
+            }
+        });
+
+        // Click anywhere on screen (except control bar and search) to toggle play/pause
+        document.body.addEventListener('click', (e) => {
+            const controlBar = document.getElementById('controlBar');
+            const header = document.querySelector('header');
+            if (!controlBar.contains(e.target) && !header.contains(e.target)) {
+                if (isPlaying) {
+                    pauseScroll();
+                } else {
+                    startScroll();
+                }
+            }
+        });
+
+        // Rewind button
+        rewindBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Restart from top immediately
+        restartBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.scrollTo(0, 0);
+            if (!isPlaying) {
+                startScroll();
+            }
+        });
+
+        // Speed control slider
+        speedRange.addEventListener('input', (e) => {
+            scrollSpeed = parseFloat(e.target.value);
+            speedValue.textContent = scrollSpeed.toFixed(1) + 'x';
+        });
+
+        // Font size adjustment
+        let currentFontSize = 16;
+        fontIncrease.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentFontSize < 24) {
+                currentFontSize += 2;
+                document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
+            }
+        });
+
+        fontDecrease.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentFontSize > 12) {
+                currentFontSize -= 2;
+                document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
+            }
+        });
+
+        // Search input event listener
+        searchInput.addEventListener('input', (e) => {
+            renderContent(e.target.value);
+            // If user searches, bring to top so results show properly
+            window.scrollTo(0, 0);
+        });
+
+        // Prevent controls from bubbling click events
+        document.getElementById('controlBar').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        document.querySelector('header').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Auto-start on load as requested ("Mở trang ra là món số 1 xuất hiện ngay lập tức ở vị trí đầu màn hình")
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0);
+            // Optional: Auto start scrolling immediately upon load or keep paused until first interaction. 
+            // Let's start paused or auto play? The prompt says "Mở trang ra là món số 1 xuất hiện ngay lập tức ở vị trí đầu màn hình", let's keep it ready or auto start. Let's start paused so user can read comfortably, or start playing if desired. Let's start paused with button showing "▶ Tiếp tục" or auto play after 1s. Let's leave it paused initially so user controls it, or auto-play. Let's start paused as standard practice.
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Vạn Niên & Tra Cứu Ngũ Hành (4 Tab Chuyên Sâu)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col text-base sm:text-lg selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- Thông báo nổi (Toast Notification) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
+
+    <!-- Header Dark Mode Tương Phản Cao -->
+    <header class="bg-gradient-to-r from-slate-900 via-red-950 to-slate-900 border-b-2 border-amber-500/60 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-center sm:text-left">
+                <div class="w-14 h-14 rounded-2xl bg-amber-500/15 border-2 border-amber-400/60 flex items-center justify-center shadow-lg shrink-0">
+                    <i data-lucide="compass" class="w-8 h-8 text-amber-400"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-2xl sm:text-3xl font-extrabold tracking-wide text-amber-300">
+                        Lịch Vạn Niên & Tra Cứu Ngũ Hành
+                    </h1>
+                    <p class="text-sm sm:text-base text-slate-300 mt-0.5">
+                        Âm Dương Lịch • Can Chi Tứ Trụ • Chia Dư Ngũ Hành & Trình Mở Web Số Ra Món
+                    </p>
+                </div>
+            </div>
+
+            <!-- Đồng hồ thời gian thực cỡ lớn -->
+            <div class="bg-slate-950/80 border border-amber-500/40 rounded-2xl px-5 py-2.5 text-center lg:text-right shadow-inner">
+                <div id="live-clock" class="text-2xl sm:text-3xl font-mono font-extrabold text-amber-400 tracking-wider">00:00:00</div>
+                <div id="live-date-badge" class="text-sm font-medium text-slate-300">Đang tải ngày...</div>
+            </div>
+        </div>
+
+        <!-- Thanh điều hướng 4 Tab lớn, dễ bấm -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-2">
+            <nav class="grid grid-cols-2 lg:grid-cols-4 gap-2" aria-label="Tabs">
+                <button id="btn-tab-1" onclick="switchTab('tab-1')"
+                    class="tab-btn flex items-center justify-center gap-2.5 px-4 py-4 text-base sm:text-lg font-bold rounded-t-2xl transition-all duration-200 bg-slate-950 text-amber-300 border-t-2 border-x-2 border-amber-500/60 shadow-lg">
+                    <i data-lucide="calendar-days" class="w-5 h-5 shrink-0"></i>
+                    <span>Tab 1: Âm Dương & Can Chi</span>
+                </button>
+                <button id="btn-tab-2" onclick="switchTab('tab-2')"
+                    class="tab-btn flex items-center justify-center gap-2.5 px-4 py-4 text-base sm:text-lg font-bold rounded-t-2xl transition-all duration-200 bg-slate-900/70 text-slate-300 hover:bg-slate-800 hover:text-white border-t border-x border-slate-700">
+                    <i data-lucide="sun" class="w-5 h-5 text-amber-400 shrink-0"></i>
+                    <span>Tab 2: Dương Lịch & Tệp Web</span>
+                </button>
+                <button id="btn-tab-3" onclick="switchTab('tab-3')"
+                    class="tab-btn flex items-center justify-center gap-2.5 px-4 py-4 text-base sm:text-lg font-bold rounded-t-2xl transition-all duration-200 bg-slate-900/70 text-slate-300 hover:bg-slate-800 hover:text-white border-t border-x border-slate-700">
+                    <i data-lucide="moon" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+                    <span>Tab 3: Ngũ Hành Âm Lịch</span>
+                </button>
+                <button id="btn-tab-4" onclick="switchTab('tab-4')"
+                    class="tab-btn flex items-center justify-center gap-2.5 px-4 py-4 text-base sm:text-lg font-bold rounded-t-2xl transition-all duration-200 bg-slate-900/70 text-slate-300 hover:bg-slate-800 hover:text-white border-t border-x border-slate-700">
+                    <i data-lucide="layers" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+                    <span>Tab 4: Ngũ Hành Can Chi</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: LỊCH VẠN NIÊN & CAN CHI (NĂM - THÁNG - NGÀY - GIỜ) -->
+        <!-- ========================================================= -->
+        <section id="tab-1" class="space-y-6">
+            <!-- Thanh điều khiển chọn Ngày & Giờ -->
+            <div class="bg-slate-900 rounded-2xl p-5 shadow-lg border border-slate-700 flex flex-col xl:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="p-3 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30">
+                        <i data-lucide="calendar-search" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-xl text-white">Chọn Ngày & Giờ Tra Cứu</h2>
+                        <p class="text-sm text-slate-400">Tự động đồng bộ sang Tab 2 (Dương lịch), Tab 3 (Âm lịch) và Tab 4 (Tứ Trụ Can Chi)</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-end">
+                    <div class="flex items-center gap-2">
+                        <label for="solar-date-picker" class="text-sm font-semibold text-slate-300">Ngày:</label>
+                        <input type="date" id="solar-date-picker"
+                            class="px-4 py-2.5 bg-slate-950 border border-slate-600 rounded-xl text-base font-bold text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <label for="solar-hour-picker" class="text-sm font-semibold text-slate-300">Giờ:</label>
+                        <select id="solar-hour-picker" onchange="onDateOrHourChange()"
+                            class="px-3.5 py-2.5 bg-slate-950 border border-slate-600 rounded-xl text-base font-bold text-cyan-300 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option value="0">Giờ Tý (23h - 01h)</option>
+                            <option value="2">Giờ Sửu (01h - 03h)</option>
+                            <option value="4">Giờ Dần (03h - 05h)</option>
+                            <option value="6">Giờ Mão (05h - 07h)</option>
+                            <option value="8">Giờ Thìn (07h - 09h)</option>
+                            <option value="10">Giờ Tỵ (09h - 11h)</option>
+                            <option value="12">Giờ Ngọ (11h - 13h)</option>
+                            <option value="14">Giờ Mùi (13h - 15h)</option>
+                            <option value="16">Giờ Thân (15h - 17h)</option>
+                            <option value="18">Giờ Dậu (17h - 19h)</option>
+                            <option value="20">Giờ Tuất (19h - 21h)</option>
+                            <option value="22">Giờ Hợi (21h - 23h)</option>
+                        </select>
+                    </div>
+
+                    <button onclick="resetToToday()"
+                        class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-base font-bold rounded-xl transition flex items-center gap-2 shadow-md">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        <span>Hôm nay & Giờ hiện tại</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lưới 3 Card lớn: Dương lịch, Âm lịch, Bát Tự Can Chi -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Card 1: Dương Lịch -->
+                <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700 overflow-hidden flex flex-col">
+                    <div class="bg-gradient-to-r from-red-900 to-red-800 px-5 py-4 text-white flex items-center justify-between border-b border-red-700">
+                        <span class="font-bold tracking-wider uppercase text-sm flex items-center gap-2">
+                            <i data-lucide="sun" class="w-5 h-5 text-amber-300"></i>
+                            Dương Lịch
+                        </span>
+                        <span id="solar-weekday-badge" class="text-sm bg-black/30 px-3 py-1 rounded-full font-bold text-amber-200">Thứ ...</span>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col items-center justify-center text-center">
+                        <div id="solar-month-year" class="text-lg font-bold uppercase tracking-widest text-red-400 mb-2">
+                            Tháng -- Năm ----
+                        </div>
+                        <div id="solar-day-big" class="font-serif text-8xl font-extrabold text-white my-2 leading-none">
+                            --
+                        </div>
+                        <div id="solar-weekday-full" class="text-2xl font-bold text-amber-300 mt-3">
+                            ---
+                        </div>
+                        <div id="solar-full-string" class="text-base text-slate-400 mt-1.5">
+                            Ngày --/--/----
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Âm Lịch -->
+                <div class="bg-slate-900 rounded-2xl shadow-xl border border-amber-500/40 overflow-hidden flex flex-col">
+                    <div class="bg-gradient-to-r from-amber-700 to-amber-600 px-5 py-4 text-slate-950 flex items-center justify-between">
+                        <span class="font-extrabold tracking-wider uppercase text-sm flex items-center gap-2">
+                            <i data-lucide="moon" class="w-5 h-5"></i>
+                            Âm Lịch Việt Nam
+                        </span>
+                        <span id="lunar-leap-badge" class="text-sm bg-slate-950/20 px-3 py-1 rounded-full font-bold">Tháng thường</span>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col items-center justify-center text-center">
+                        <div id="lunar-month-year" class="text-lg font-bold uppercase tracking-widest text-amber-400 mb-2">
+                            Tháng -- Âm Lịch
+                        </div>
+                        <div id="lunar-day-big" class="font-serif text-8xl font-extrabold text-amber-300 my-2 leading-none">
+                            --
+                        </div>
+                        <div id="lunar-year-name" class="text-2xl font-bold text-white mt-3">
+                            Năm ---
+                        </div>
+                        <div id="lunar-full-string" class="text-base text-slate-400 mt-1.5">
+                            Ngày -- tháng -- năm ---- (ÂL)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Tứ Trụ Can Chi (Năm - Tháng - Ngày - Giờ) -->
+                <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700 overflow-hidden flex flex-col">
+                    <div class="bg-slate-800 px-5 py-4 text-amber-300 flex items-center justify-between border-b border-slate-700">
+                        <span class="font-bold tracking-wider uppercase text-sm flex items-center gap-2">
+                            <i data-lucide="scroll-text" class="w-5 h-5"></i>
+                            Can Chi Tứ Trụ
+                        </span>
+                        <span id="zodiac-animal-badge" class="text-sm bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full font-bold">Con giáp</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-center space-y-2.5">
+                        <!-- Năm Can Chi -->
+                        <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase block">Năm Can Chi</span>
+                                <span id="canchi-year" class="font-serif text-xl font-bold text-amber-300">---</span>
+                            </div>
+                            <span id="canchi-year-element" class="text-xs sm:text-sm font-bold px-3 py-1 rounded-lg bg-slate-800 text-amber-200 border border-slate-600">
+                                Nạp âm ---
+                            </span>
+                        </div>
+
+                        <!-- Tháng Can Chi -->
+                        <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase block">Tháng Can Chi</span>
+                                <span id="canchi-month" class="font-serif text-xl font-bold text-emerald-300">---</span>
+                            </div>
+                            <span id="canchi-month-note" class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-lg bg-slate-800 text-emerald-200 border border-slate-600">
+                                Tháng ÂL
+                            </span>
+                        </div>
+
+                        <!-- Ngày Can Chi -->
+                        <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase block">Ngày Can Chi</span>
+                                <span id="canchi-day" class="font-serif text-xl font-bold text-rose-300">---</span>
+                            </div>
+                            <span id="canchi-day-element" class="text-xs sm:text-sm font-bold px-3 py-1 rounded-lg bg-slate-800 text-rose-200 border border-slate-600">
+                                Can hành ---
+                            </span>
+                        </div>
+
+                        <!-- Giờ Can Chi -->
+                        <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase block">Giờ Can Chi</span>
+                                <span id="canchi-hour" class="font-serif text-xl font-bold text-cyan-300">---</span>
+                            </div>
+                            <span id="canchi-hour-note" class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-lg bg-slate-800 text-cyan-200 border border-slate-600">
+                                Canh giờ
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thanh chuyển nhanh sang các Tab tính toán -->
+            <div class="bg-slate-900 rounded-2xl p-5 border border-slate-700 flex flex-wrap items-center justify-between gap-4">
+                <div class="text-base text-slate-300">
+                    <span class="font-bold text-amber-300">Chuyển nhanh dữ liệu sang các Tab tính Ngũ Hành:</span>
+                    <span id="julian-day-info" class="ml-2 text-sm font-mono text-slate-400">(JD: ---)</span>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="switchTab('tab-2')" class="px-4 py-2.5 bg-red-800 hover:bg-red-700 text-white font-bold rounded-xl transition text-sm sm:text-base">
+                        Xem Tab 2 (Dương Lịch) →
+                    </button>
+                    <button onclick="switchTab('tab-3')" class="px-4 py-2.5 bg-cyan-800 hover:bg-cyan-700 text-white font-bold rounded-xl transition text-sm sm:text-base">
+                        Xem Tab 3 (Âm Lịch) →
+                    </button>
+                    <button onclick="switchTab('tab-4')" class="px-4 py-2.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-sm sm:text-base">
+                        Xem Tab 4 (Can Chi) →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: CHIA DƯ DƯƠNG LỊCH & TRÌNH NẠP TỆP WEB SỐ RA MÓN   -->
+        <!-- ========================================================= -->
+        <section id="tab-2" class="hidden space-y-8">
+            
+            <!-- PHẦN 1: TÍNH (NGÀY DƯƠNG LỊCH + THÁNG DƯƠNG LỊCH) % 5 -->
+            <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-950 to-slate-900 px-6 py-4 border-b border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="calculator" class="w-6 h-6 text-amber-400"></i>
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold text-amber-300">
+                            Tab 2.1: (Ngày Dương Lịch + Tháng Dương Lịch) Chia Dư Cho 5
+                        </h2>
+                    </div>
+                    <span class="text-sm font-mono bg-slate-950 px-3.5 py-1.5 rounded-xl text-amber-300 border border-amber-500/30">
+                        (Ngày DL + Tháng DL) mod 5
+                    </span>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="calc-solar-day" class="block text-sm font-bold uppercase text-slate-300 mb-1.5">
+                                    Ngày Dương lịch
+                                </label>
+                                <input type="number" id="calc-solar-day" min="1" max="31" value="1"
+                                    oninput="calculateSolarMod5()"
+                                    class="w-full px-4 py-3 text-2xl font-extrabold text-center bg-slate-950 border-2 border-slate-600 rounded-xl text-amber-300 focus:outline-none focus:border-amber-400">
+                            </div>
+                            <div>
+                                <label for="calc-solar-month" class="block text-sm font-bold uppercase text-slate-300 mb-1.5">
+                                    Tháng Dương lịch
+                                </label>
+                                <input type="number" id="calc-solar-month" min="1" max="12" value="1"
+                                    oninput="calculateSolarMod5()"
+                                    class="w-full px-4 py-3 text-2xl font-extrabold text-center bg-slate-950 border-2 border-slate-600 rounded-xl text-amber-300 focus:outline-none focus:border-amber-400">
+                            </div>
+                        </div>
+
+                        <button onclick="syncFromTab1ToAll()"
+                            class="w-full px-4 py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold rounded-xl border border-slate-600 transition flex items-center justify-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                            <span>Đồng bộ từ Tab 1</span>
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        <div id="solar-mod-card" class="rounded-2xl p-6 border-2 border-amber-500/50 bg-slate-950/90 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div class="space-y-2 text-center sm:text-left">
+                                <div class="text-sm font-bold uppercase tracking-wider text-slate-400">Kết quả phép chia Dương lịch</div>
+                                <div id="solar-mod-formula" class="text-xl sm:text-2xl font-mono font-bold text-white">
+                                    (1 + 1) = 2 → Chia 5 dư 2
+                                </div>
+                                <div class="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                                    <button id="btn-solar-open-number" onclick="selectNumberForDish(2)"
+                                        class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl shadow-lg transition flex items-center gap-2">
+                                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                        <span>Mở Web Số Ra Món: Số 2</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="w-full sm:w-56 p-5 rounded-2xl bg-slate-900 border-2 border-amber-500/40 text-center shrink-0">
+                                <div class="text-xs uppercase font-bold text-slate-400">Ngũ Hành Dương Lịch</div>
+                                <div id="solar-mod-element" class="font-serif text-3xl sm:text-4xl font-extrabold text-rose-400 my-1.5">Hành Hỏa</div>
+                                <div id="solar-mod-relation" class="text-sm text-slate-300">Mộc sinh Hỏa • Khắc Kim</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHẦN 2: TRÌNH NẠP TỆP HTML/TXT & XEM TRỰC TIẾP GIAO DIỆN WEB -->
+            <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700 overflow-hidden">
+                <div class="bg-slate-800 px-6 py-4 border-b border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold text-amber-300 flex items-center gap-2.5">
+                            <i data-lucide="globe" class="w-6 h-6 text-emerald-400"></i>
+                            <span>Tab 2.2: Kho Tệp Ngũ Hành & Trình Mở Web Số Ra Món</span>
+                        </h2>
+                        <p class="text-sm text-slate-300 mt-1">
+                            Nạp tệp <strong>.html, .txt</strong> từ máy tính. Khi mở tệp HTML có chứa các con số, bạn có thể <strong>bấm chọn trực tiếp các số để ra món web luôn</strong>!
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <input type="file" id="file-upload-input" multiple accept=".txt,.html,.htm,.md,.json,.csv" class="hidden" onchange="handleFileUpload(event)">
+                        <button onclick="document.getElementById('file-upload-input').click()"
+                            class="px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-base rounded-xl transition flex items-center gap-2 shadow-lg cursor-pointer">
+                            <i data-lucide="file-up" class="w-5 h-5"></i>
+                            <span>Nạp tệp (.html, .txt...)</span>
+                        </button>
+                        <button onclick="downloadSampleHtmlFile()"
+                            class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-amber-200 text-sm sm:text-base font-bold rounded-xl transition flex items-center gap-2 border border-slate-500">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            <span>Tải tệp HTML mẫu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chia 2 cột: Danh sách tệp (Trái) & Khung Web Viewer trực tiếp (Phải) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[540px]">
+                    <!-- Danh sách tệp -->
+                    <div class="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-slate-700 bg-slate-950/60 flex flex-col">
+                        <div class="p-4 border-b border-slate-800 bg-slate-900 flex items-center justify-between">
+                            <span class="text-sm font-bold uppercase text-slate-200 flex items-center gap-2">
+                                <i data-lucide="folder-open" class="w-4 h-4 text-amber-400"></i>
+                                <span>Danh sách tệp (<span id="file-count">0</span>)</span>
+                            </span>
+                            <div class="flex items-center gap-2 text-sm">
+                                <button onclick="restoreDefaultSamples()" class="text-amber-400 hover:underline font-semibold">Khôi phục mẫu</button>
+                                <span class="text-slate-600">|</span>
+                                <button onclick="clearAllFiles()" class="text-rose-400 hover:underline font-semibold">Xóa hết</button>
+                            </div>
+                        </div>
+
+                        <div id="drop-zone" class="p-3.5 flex-grow overflow-y-auto max-h-[560px] space-y-2.5">
+                            <!-- Danh sách tệp render bằng JS -->
+                        </div>
+                    </div>
+
+                    <!-- Khung hiển thị nội dung Web (iframe srcdoc) hoặc Văn bản -->
+                    <div class="lg:col-span-8 flex flex-col bg-slate-950">
+                        <div class="px-5 py-3.5 border-b border-slate-800 bg-slate-900 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span id="viewer-type-badge" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-extrabold uppercase shrink-0">
+                                    HTML
+                                </span>
+                                <h3 id="viewer-title" class="font-serif font-bold text-white truncate text-lg sm:text-xl">
+                                    Đang tải tài liệu...
+                                </h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="viewer-meta" class="text-sm text-slate-400 hidden sm:inline"></span>
+                                <button id="btn-toggle-raw" onclick="toggleRawView()"
+                                    class="px-3.5 py-1.5 text-sm font-bold rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 text-amber-300 transition">
+                                    Xem mã nguồn
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="viewer-body" class="flex-grow flex flex-col min-h-[480px]">
+                            <!-- Nội dung iframe web hoặc pre text -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: TÍNH NGŨ HÀNH THEO NGÀY THÁNG ÂM LỊCH              -->
+        <!-- ========================================================= -->
+        <section id="tab-3" class="hidden space-y-6">
+            <div class="bg-slate-900 rounded-2xl shadow-xl border border-cyan-500/40 overflow-hidden">
+                <div class="bg-gradient-to-r from-cyan-950 via-slate-900 to-slate-900 px-6 py-5 border-b border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-cyan-500/20 rounded-xl border border-cyan-400/40 text-cyan-300">
+                            <i data-lucide="moon" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-serif text-xl sm:text-2xl font-bold text-cyan-300">
+                                Tab 3: Cộng Ngày Tháng Âm Lịch & Tính Ngũ Hành
+                            </h2>
+                            <p class="text-sm text-slate-300">Công thức: (Ngày Âm lịch + Tháng Âm lịch) chia dư cho 5</p>
+                        </div>
+                    </div>
+                    <button onclick="syncFromTab1ToAll()"
+                        class="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-extrabold rounded-xl transition flex items-center gap-2 self-start sm:self-auto">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span>Lấy Âm Lịch từ Tab 1</span>
+                    </button>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Nhập Ngày & Tháng Âm lịch -->
+                    <div class="lg:col-span-5 space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="calc-lunar-day" class="block text-sm font-bold uppercase text-cyan-300 mb-2">
+                                    Ngày Âm Lịch (1-30)
+                                </label>
+                                <input type="number" id="calc-lunar-day" min="1" max="30" value="1"
+                                    oninput="calculateLunarMod5()"
+                                    class="w-full px-4 py-3.5 text-3xl font-extrabold text-center bg-slate-950 border-2 border-cyan-500/50 rounded-2xl text-white focus:outline-none focus:border-cyan-400">
+                            </div>
+                            <div>
+                                <label for="calc-lunar-month" class="block text-sm font-bold uppercase text-cyan-300 mb-2">
+                                    Tháng Âm Lịch (1-12)
+                                </label>
+                                <input type="number" id="calc-lunar-month" min="1" max="12" value="1"
+                                    oninput="calculateLunarMod5()"
+                                    class="w-full px-4 py-3.5 text-3xl font-extrabold text-center bg-slate-950 border-2 border-cyan-500/50 rounded-2xl text-white focus:outline-none focus:border-cyan-400">
+                            </div>
+                        </div>
+
+                        <div id="lunar-tab3-note" class="p-4 rounded-xl bg-slate-950 border border-slate-700 text-sm text-slate-300">
+                            Đang đồng bộ theo ngày Âm lịch tại Tab 1. Bạn có thể tự nhập số khác để thử nghiệm.
+                        </div>
+                    </div>
+
+                    <!-- Kết quả Ngũ Hành Âm Lịch -->
+                    <div class="lg:col-span-7">
+                        <div id="lunar-mod-card" class="rounded-2xl p-6 sm:p-8 border-2 border-cyan-500/50 bg-slate-950 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner">
+                            <div class="space-y-3 text-center sm:text-left">
+                                <div class="text-sm font-bold uppercase tracking-wider text-cyan-400">Chi tiết phép tính Âm Lịch</div>
+                                <div id="lunar-mod-formula" class="text-2xl sm:text-3xl font-mono font-extrabold text-white">
+                                    (1 + 1) = 2 → Dư 2
+                                </div>
+                                <div id="lunar-mod-detail" class="text-base text-slate-300">
+                                    Tổng: 2 | Thương: 0 | Số dư: 2
+                                </div>
+                                <div class="pt-2">
+                                    <button id="btn-lunar-open-number" onclick="selectNumberForDish(2)"
+                                        class="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-base rounded-xl shadow-lg transition inline-flex items-center gap-2">
+                                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                        <span>Bấm mở Web Số Ra Món: Số 2</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="w-full sm:w-64 p-6 rounded-2xl bg-slate-900 border-2 border-cyan-500/40 text-center shrink-0">
+                                <div class="text-xs uppercase font-bold text-slate-400">Ngũ Hành Âm Lịch</div>
+                                <div id="lunar-mod-element" class="font-serif text-4xl font-extrabold text-rose-400 my-2">Hành Hỏa</div>
+                                <div id="lunar-mod-relation" class="text-sm text-slate-300 leading-relaxed">Mộc sinh Hỏa • Hỏa sinh Thổ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: TÍNH NGŨ HÀNH CAN CHI (NĂM - THÁNG - NGÀY - GIỜ)   -->
+        <!-- ========================================================= -->
+        <section id="tab-4" class="hidden space-y-6">
+            <div class="bg-slate-900 rounded-2xl shadow-xl border border-emerald-500/40 overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 px-6 py-5 border-b border-slate-700 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-emerald-500/20 rounded-xl border border-emerald-400/40 text-emerald-300">
+                            <i data-lucide="layers" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-serif text-xl sm:text-2xl font-bold text-emerald-300">
+                                Tab 4: Cộng Số Can Chi (Năm • Tháng • Ngày • Giờ) Tính Ngũ Hành
+                            </h2>
+                            <p class="text-sm text-slate-300">
+                                Công thức từng trụ: <strong>(Trị số Thiên Can + Trị số Địa Chi) chia dư cho 5</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bộ chọn hệ số quy đổi Can Chi -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <select id="canchi-number-system" onchange="calculateCanChiTab4()"
+                            class="px-4 py-2.5 bg-slate-950 border border-emerald-500/50 rounded-xl text-sm sm:text-base font-bold text-emerald-300 focus:outline-none">
+                            <option value="sequential">Hệ số thứ tự (Giáp=1..Quý=10 | Tý=1..Hợi=12)</option>
+                            <option value="thai-huyen">Hệ số Thái Huyền (Giáp Kỷ=9, Ất Canh=8...)</option>
+                        </select>
+                        <button onclick="syncFromTab1ToAll()"
+                            class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>Đồng bộ Tab 1</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lưới 4 Trụ: Năm - Tháng - Ngày - Giờ -->
+                <div class="p-6 space-y-6">
+                    <div id="four-pillars-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                        <!-- 4 Card Trụ Năm, Tháng, Ngày, Giờ sẽ được render tự động bằng JS -->
+                    </div>
+
+                    <!-- Tổng hợp cả 4 Trụ (Tứ Trụ Hợp Nhất) -->
+                    <div class="bg-slate-950 rounded-2xl p-6 border-2 border-amber-500/40 flex flex-col lg:flex-row items-center justify-between gap-6">
+                        <div class="space-y-2 text-center lg:text-left">
+                            <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-extrabold uppercase">
+                                Tổng hợp Tứ Trụ (Năm + Tháng + Ngày + Giờ)
+                            </span>
+                            <div id="total-pillars-formula" class="text-xl sm:text-2xl font-mono font-bold text-white pt-1">
+                                Tổng 4 trụ = -- → Chia 5 dư --
+                            </div>
+                            <p class="text-sm text-slate-400">
+                                Bấm vào nút bên phải hoặc bấm trực tiếp vào số dư của từng trụ ở trên để mở trang web <strong>Số Ra Món</strong> tương ứng!
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+                            <div class="px-6 py-4 rounded-2xl bg-slate-900 border border-amber-500/40 text-center">
+                                <div class="text-xs uppercase font-bold text-slate-400">Ngũ Hành Tổng Tứ Trụ</div>
+                                <div id="total-pillars-element" class="font-serif text-3xl font-extrabold text-amber-300 mt-1">---</div>
+                            </div>
+                            <button id="btn-total-pillars-dish" onclick="selectNumberForDish(1)"
+                                class="px-5 py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-2xl shadow-lg transition flex items-center gap-2">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                                <span>Mở Web Số Ra Món</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bảng tra cứu trị số Thiên Can & Địa Chi đang áp dụng -->
+                    <div class="bg-slate-950/70 rounded-2xl p-5 border border-slate-800">
+                        <h3 class="text-base font-bold text-amber-300 mb-3 flex items-center gap-2">
+                            <i data-lucide="table" class="w-5 h-5"></i>
+                            <span>Bảng Trị Số Quy Đổi Thiên Can & Địa Chi Đang Áp Dụng</span>
+                        </h3>
+                        <div id="canchi-mapping-table" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- KHU VỰC TƯƠNG TÁC CHUNG: BẢNG BẤM SỐ RA MÓN WEB LUÔN      -->
+        <!-- ========================================================= -->
+        <section id="quick-dish-panel" class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/30 rounded-2xl shadow-2xl border-2 border-amber-500/50 overflow-hidden">
+            <div class="bg-slate-900/90 px-6 py-4 border-b border-amber-500/30 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-amber-500 text-slate-950 rounded-xl font-extrabold">
+                        <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold text-amber-300">
+                            Tra Cứu Nhanh: Bấm Số Ra Món & Luận Giải Ngũ Hành Web
+                        </h2>
+                        <p class="text-sm text-slate-300">
+                            Bấm trực tiếp vào bất kỳ con số nào (0 - 9) hoặc kết quả từ các Tab để mở giao diện HTML luận giải ngay lập tức
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Hàng nút bấm chọn số nhanh từ 0 đến 9 -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-bold text-slate-400 mr-1">Chọn số:</span>
+                    <div id="number-pad-buttons" class="flex flex-wrap gap-1.5">
+                        <!-- Các nút 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 render bằng JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khung hiển thị nội dung HTML của Số đang chọn -->
+            <div id="dish-web-display" class="p-6">
+                <!-- Nội dung HTML tương tác của số đang chọn -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-sm py-5 px-6 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center">
+            <span>Ứng dụng Lịch Vạn Niên & Ngũ Hành 4 Tab • Chuẩn Âm Lịch Việt Nam (UTC+7)</span>
+            <span class="text-amber-400/80">Quy ước chia dư 5: Dư 1 Thủy • Dư 2 Hỏa • Dư 3 Mộc • Dư 4 Kim • Dư 0 (5) Thổ</span>
+        </div>
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT: THUẬT TOÁN ÂM LỊCH, CAN CHI 4 TRỤ, CHIA DƯ 5 & WEB VIEWER -->
+    <!-- ===================================================================== -->
+    <script>
+        // =========================================================================
+        // 1. HẰNG SỐ CAN CHI, NGŨ HÀNH & THUẬT TOÁN ÂM LỊCH VIỆT NAM (Hồ Ngọc Đức)
+        // =========================================================================
+        const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
+        const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+        const CON_GIAP = ["Chuột", "Trâu", "Hổ", "Mèo", "Rồng", "Rắn", "Ngựa", "Dê", "Khỉ", "Gà", "Chó", "Lợn"];
+        const THU_TRONG_TUAN = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+        const CAN_NGU_HANH = ["Mộc", "Mộc", "Hỏa", "Hỏa", "Thổ", "Thổ", "Kim", "Kim", "Thủy", "Thủy"];
+
+        // Hệ số Thái Huyền kinh điển:
+        // Giáp Kỷ = 9, Ất Canh = 8, Bính Tân = 7, Đinh Nhâm = 6, Mậu Quý = 5
+        const THAI_HUYEN_CAN = [9, 8, 7, 6, 5, 9, 8, 7, 6, 5];
+        // Tý Ngọ = 9, Sửu Mùi = 8, Dần Thân = 7, Mão Dậu = 6, Thìn Tuất = 5, Tỵ Hợi = 4
+        const THAI_HUYEN_CHI = [9, 8, 7, 6, 5, 4, 9, 8, 7, 6, 5, 4];
+
+        const NAP_AM = [
+            "Hải Trung Kim", "Lư Trung Hỏa", "Đại Lâm Mộc", "Lộ Bàng Thổ", "Kiếm Phong Kim",
+            "Sơn Đầu Hỏa", "Giản Hạ Thủy", "Thành Đầu Thổ", "Bạch Lạp Kim", "Dương Liễu Mộc",
+            "Tuyền Trung Thủy", "Ốc Thượng Thổ", "Tích Lịch Hỏa", "Tùng Bách Mộc", "Trường Lưu Thủy",
+            "Sa Trung Kim", "Sơn Hạ Hỏa", "Bình Địa Mộc", "Bích Thượng Thổ", "Kim Bạch Kim",
+            "Phúc Đăng Hỏa", "Thiên Hà Thủy", "Đại Trạch Thổ", "Thoa Xuyến Kim", "Tang Đố Mộc",
+            "Đại Khê Thủy", "Sa Trung Thổ", "Thiên Thượng Hỏa", "Thạch Lựu Mộc", "Đại Hải Thủy"
+        ];
+
+        // Quy ước Ngũ Hành theo số dư chia 5 (Hà Đồ)
+        const NGU_HANH_MOD5 = {
+            1: {
+                name: "Hành Thủy",
+                short: "Thủy",
+                textClass: "text-cyan-400",
+                borderClass: "border-cyan-500/60",
+                bgBadge: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+                relation: "Kim sinh Thủy • Thủy sinh Mộc (Khắc Hỏa)",
+                colorDesc: "Màu Xanh Dương, Đen • Hướng Bắc • Mùa Đông",
+                dishTitle: "Món Web Số 1 (Số 1 & Số 6) — Hành Thủy",
+                dishSummary: "Tượng trưng cho trí tuệ, sự linh hoạt, dòng chảy tài lộc và khởi đầu hanh thông.",
+                dishItems: [
+                    "Món tinh thần: Khởi động kế hoạch mới, giao thương, đàm phán, di chuyển đường thủy.",
+                    "Món ẩm thực hợp mệnh: Các món canh thanh mát, hải sản hấp, đậu đen, mè đen, nước khoáng.",
+                    "Con số tương hợp: Số 1, Số 6 (Thủy) và Số 4, Số 9 (Kim sinh Thủy)."
+                ]
+            },
+            2: {
+                name: "Hành Hỏa",
+                short: "Hỏa",
+                textClass: "text-rose-400",
+                borderClass: "border-rose-500/60",
+                bgBadge: "bg-rose-500/20 text-rose-300 border-rose-500/40",
+                relation: "Mộc sinh Hỏa • Hỏa sinh Thổ (Khắc Kim)",
+                colorDesc: "Màu Đỏ, Hồng, Tím • Hướng Nam • Mùa Hè",
+                dishTitle: "Món Web Số 2 (Số 2 & Số 7) — Hành Hỏa",
+                dishSummary: "Tượng trưng cho nhiệt huyết, ánh sáng, danh vọng, lễ nghĩa và sự bứt phá mạnh mẽ.",
+                dishItems: [
+                    "Món tinh thần: Khai trương, quảng bá thương hiệu, gặp gỡ đối tác quan trọng, biểu diễn.",
+                    "Món ẩm thực hợp mệnh: Các món nướng thơm lừng, lẩu ấm nóng, gừng, ớt, táo đỏ, trà thảo mộc.",
+                    "Con số tương hợp: Số 2, Số 7 (Hỏa) và Số 3, Số 8 (Mộc sinh Hỏa)."
+                ]
+            },
+            3: {
+                name: "Hành Mộc",
+                short: "Mộc",
+                textClass: "text-emerald-400",
+                borderClass: "border-emerald-500/60",
+                bgBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+                relation: "Thủy sinh Mộc • Mộc sinh Hỏa (Khắc Thổ)",
+                colorDesc: "Màu Xanh Lục • Hướng Đông • Mùa Xuân",
+                dishTitle: "Món Web Số 3 (Số 3 & Số 8) — Hành Mộc",
+                dishSummary: "Tượng trưng cho sức sống, sự sinh trưởng, nhân ái, sáng tạo và vươn lên không ngừng.",
+                dishItems: [
+                    "Món tinh thần: Trồng cây, học tập nghiên cứu, mở rộng quy mô, chăm sóc sức khỏe.",
+                    "Món ẩm thực hợp mệnh: Rau xanh hữu cơ, gỏi cuốn, trà xanh, các món chua nhẹ thanh vị.",
+                    "Con số tương hợp: Số 3, Số 8 (Mộc) và Số 1, Số 6 (Thủy sinh Mộc)."
+                ]
+            },
+            4: {
+                name: "Hành Kim",
+                short: "Kim",
+                textClass: "text-amber-300",
+                borderClass: "border-amber-500/60",
+                bgBadge: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+                relation: "Thổ sinh Kim • Kim sinh Thủy (Khắc Mộc)",
+                colorDesc: "Màu Trắng, Vàng Ánh Kim • Hướng Tây • Mùa Thu",
+                dishTitle: "Món Web Số 4 (Số 4 & Số 9) — Hành Kim",
+                dishSummary: "Tượng trưng cho sự quyết đoán, kỷ cương, sắc bén, giá trị bền vững và thu hoạch.",
+                dishItems: [
+                    "Món tinh thần: Ký kết hợp đồng, chốt giao dịch tài chính, sắp xếp tổ chức, mua sắm trang sức.",
+                    "Món ẩm thực hợp mệnh: Các món tiềm bổ dưỡng, nấm tuyết, lê hấp, củ cải trắng, gia vị cay nhẹ.",
+                    "Con số tương hợp: Số 4, Số 9 (Kim) và Số 5, Số 0 (Thổ sinh Kim)."
+                ]
+            },
+            0: {
+                name: "Hành Thổ",
+                short: "Thổ",
+                textClass: "text-yellow-400",
+                borderClass: "border-yellow-500/60",
+                bgBadge: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
+                relation: "Hỏa sinh Thổ • Thổ sinh Kim (Khắc Thủy)",
+                colorDesc: "Màu Vàng Đất, Nâu • Trung Cung • Giao Mùa",
+                dishTitle: "Món Web Số 0 / Số 5 — Hành Thổ",
+                dishSummary: "Tượng trưng cho sự vững chãi, bao dung, chữ tín, nền tảng ổn định và nuôi dưỡng vạn vật.",
+                dishItems: [
+                    "Món tinh thần: Giao dịch bất động sản, xây dựng nền móng, củng cố nội bộ, sum họp gia đình.",
+                    "Món ẩm thực hợp mệnh: Các món hầm nhừ, kho tộ, ngũ cốc, khoai lang, bí đỏ, mật ong.",
+                    "Con số tương hợp: Số 5, Số 0 (Thổ) và Số 2, Số 7 (Hỏa sinh Thổ)."
+                ]
+            }
+        };
+
+        const PI = Math.PI;
+        function INT(d) { return Math.floor(d); }
+
+        function jdFromDate(dd, mm, yy) {
+            var a = INT((14 - mm) / 12);
+            var y = yy + 4800 - a;
+            var m = mm + 12 * a - 3;
+            var jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+            if (jd < 2299161) {
+                jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+            }
+            return jd;
+        }
+
+        function getNewMoonDay(k, timeZone) {
+            var T = k / 1236.85;
+            var T2 = T * T;
+            var T3 = T2 * T;
+            var dr = PI / 180;
+            var Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+            Jd1 = Jd1 + 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+            var M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+            var Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+            var F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+            var C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+            C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
+            C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr);
+            C1 = C1 + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr));
+            C1 = C1 - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
+            C1 = C1 - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr));
+            C1 = C1 + 0.0010 * Math.sin(dr * (2 * F - Mpr)) + 0.0005 * Math.sin(dr * (2 * Mpr + M));
+            var deltat;
+            if (T < -11) {
+                deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3;
+            } else {
+                deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
+            }
+            var JdNew = Jd1 + C1 - deltat;
+            return INT(JdNew + 0.5 + timeZone / 24);
+        }
+
+        function getSunLongitude(jdn, timeZone) {
+            var T = (jdn - 2451545.5 - timeZone / 24) / 36525;
+            var T2 = T * T;
+            var dr = PI / 180;
+            var M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+            var L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+            var DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+            DL = DL + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+            var L = L0 + DL;
+            L = L * dr;
+            L = L - PI * 2 * (INT(L / (PI * 2)));
+            return INT(L / PI * 6);
+        }
+
+        function getLunarMonth11(yy, timeZone) {
+            var off = jdFromDate(31, 12, yy) - 2415021;
+            var k = INT(off / 29.530588853);
+            var nm = getNewMoonDay(k, timeZone);
+            var sunLong = getSunLongitude(nm, timeZone);
+            if (sunLong >= 9) {
+                nm = getNewMoonDay(k - 1, timeZone);
+            }
+            return nm;
+        }
+
+        function getLeapMonthOffset(a11, timeZone) {
+            var k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+            var last = 0;
+            var i = 1;
+            var arc = getSunLongitude(getNewMoonDay(k + i, timeZone), timeZone);
+            do {
+                last = arc;
+                i++;
+                arc = getSunLongitude(getNewMoonDay(k + i, timeZone), timeZone);
+            } while (arc != last && i < 14);
+            return i - 1;
+        }
+
+        function convertSolar2Lunar(dd, mm, yy, timeZone = 7) {
+            var dayNumber = jdFromDate(dd, mm, yy);
+            var k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+            var monthStart = getNewMoonDay(k + 1, timeZone);
+            if (monthStart > dayNumber) {
+                monthStart = getNewMoonDay(k, timeZone);
+            }
+            var a11 = getLunarMonth11(yy, timeZone);
+            var b11 = a11;
+            var lunarYear;
+            if (a11 >= monthStart) {
+                lunarYear = yy;
+                a11 = getLunarMonth11(yy - 1, timeZone);
+            } else {
+                lunarYear = yy + 1;
+                b11 = getLunarMonth11(yy + 1, timeZone);
+            }
+            var lunarDay = dayNumber - monthStart + 1;
+            var diff = INT((monthStart - a11) / 29);
+            var lunarLeap = 0;
+            var lunarMonth = diff + 11;
+            if (b11 - a11 > 365) {
+                var leapMonthDiff = getLeapMonthOffset(a11, timeZone);
+                if (diff >= leapMonthDiff) {
+                    lunarMonth = diff + 10;
+                    if (diff == leapMonthDiff) {
+                        lunarLeap = 1;
+                    }
+                }
+            }
+            if (lunarMonth > 12) {
+                lunarMonth = lunarMonth - 12;
+            }
+            if (lunarMonth >= 11 && diff < 4) {
+                lunarYear -= 1;
+            }
+            return {
+                day: lunarDay,
+                month: lunarMonth,
+                year: lunarYear,
+                leap: lunarLeap,
+                jd: dayNumber
+            };
+        }
+
+        // Tính Can Chi đầy đủ 4 trụ (Năm, Tháng, Ngày, Giờ) kèm chỉ số index (0..9 và 0..11)
+        function getCanChiFourPillars(lunar, hour24) {
+            // 1. Năm Can Chi
+            const yearCanIdx = (lunar.year + 6) % 10;
+            const yearChiIdx = (lunar.year + 8) % 12;
+
+            let sexagenaryIdx = 0;
+            for (let i = 0; i < 60; i++) {
+                if (i % 10 === yearCanIdx && i % 12 === yearChiIdx) {
+                    sexagenaryIdx = i;
+                    break;
+                }
+            }
+            const napAmYear = NAP_AM[Math.floor(sexagenaryIdx / 2)];
+
+            // 2. Tháng Can Chi
+            const monthCanIdx = (yearCanIdx * 2 + 1 + lunar.month) % 10;
+            const monthChiIdx = (lunar.month + 1) % 12;
+
+            // 3. Ngày Can Chi
+            const dayCanIdx = (lunar.jd + 9) % 10;
+            const dayChiIdx = (lunar.jd + 1) % 12;
+
+            // 4. Giờ Can Chi (Ngũ Thử Độn: Giờ Tý ngày Giáp/Kỷ bắt đầu từ Giáp Tý)
+            // Quy đổi giờ 24h sang chi giờ (0=Tý [23h-1h], 1=Sửu [1h-3h], ...)
+            const hourChiIdx = Math.floor((hour24 + 1) % 24 / 2);
+            const hourCanIdx = ((dayCanIdx % 5) * 2 + hourChiIdx) % 10;
+
+            return {
+                year: {
+                    canIdx: yearCanIdx,
+                    chiIdx: yearChiIdx,
+                    name: `${THIEN_CAN[yearCanIdx]} ${DIA_CHI[yearChiIdx]}`,
+                    animal: CON_GIAP[yearChiIdx],
+                    napAm: napAmYear
+                },
+                month: {
+                    canIdx: monthCanIdx,
+                    chiIdx: monthChiIdx,
+                    name: `${THIEN_CAN[monthCanIdx]} ${DIA_CHI[monthChiIdx]}`
+                },
+                day: {
+                    canIdx: dayCanIdx,
+                    chiIdx: dayChiIdx,
+                    name: `${THIEN_CAN[dayCanIdx]} ${DIA_CHI[dayChiIdx]}`,
+                    element: CAN_NGU_HANH[dayCanIdx]
+                },
+                hour: {
+                    canIdx: hourCanIdx,
+                    chiIdx: hourChiIdx,
+                    name: `${THIEN_CAN[hourCanIdx]} ${DIA_CHI[hourChiIdx]}`,
+                    chiName: DIA_CHI[hourChiIdx]
+                }
+            };
+        }
+
+        // =========================================================================
+        // 2. TRẠNG THÁI CHUNG & ĐỒNG BỘ GIỮA 4 TAB
+        // =========================================================================
+        let state = {
+            date: new Date(),
+            hour: new Date().getHours(),
+            lunar: null,
+            pillars: null
+        };
+
+        function mapHourToSelectValue(h24) {
+            // Đưa về mốc giờ chẵn đại diện cho 12 canh giờ (0, 2, 4, ..., 22)
+            if (h24 === 23 || h24 === 0) return 0;
+            return Math.floor((h24 + 1) / 2) * 2;
+        }
+
+        function updateAllFromState() {
+            const dd = state.date.getDate();
+            const mm = state.date.getMonth() + 1;
+            const yy = state.date.getFullYear();
+            const weekday = THU_TRONG_TUAN[state.date.getDay()];
+
+            state.lunar = convertSolar2Lunar(dd, mm, yy, 7);
+            state.pillars = getCanChiFourPillars(state.lunar, state.hour);
+
+            // --- Cập nhật Tab 1 ---
+            const yyyyStr = String(yy).padStart(4, '0');
+            const mmStr = String(mm).padStart(2, '0');
+            const ddStr = String(dd).padStart(2, '0');
+            document.getElementById('solar-date-picker').value = `${yyyyStr}-${mmStr}-${ddStr}`;
+            document.getElementById('solar-hour-picker').value = String(mapHourToSelectValue(state.hour));
+
+            document.getElementById('solar-weekday-badge').textContent = weekday;
+            document.getElementById('solar-month-year').textContent = `Tháng ${mm} Năm ${yy}`;
+            document.getElementById('solar-day-big').textContent = ddStr;
+            document.getElementById('solar-weekday-full').textContent = weekday;
+            document.getElementById('solar-full-string').textContent = `Ngày ${ddStr}/${mmStr}/${yyyyStr} (Dương lịch)`;
+
+            const lDayStr = String(state.lunar.day).padStart(2, '0');
+            const lMonthStr = String(state.lunar.month).padStart(2, '0');
+            document.getElementById('lunar-leap-badge').textContent = state.lunar.leap ? "Tháng nhuận" : "Tháng thường";
+            document.getElementById('lunar-month-year').textContent = `Tháng ${state.lunar.month}${state.lunar.leap ? ' (Nhuận)' : ''} Âm Lịch`;
+            document.getElementById('lunar-day-big').textContent = lDayStr;
+            document.getElementById('lunar-year-name').textContent = `Năm ${state.pillars.year.name}`;
+            document.getElementById('lunar-full-string').textContent = `Ngày ${lDayStr} tháng ${lMonthStr}${state.lunar.leap ? ' nhuận' : ''} năm ${state.pillars.year.name} (${state.lunar.year})`;
+
+            document.getElementById('zodiac-animal-badge').textContent = `Tuổi ${state.pillars.year.animal}`;
+            document.getElementById('canchi-year').textContent = `Năm ${state.pillars.year.name}`;
+            document.getElementById('canchi-year-element').textContent = state.pillars.year.napAm;
+            document.getElementById('canchi-month').textContent = `Tháng ${state.pillars.month.name}`;
+            document.getElementById('canchi-month-note').textContent = `Tháng ${state.lunar.month} ÂL`;
+            document.getElementById('canchi-day').textContent = `Ngày ${state.pillars.day.name}`;
+            document.getElementById('canchi-day-element').textContent = `Can hành ${state.pillars.day.element}`;
+            document.getElementById('canchi-hour').textContent = `Giờ ${state.pillars.hour.name}`;
+            document.getElementById('canchi-hour-note').textContent = `Canh giờ ${state.pillars.hour.chiName}`;
+            document.getElementById('julian-day-info').textContent = `Số ngày Julius (JD): ${state.lunar.jd}`;
+
+            // --- Đồng bộ sang Tab 2, Tab 3, Tab 4 ---
+            syncFromTab1ToAll(false);
+        }
+
+        function syncFromTab1ToAll(showNotify = true) {
+            // Đồng bộ Tab 2 (Dương lịch)
+            document.getElementById('calc-solar-day').value = state.date.getDate();
+            document.getElementById('calc-solar-month').value = state.date.getMonth() + 1;
+            calculateSolarMod5();
+
+            // Đồng bộ Tab 3 (Âm lịch)
+            document.getElementById('calc-lunar-day').value = state.lunar.day;
+            document.getElementById('calc-lunar-month').value = state.lunar.month;
+            document.getElementById('lunar-tab3-note').innerHTML = `
+                Đang tính theo ngày Âm lịch: <strong class="text-cyan-300">Ngày ${state.lunar.day} tháng ${state.lunar.month}${state.lunar.leap ? ' (Nhuận)' : ''} năm ${state.pillars.year.name}</strong>.
+            `;
+            calculateLunarMod5();
+
+            // Đồng bộ Tab 4 (Can Chi 4 trụ)
+            calculateCanChiTab4();
+
+            if (showNotify) {
+                showToast("Đã đồng bộ dữ liệu mới nhất từ Tab 1 sang tất cả các Tab!");
+            }
+        }
+
+        document.getElementById('solar-date-picker').addEventListener('change', function (e) {
+            if (!e.target.value) return;
+            const parts = e.target.value.split('-');
+            state.date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            updateAllFromState();
+            showToast(`Đã cập nhật ngày ${parts[2]}/${parts[1]}/${parts[0]} cho cả 4 Tab!`);
+        });
+
+        function onDateOrHourChange() {
+            state.hour = parseInt(document.getElementById('solar-hour-picker').value, 10);
+            updateAllFromState();
+            showToast(`Đã cập nhật giờ ${state.pillars.hour.name}!`);
+        }
+
+        function resetToToday() {
+            const now = new Date();
+            state.date = now;
+            state.hour = now.getHours();
+            updateAllFromState();
+            showToast("Đã cập nhật về Ngày Hôm Nay & Giờ Hiện Tại!");
+        }
+
+        // =========================================================================
+        // 3. TAB 2: TÍNH NGŨ HÀNH DƯƠNG LỊCH & TRÌNH MỞ TỆP HTML/TXT
+        // =========================================================================
+        function calculateSolarMod5() {
+            let day = parseInt(document.getElementById('calc-solar-day').value, 10) || 1;
+            let month = parseInt(document.getElementById('calc-solar-month').value, 10) || 1;
+            day = Math.min(31, Math.max(1, day));
+            month = Math.min(12, Math.max(1, month));
+
+            const sum = day + month;
+            const rem = sum % 5;
+            const info = NGU_HANH_MOD5[rem];
+
+            document.getElementById('solar-mod-formula').textContent = `(${day} + ${month}) = ${sum} → ${sum} chia 5 dư ${rem}`;
+            const el = document.getElementById('solar-mod-element');
+            el.textContent = info.name;
+            el.className = `font-serif text-3xl sm:text-4xl font-extrabold my-1.5 ${info.textClass}`;
+            document.getElementById('solar-mod-relation').textContent = info.relation;
+
+            const btn = document.getElementById('btn-solar-open-number');
+            btn.setAttribute('onclick', `selectNumberForDish(${rem})`);
+            btn.innerHTML = `<i data-lucide="sparkles" class="w-5 h-5"></i><span>Mở Web Số Ra Món: Số ${rem === 0 ? '0 (hoặc 5)' : rem}</span>`;
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 4. TAB 3: TÍNH NGŨ HÀNH ÂM LỊCH (NGÀY ÂM + THÁNG ÂM) % 5
+        // =========================================================================
+        function calculateLunarMod5() {
+            let lDay = parseInt(document.getElementById('calc-lunar-day').value, 10) || 1;
+            let lMonth = parseInt(document.getElementById('calc-lunar-month').value, 10) || 1;
+            lDay = Math.min(30, Math.max(1, lDay));
+            lMonth = Math.min(12, Math.max(1, lMonth));
+
+            const sum = lDay + lMonth;
+            const quotient = Math.floor(sum / 5);
+            const rem = sum % 5;
+            const info = NGU_HANH_MOD5[rem];
+
+            document.getElementById('lunar-mod-formula').textContent = `(${lDay} + ${lMonth}) = ${sum} → Chia 5 dư ${rem}`;
+            document.getElementById('lunar-mod-detail').textContent = `Tổng: ${sum}  |  Thương: ${quotient}  |  Số dư: ${rem}`;
+
+            const el = document.getElementById('lunar-mod-element');
+            el.textContent = info.name;
+            el.className = `font-serif text-4xl font-extrabold my-2 ${info.textClass}`;
+            document.getElementById('lunar-mod-relation').textContent = info.relation;
+
+            const btn = document.getElementById('btn-lunar-open-number');
+            btn.setAttribute('onclick', `selectNumberForDish(${rem})`);
+            btn.innerHTML = `<i data-lucide="sparkles" class="w-5 h-5"></i><span>Bấm mở Web Số Ra Món: Số ${rem === 0 ? '0 (hoặc 5)' : rem}</span>`;
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 5. TAB 4: TÍNH NGŨ HÀNH CAN CHI (NĂM - THÁNG - NGÀY - GIỜ)
+        // =========================================================================
+        function getCanChiNumericValues(canIdx, chiIdx, system) {
+            if (system === 'thai-huyen') {
+                return {
+                    canVal: THAI_HUYEN_CAN[canIdx],
+                    chiVal: THAI_HUYEN_CHI[chiIdx]
+                };
+            }
+            // Mặc định: Hệ số thứ tự 1..10 và 1..12
+            return {
+                canVal: canIdx + 1,
+                chiVal: chiIdx + 1
+            };
+        }
+
+        function calculateCanChiTab4() {
+            if (!state.pillars) return;
+            const system = document.getElementById('canchi-number-system').value;
+
+            const pillarConfigs = [
+                { key: 'year', title: 'Trụ Năm', data: state.pillars.year, accent: 'text-amber-300' },
+                { key: 'month', title: 'Trụ Tháng', data: state.pillars.month, accent: 'text-emerald-300' },
+                { key: 'day', title: 'Trụ Ngày', data: state.pillars.day, accent: 'text-rose-300' },
+                { key: 'hour', title: 'Trụ Giờ', data: state.pillars.hour, accent: 'text-cyan-300' }
+            ];
+
+            let totalAllFour = 0;
+
+            const cardsHtml = pillarConfigs.map(p => {
+                const { canVal, chiVal } = getCanChiNumericValues(p.data.canIdx, p.data.chiIdx, system);
+                const sum = canVal + chiVal;
+                const rem = sum % 5;
+                totalAllFour += sum;
+                const info = NGU_HANH_MOD5[rem];
+
+                const canName = THIEN_CAN[p.data.canIdx];
+                const chiName = DIA_CHI[p.data.chiIdx];
+
+                return `
+                    <div class="bg-slate-950 rounded-2xl p-5 border border-slate-700 hover:border-amber-500/50 transition flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">${p.title}</span>
+                                <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold border ${info.bgBadge}">Dư ${rem}</span>
+                            </div>
+                            <div class="font-serif text-2xl font-extrabold ${p.accent} mt-1">
+                                ${p.data.name}
+                            </div>
+                            <div class="mt-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-sm space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Can ${canName}:</span>
+                                    <strong class="text-white">${canVal}</strong>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Chi ${chiName}:</span>
+                                    <strong class="text-white">${chiVal}</strong>
+                                </div>
+                                <div class="border-t border-slate-800 pt-1 flex justify-between font-mono text-amber-300">
+                                    <span>(${canVal} + ${chiVal}) % 5:</span>
+                                    <strong>${sum} % 5 = ${rem}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-1 space-y-2.5">
+                            <div class="text-center p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                                <span class="text-xs text-slate-400 block">Ngũ Hành ${p.title}</span>
+                                <span class="font-serif text-2xl font-extrabold ${info.textClass}">${info.name}</span>
+                            </div>
+                            <button onclick="selectNumberForDish(${rem})"
+                                class="w-full py-2.5 px-3 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-300 text-sm font-bold rounded-xl border border-slate-600 transition">
+                                Mở Web Số ${rem === 0 ? '0 (5)' : rem} →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('four-pillars-grid').innerHTML = cardsHtml;
+
+            // Tổng hợp 4 trụ
+            const totalRem = totalAllFour % 5;
+            const totalInfo = NGU_HANH_MOD5[totalRem];
+            document.getElementById('total-pillars-formula').textContent =
+                `Tổng 4 trụ = ${totalAllFour} → ${totalAllFour} chia 5 dư ${totalRem}`;
+            const totalEl = document.getElementById('total-pillars-element');
+            totalEl.textContent = totalInfo.name;
+            totalEl.className = `font-serif text-3xl font-extrabold mt-1 ${totalInfo.textClass}`;
+
+            const totalBtn = document.getElementById('btn-total-pillars-dish');
+            totalBtn.setAttribute('onclick', `selectNumberForDish(${totalRem})`);
+            totalBtn.innerHTML = `<i data-lucide="external-link" class="w-5 h-5"></i><span>Mở Web Số ${totalRem === 0 ? '0 (5)' : totalRem}</span>`;
+
+            // Render bảng quy ước trị số Can Chi
+            const canListHtml = THIEN_CAN.map((c, idx) => {
+                const val = system === 'thai-huyen' ? THAI_HUYEN_CAN[idx] : (idx + 1);
+                return `<span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200">${c}: <strong class="text-amber-300">${val}</strong></span>`;
+            }).join('');
+
+            const chiListHtml = DIA_CHI.map((c, idx) => {
+                const val = system === 'thai-huyen' ? THAI_HUYEN_CHI[idx] : (idx + 1);
+                return `<span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200">${c}: <strong class="text-cyan-300">${val}</strong></span>`;
+            }).join('');
+
+            document.getElementById('canchi-mapping-table').innerHTML = `
+                <div class="space-y-2">
+                    <div class="font-bold text-slate-300">10 Thiên Can:</div>
+                    <div class="flex flex-wrap gap-1.5">${canListHtml}</div>
+                </div>
+                <div class="space-y-2">
+                    <div class="font-bold text-slate-300">12 Địa Chi:</div>
+                    <div class="flex flex-wrap gap-1.5">${chiListHtml}</div>
+                </div>
+            `;
+
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 6. TÍNH NĂNG "BẤM CHỌN SỐ RA MÓN WEB LUÔN" & GIAO TIẾP VỚI IFRAME HTML
+        // =========================================================================
+        let currentSelectedDishNum = 1;
+
+        function renderNumberPad() {
+            const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+            const container = document.getElementById('number-pad-buttons');
+            container.innerHTML = nums.map(n => {
+                const isSelected = n === currentSelectedDishNum;
+                return `
+                    <button onclick="selectNumberForDish(${n})"
+                        class="w-11 h-11 rounded-xl font-extrabold text-lg transition-all cursor-pointer ${
+                            isSelected
+                                ? 'bg-amber-400 text-slate-950 scale-105 shadow-lg ring-2 ring-white'
+                                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-600'
+                        }">
+                        ${n}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectNumberForDish(num, scrollToPanel = true) {
+            currentSelectedDishNum = num;
+            renderNumberPad();
+
+            const mod5 = num % 5;
+            const info = NGU_HANH_MOD5[mod5];
+
+            const displayEl = document.getElementById('dish-web-display');
+            displayEl.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <!-- Thẻ định danh Số & Ngũ Hành -->
+                    <div class="lg:col-span-4 rounded-2xl p-6 bg-slate-950 border-2 ${info.borderClass} flex flex-col justify-between text-center">
+                        <div>
+                            <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase border ${info.bgBadge}">
+                                Số ${num} → Chia 5 dư ${mod5}
+                            </span>
+                            <div class="font-serif text-6xl font-extrabold text-white my-3">${num}</div>
+                            <div class="font-serif text-3xl font-extrabold ${info.textClass}">${info.name}</div>
+                            <p class="text-sm text-slate-300 mt-2 font-medium">${info.relation}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-400">
+                            ${info.colorDesc}
+                        </div>
+                    </div>
+
+                    <!-- Nội dung HTML "Món Web" chi tiết -->
+                    <div class="lg:col-span-8 rounded-2xl p-6 bg-slate-950/90 border border-slate-700 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-serif text-2xl font-bold ${info.textClass} mb-2">
+                                ${info.dishTitle}
+                            </h3>
+                            <p class="text-base text-slate-200 leading-relaxed mb-4">
+                                ${info.dishSummary}
+                            </p>
+                            <div class="space-y-2.5">
+                                ${info.dishItems.map(item => `
+                                    <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-base text-slate-100 flex items-start gap-3">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 mt-2 shrink-0"></span>
+                                        <span>${item}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-sm text-slate-400">
+                            <span>Mẹo: Nạp tệp HTML của riêng bạn ở Tab 2 và bấm vào các con số trong tệp đó để mở món tại đây!</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (scrollToPanel) {
+                document.getElementById('quick-dish-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Lắng nghe tin nhắn postMessage từ bên trong iframe HTML (khi người dùng bấm số trong tệp HTML nạp vào)
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'SELECT_DISH_NUMBER') {
+                const num = parseInt(event.data.number, 10);
+                if (!isNaN(num)) {
+                    selectNumberForDish(num, true);
+                    showToast(`Đã chọn Số ${num} từ trang web HTML!`);
+                }
+            }
+        });
+
+        // =========================================================================
+        // 7. QUẢN LÝ KHO TỆP HTML/TXT TRONG TAB 2 (HỖ TRỢ IFRAME SRCDOC TƯƠNG TÁC)
+        // =========================================================================
+        const DEFAULT_FILES = [
+            {
+                id: 'default-bang-so-ra-mon',
+                name: 'Bang_Chon_So_Ra_Mon_Web.html',
+                type: 'HTML',
+                size: '3.2 KB',
+                isDefault: true,
+                content: `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
+  h2 { color: #fcd34d; margin-top: 0; font-size: 22px; }
+  p { color: #cbd5e1; font-size: 15px; line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .card { background: #1e293b; border: 2px solid #334155; border-radius: 14px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .card:hover { border-color: #f59e0b; transform: translateY(-2px); background: #263349; }
+  .num { font-size: 32px; font-weight: 800; color: #fbbf24; }
+  .hanh { font-size: 16px; font-weight: 700; margin: 4px 0; }
+  .desc { font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+  <h2>Bấm Trực Tiếp Vào Các Con Số Dưới Đây Để Ra Món Web Luôn</h2>
+  <p>Đây là trang web HTML tương tác. Khi bạn bấm vào một ô số bên dưới, hệ thống sẽ lập tức mở bảng luận giải Ngũ Hành & thực đơn/gợi ý ứng dụng tương ứng:</p>
+  <div class="grid">
+    <div class="card" onclick="pick(1)"><div class="num">1</div><div class="hanh" style="color:#22d3ee">Hành Thủy</div><div class="desc">Dư 1 • Khởi đầu, trí tuệ</div></div>
+    <div class="card" onclick="pick(2)"><div class="num">2</div><div class="hanh" style="color:#fb7185">Hành Hỏa</div><div class="desc">Dư 2 • Nhiệt huyết, tỏa sáng</div></div>
+    <div class="card" onclick="pick(3)"><div class="num">3</div><div class="hanh" style="color:#34d399">Hành Mộc</div><div class="desc">Dư 3 • Sinh trưởng, sáng tạo</div></div>
+    <div class="card" onclick="pick(4)"><div class="num">4</div><div class="hanh" style="color:#fcd34d">Hành Kim</div><div class="desc">Dư 4 • Quyết đoán, thu hoạch</div></div>
+    <div class="card" onclick="pick(5)"><div class="num">5</div><div class="hanh" style="color:#facc15">Hành Thổ</div><div class="desc">Dư 0 • Vững chãi, nền tảng</div></div>
+    <div class="card" onclick="pick(6)"><div class="num">6</div><div class="hanh" style="color:#22d3ee">Hành Thủy</div><div class="desc">6 % 5 = 1 • Tài lộc hanh thông</div></div>
+    <div class="card" onclick="pick(7)"><div class="num">7</div><div class="hanh" style="color:#fb7185">Hành Hỏa</div><div class="desc">7 % 5 = 2 • Danh vọng rực rỡ</div></div>
+    <div class="card" onclick="pick(8)"><div class="num">8</div><div class="hanh" style="color:#34d399">Hành Mộc</div><div class="desc">8 % 5 = 3 • Phát đạt vươn xa</div></div>
+    <div class="card" onclick="pick(9)"><div class="num">9</div><div class="hanh" style="color:#fcd34d">Hành Kim</div><div class="desc">9 % 5 = 4 • Trường cửu viên mãn</div></div>
+    <div class="card" onclick="pick(0)"><div class="num">0</div><div class="hanh" style="color:#facc15">Hành Thổ</div><div class="desc">0 % 5 = 0 • Viên dung bao quát</div></div>
+  </div>
+  <script>
+    function pick(n) {
+      window.parent.postMessage({ type: 'SELECT_DISH_NUMBER', number: n }, '*');
+    }
+  <\/script>
+</body>
+</html>`
+            },
+            {
+                id: 'default-tuong-sinh-khac',
+                name: 'Ngu_Hanh_Tuong_Sinh_Tuong_Khac.html',
+                type: 'HTML',
+                size: '2.6 KB',
+                isDefault: true,
+                content: `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; line-height: 1.6; }
+  h2 { color: #34d399; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+  h2.khac { color: #fb7185; margin-top: 24px; }
+  .box { background: #1e293b; padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid #f59e0b; font-size: 16px; }
+</style>
+</head>
+<body>
+  <h2>I. Vòng Ngũ Hành Tương Sinh (Hỗ Trợ, Nuôi Dưỡng)</h2>
+  <div class="box"><strong>1. Kim sinh Thủy:</strong> Kim loại nung chảy tạo thành dạng lỏng, quặng kim loại ngưng tụ hơi nước.</div>
+  <div class="box"><strong>2. Thủy sinh Mộc:</strong> Nước tưới tắm nuôi dưỡng cây cối đâm chồi nảy lộc.</div>
+  <div class="box"><strong>3. Mộc sinh Hỏa:</strong> Cây khô làm củi đốt sinh ra ngọn lửa ấm áp.</div>
+  <div class="box"><strong>4. Hỏa sinh Thổ:</strong> Lửa đốt vạn vật thành tro bụi bồi đắp cho đất đai.</div>
+  <div class="box"><strong>5. Thổ sinh Kim:</strong> Trong lòng đất kết tinh các mỏ quặng kim loại quý.</div>
+
+  <h2 class="khac">II. Vòng Ngũ Hành Tương Khắc (Chế Ngự, Cân Bằng)</h2>
+  <div class="box"><strong>1. Kim khắc Mộc:</strong> Rìu búa bằng kim loại chặt đổ được cây cối.</div>
+  <div class="box"><strong>2. Mộc khắc Thổ:</strong> Rễ cây hút chất dinh dưỡng và giữ chặt đất.</div>
+  <div class="box"><strong>3. Thổ khắc Thủy:</strong> Đất đắp đê ngăn chặn và điều hướng dòng nước.</div>
+  <div class="box"><strong>4. Thủy khắc Hỏa:</strong> Nước dập tắt ngọn lửa đang bùng cháy.</div>
+  <div class="box"><strong>5. Hỏa khắc Kim:</strong> Lửa lớn nung chảy kim loại cứng rắn.</div>
+</body>
+</html>`
+            },
+            {
+                id: 'default-ghi-chu-txt',
+                name: 'Cong_Thuc_4_Tab_Ngu_Hanh.txt',
+                type: 'TXT',
+                size: '0.9 KB',
+                isDefault: true,
+                content: `TỔNG HỢP CÔNG THỨC TÍNH NGŨ HÀNH TRONG ỨNG DỤNG
+=================================================
+
+1. TAB 2 - DƯƠNG LỊCH:
+   Công thức: (Ngày Dương Lịch + Tháng Dương Lịch) chia dư cho 5
+
+2. TAB 3 - ÂM LỊCH:
+   Công thức: (Ngày Âm Lịch + Tháng Âm Lịch) chia dư cho 5
+
+3. TAB 4 - CAN CHI TỨ TRỤ (NĂM, THÁNG, NGÀY, GIỜ):
+   Công thức: (Số Thiên Can + Số Địa Chi) chia dư cho 5
+   - Thiên Can: Giáp(1), Ất(2), Bính(3), Đinh(4), Mậu(5), Kỷ(6), Canh(7), Tân(8), Nhâm(9), Quý(10)
+   - Địa Chi: Tý(1), Sửu(2), Dần(3), Mão(4), Thìn(5), Tỵ(6), Ngọ(7), Mùi(8), Thân(9), Dậu(10), Tuất(11), Hợi(12)
+
+4. BẢNG QUY ĐỔI SỐ DƯ RA NGŨ HÀNH (HÀ ĐỒ):
+   - Dư 1 -> Hành Thủy
+   - Dư 2 -> Hành Hỏa
+   - Dư 3 -> Hành Mộc
+   - Dư 4 -> Hành Kim
+   - Dư 0 -> Hành Thổ`
+            }
+        ];
+
+        let loadedFiles = [...DEFAULT_FILES];
+        let activeFileId = loadedFiles[0].id;
+        let viewRawMode = false;
+
+        // Tự động gắn thêm bộ bắt sự kiện click vào các con số trong tệp HTML người dùng tự nạp
+        function enhanceUserHtmlWithNumberClick(rawHtml) {
+            const bridgeScript = `
+                <script>
+                    document.addEventListener('click', function(e) {
+                        const target = e.target.closest('[data-num], button, a, td, li, .num, .number');
+                        if (!target) return;
+                        const attrNum = target.getAttribute('data-num');
+                        if (attrNum !== null && !isNaN(parseInt(attrNum, 10))) {
+                            window.parent.postMessage({ type: 'SELECT_DISH_NUMBER', number: parseInt(attrNum, 10) }, '*');
+                            return;
+                        }
+                        const txt = target.textContent.trim();
+                        if (/^[0-9]$/.test(txt)) {
+                            window.parent.postMessage({ type: 'SELECT_DISH_NUMBER', number: parseInt(txt, 10) }, '*');
+                        }
+                    });
+                <\/script>
+            `;
+            if (rawHtml.includes('</body>')) {
+                return rawHtml.replace('</body>', bridgeScript + '</body>');
+            }
+            return rawHtml + bridgeScript;
+        }
+
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            let countSuccess = 0;
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const ext = file.name.split('.').pop().toUpperCase();
+                    const sizeKB = (file.size / 1024).toFixed(1) + ' KB';
+                    const newFileObj = {
+                        id: 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                        name: file.name,
+                        type: ext || 'TXT',
+                        size: sizeKB,
+                        isDefault: false,
+                        content: e.target.result
+                    };
+
+                    loadedFiles.unshift(newFileObj);
+                    countSuccess++;
+
+                    if (index === 0) {
+                        activeFileId = newFileObj.id;
+                        viewRawMode = false;
+                    }
+
+                    renderFileList();
+                    openFileItem(activeFileId);
+
+                    if (countSuccess === files.length) {
+                        showToast(`Đã nạp thành công ${countSuccess} tệp vào kho dữ liệu!`);
+                    }
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+            event.target.value = '';
+        }
+
+        function renderFileList() {
+            const container = document.getElementById('drop-zone');
+            document.getElementById('file-count').textContent = loadedFiles.length;
+
+            if (loadedFiles.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 px-4 border-2 border-dashed border-slate-700 rounded-2xl text-slate-400">
+                        <p class="text-base font-bold text-slate-300">Danh sách đang trống</p>
+                        <p class="text-sm mt-1">Bấm nút "Nạp tệp" ở trên hoặc kéo thả tệp .html, .txt vào đây</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = loadedFiles.map(item => {
+                const isActive = item.id === activeFileId;
+                const isHtml = (item.type === 'HTML' || item.type === 'HTM');
+                const badgeColor = isHtml
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                    : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+
+                return `
+                    <div onclick="openFileItem('${item.id}')"
+                        class="group p-3.5 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                            isActive
+                                ? 'bg-slate-800 border-amber-400 shadow-md'
+                                : 'bg-slate-900/90 border-slate-800 hover:border-slate-600'
+                        }">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="px-2.5 py-1 text-xs font-extrabold rounded-lg border ${badgeColor} shrink-0">
+                                ${escapeHtml(item.type)}
+                            </span>
+                            <div class="min-w-0">
+                                <div class="text-base font-bold truncate ${isActive ? 'text-amber-300' : 'text-slate-100'}">
+                                    ${escapeHtml(item.name)}
+                                </div>
+                                <div class="text-xs text-slate-400 mt-0.5">
+                                    ${item.size} • ${item.isDefault ? 'Tệp mẫu sẵn' : 'Tệp đã nạp'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="deleteFileItem(event, '${item.id}')"
+                            class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/60 transition shrink-0"
+                            title="Xóa tệp này">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function openFileItem(id) {
+            activeFileId = id;
+            renderFileList();
+
+            const file = loadedFiles.find(f => f.id === id);
+            const titleEl = document.getElementById('viewer-title');
+            const badgeEl = document.getElementById('viewer-type-badge');
+            const metaEl = document.getElementById('viewer-meta');
+            const bodyEl = document.getElementById('viewer-body');
+            const rawBtn = document.getElementById('btn-toggle-raw');
+
+            if (!file) {
+                titleEl.textContent = "Chưa chọn tệp";
+                badgeEl.textContent = "---";
+                metaEl.textContent = "";
+                rawBtn.classList.add('hidden');
+                bodyEl.innerHTML = `<div class="p-10 text-center text-slate-400">Hãy chọn một tệp ở danh sách bên trái để mở.</div>`;
+                return;
+            }
+
+            titleEl.textContent = file.name;
+            badgeEl.textContent = file.type;
+            metaEl.textContent = `Dung lượng: ${file.size}`;
+
+            const isHtml = (file.type === 'HTML' || file.type === 'HTM');
+            if (isHtml) {
+                rawBtn.classList.remove('hidden');
+                rawBtn.textContent = viewRawMode ? "Mở giao diện Web" : "Xem mã nguồn HTML";
+            } else {
+                rawBtn.classList.add('hidden');
+            }
+
+            if (isHtml && !viewRawMode) {
+                const enhancedHtml = enhanceUserHtmlWithNumberClick(file.content);
+                const iframe = document.createElement('iframe');
+                iframe.className = "w-full flex-grow min-h-[480px] border-0 bg-slate-950";
+                iframe.setAttribute('sandbox', 'allow-scripts');
+                iframe.srcdoc = enhancedHtml;
+                bodyEl.innerHTML = '';
+                bodyEl.appendChild(iframe);
+            } else {
+                bodyEl.innerHTML = `
+                    <div class="p-5 overflow-y-auto max-h-[500px]">
+                        <pre class="whitespace-pre-wrap break-words font-mono text-base bg-slate-900 p-5 rounded-xl border border-slate-700 text-slate-100 leading-relaxed">${escapeHtml(file.content)}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleRawView() {
+            viewRawMode = !viewRawMode;
+            if (activeFileId) openFileItem(activeFileId);
+        }
+
+        function deleteFileItem(event, id) {
+            event.stopPropagation();
+            loadedFiles = loadedFiles.filter(f => f.id !== id);
+            if (activeFileId === id) {
+                activeFileId = loadedFiles.length > 0 ? loadedFiles[0].id : null;
+            }
+            renderFileList();
+            openFileItem(activeFileId);
+            showToast("Đã xóa tệp khỏi danh sách.");
+        }
+
+        function clearAllFiles() {
+            loadedFiles = [];
+            activeFileId = null;
+            renderFileList();
+            openFileItem(null);
+            showToast("Đã xóa toàn bộ danh sách tệp.");
+        }
+
+        function restoreDefaultSamples() {
+            loadedFiles = [...DEFAULT_FILES];
+            activeFileId = loadedFiles[0].id;
+            viewRawMode = false;
+            renderFileList();
+            openFileItem(activeFileId);
+            showToast("Đã khôi phục các tệp mẫu Ngũ Hành & Số Ra Món!");
+        }
+
+        function downloadSampleHtmlFile() {
+            const sampleHtml = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Danh Sách Số Ra Món Tùy Chỉnh</title>
+<style>
+  body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 24px; }
+  h2 { color: #fbbf24; }
+  button { font-size: 20px; font-weight: bold; padding: 12px 20px; margin: 6px; border-radius: 12px; border: 2px solid #f59e0b; background: #1e293b; color: #fcd34d; cursor: pointer; }
+  button:hover { background: #f59e0b; color: #0f172a; }
+</style>
+</head>
+<body>
+  <h2>Tệp HTML Bấm Số Ra Món Tùy Chỉnh</h2>
+  <p>Bấm vào bất kỳ nút số nào dưới đây để mở ngay món Ngũ Hành tương ứng:</p>
+  <div>
+    <button data-num="1">Số 1 (Thủy)</button>
+    <button data-num="2">Số 2 (Hỏa)</button>
+    <button data-num="3">Số 3 (Mộc)</button>
+    <button data-num="4">Số 4 (Kim)</button>
+    <button data-num="5">Số 5 (Thổ)</button>
+  </div>
+</body>
+</html>`;
+            const blob = new Blob([sampleHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Mau_Bam_So_Ra_Mon.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Đã tải tệp 'Mau_Bam_So_Ra_Mon.html' về máy!");
+        }
+
+        // Kéo thả tệp vào danh sách
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('bg-slate-800');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-slate-800');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-slate-800');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFileUpload({ target: { files: e.dataTransfer.files } });
+            }
+        });
+
+        // =========================================================================
+        // 8. CHUYỂN TAB, ĐỒNG HỒ & TIỆN ÍCH
+        // =========================================================================
+        function switchTab(tabId) {
+            const tabs = ['tab-1', 'tab-2', 'tab-3', 'tab-4'];
+            tabs.forEach(id => {
+                const section = document.getElementById(id);
+                const btn = document.getElementById('btn-' + id);
+                if (id === tabId) {
+                    section.classList.remove('hidden');
+                    btn.className = "tab-btn flex items-center justify-center gap-2.5 px-4 py-4 text-base sm:text-lg font-bold rounded-t-2xl transition-all duration-200 bg-slate-950 text-amber-300 border-t-2 border-x-2 border-amber-500/60 shadow-lg";
+                } else {
+                    section.classList.add('hidden');
+                    btn.className = "tab-btn flex items-center justify-center gap-2.5 px-4 py-4 text-base sm:text-lg font-bold rounded-t-2xl transition-all duration-200 bg-slate-900/70 text-slate-300 hover:bg-slate-800 hover:text-white border-t border-x border-slate-700";
+                }
+            });
+        }
+
+        function startLiveClock() {
+            function tick() {
+                const now = new Date();
+                const hh = String(now.getHours()).padStart(2, '0');
+                const min = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                document.getElementById('live-clock').textContent = `${hh}:${min}:${ss}`;
+
+                const dd = String(now.getDate()).padStart(2, '0');
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const yy = now.getFullYear();
+                const wd = THU_TRONG_TUAN[now.getDay()];
+                document.getElementById('live-date-badge').textContent = `Hôm nay: ${wd}, ${dd}/${mm}/${yy}`;
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "pointer-events-auto px-5 py-3.5 rounded-2xl shadow-2xl text-base font-bold flex items-center gap-3 border bg-slate-900 text-amber-200 border-amber-500/50 transition-all duration-300";
+            toast.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span><span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.onload = function () {
+            lucide.createIcons();
+            startLiveClock();
+            updateAllFromState();
+            renderFileList();
+            openFileItem(activeFileId);
+            selectNumberForDish(state.date.getDate() % 5 || 5, false);
+        };
+    </script>
+</body>
+</html>

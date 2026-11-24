@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực Đơn Ngũ Hành & Giờ Nội Tạng (Chu Kỳ 15 & 6)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f6f4; color: #1e293b; }
+        .fade-in { animation: fadeIn 0.25s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Toast -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full px-4 pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-800 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/15 p-2.5 rounded-xl backdrop-blur-sm border border-white/20">
+                        <i data-lucide="compass" class="w-7 h-7 text-amber-300"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-extrabold tracking-tight">Thực Đơn 4 Bữa Ngũ Hành & Giờ Nội Tạng</h1>
+                        <p class="text-emerald-100 text-xs sm:text-sm font-medium">Mốc 01/01/1900 • Xoay vòng Sáng – Trưa – Chiều – Tối • Chợ Nhà & Siêu Thị Tiện Lợi</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="bg-white/10 p-1 rounded-xl border border-white/20 flex text-xs font-bold">
+                        <button onclick="setMode('both')" id="mode-both" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 transition">Cả Chợ & Siêu Thị</button>
+                        <button onclick="setMode('home')" id="mode-home" class="px-3 py-1.5 rounded-lg text-white hover:bg-white/10 transition">Ở Nhà (Đi Chợ)</button>
+                        <button onclick="setMode('travel')" id="mode-travel" class="px-3 py-1.5 rounded-lg text-white hover:bg-white/10 transition">Đi Ngoài / Viện (Siêu Thị)</button>
+                    </div>
+                    <select id="calo-select" onchange="setTargetCalo(this.value)" class="bg-slate-900/70 text-white border border-white/25 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none">
+                        <option value="1800">Mục tiêu: ~1.800 kcal/ngày</option>
+                        <option value="2200" selected>Mục tiêu: ~2.200 kcal/ngày (Chuẩn)</option>
+                        <option value="2500">Mục tiêu: ~2.500 kcal/ngày (Vận động nhiều)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- 1. CHỌN NGÀY & THÔNG SỐ CHU KỲ -->
+        <section class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="shiftSelectedDate(-1)" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition flex items-center gap-1">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        <span>Hôm qua</span>
+                    </button>
+                    <button onclick="setToday()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xs transition">
+                        Hôm nay
+                    </button>
+                    <button onclick="shiftSelectedDate(1)" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition flex items-center gap-1">
+                        <span>Ngày mai</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5">
+                        <i data-lucide="calendar" class="w-4 h-4 text-emerald-700 mr-2"></i>
+                        <input type="date" id="date-input" onchange="handleDateInput(this.value)" class="bg-transparent font-bold text-slate-800 text-sm focus:outline-none cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl px-4 py-2.5 border border-slate-200 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm">
+                    <div>
+                        <span class="text-slate-500">N (từ 1900):</span>
+                        <strong id="calc-n-days" class="text-slate-900 font-extrabold ml-1">0</strong>
+                    </div>
+                    <span class="text-slate-300">|</span>
+                    <div>
+                        <span class="text-slate-500">Chu kỳ 15:</span>
+                        <strong id="calc-mod-15" class="text-amber-700 font-extrabold ml-1">Nhịp 1</strong>
+                    </div>
+                    <span class="text-slate-300">|</span>
+                    <div>
+                        <span class="text-slate-500">Chu kỳ 6 (Thực vật):</span>
+                        <strong id="calc-mod-6" class="text-emerald-700 font-extrabold ml-1">Rễ, củ</strong>
+                    </div>
+                    <span class="text-slate-300">|</span>
+                    <div>
+                        <span class="text-slate-500">Tổng ước tính:</span>
+                        <strong id="total-kcal-badge" class="text-rose-700 font-extrabold ml-1">2.200 kcal</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. BẢNG XẾP MÓN THEO TỪNG CỘT BỮA ĂN -->
+        <section class="space-y-3 fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-5 h-5 text-amber-600"></i>
+                        <span>Bảng Chia Món Từng Cột Theo Thời Tiết, Giờ Nội Tạng & Ngũ Hành</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500">
+                        Nguyên tắc: <strong>Sáng lạnh</strong> dùng ấm bổ tỳ tâm (Thổ – Hỏa) • <strong>Trưa nóng</strong> dùng thanh nhuận bổ phế thận (Kim – Thủy) • <strong>Chiều mát</strong> dưỡng can sơ tiết (Mộc) • <strong>Tối lạnh</strong> hồi dương giữ ấm (Hỏa – Thổ).
+                    </p>
+                </div>
+            </div>
+
+            <div id="meals-columns-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <!-- Render 4 cột bằng JS -->
+            </div>
+        </section>
+
+        <!-- 3. BỔ SUNG: THỰC ĐƠN SIÊU THỊ / TẠP HÓA THEO MÙA (MỚI) -->
+        <section id="seasonal-travel-section" class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 text-indigo-600"></i>
+                    <span>Thực Đơn Siêu Thị / Tạp Hóa (Ăn Ngay) Theo Mùa & Ngũ Hành</span>
+                </h3>
+                <span id="season-badge" class="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded-lg"></span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="seasonal-grid">
+                <!-- Render bằng JS -->
+            </div>
+        </section>
+
+        <!-- 4. BẢN ĐỒ QUAY VÒNG NGŨ HÀNH – ÂM DƯƠNG VỊ -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-800 mb-3 flex items-center gap-2">
+                <i data-lucide="clock" class="w-5 h-5 text-teal-600"></i>
+                <span>Biểu Đồ Xoay Vòng Giờ Nội Tạng & Vị Âm – Dương (Thổ → Kim → Thủy → Mộc → Hỏa)</span>
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 uppercase text-[11px] tracking-wider border-b border-slate-200">
+                            <th class="py-3 px-3 font-extrabold">Khung Giờ & Thời Tiết</th>
+                            <th class="py-3 px-3 font-extrabold">Giờ Nội Tạng Vượng</th>
+                            <th class="py-3 px-3 font-extrabold">Hành & Tính Chất</th>
+                            <th class="py-3 px-3 font-extrabold">Vị Âm – Dương Cân Bằng</th>
+                            <th class="py-3 px-3 font-extrabold">Mục Tiêu Sức Khỏe</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-amber-50/40">
+                            <td class="py-3 px-3 font-bold text-slate-800">05:30 – 09:00<br><span class="text-xs font-normal text-sky-700">Sáng sớm lạnh / se lạnh</span></td>
+                            <td class="py-3 px-3"><span class="font-bold text-amber-800">Giờ Mão – Thìn – Tỵ</span><br><span class="text-xs text-slate-500">Đại trường (5-7h) → Vị/Dạ dày (7-9h) → Tỳ (9-11h)</span></td>
+                            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold">Thổ – Hỏa</span><br><span class="text-xs text-slate-500">Ấm áp, sinh năng lượng</span></td>
+                            <td class="py-3 px-3"><strong class="text-amber-700">Âm Ngọt ấm</strong> + <strong class="text-rose-700">Dương Đắng nhẹ</strong><br><span class="text-xs text-slate-500">Bánh ngọt/tinh bột + Cà phê đắng/trà ấm</span></td>
+                            <td class="py-3 px-3 text-slate-700">Khởi động dạ dày, làm ấm bụng, tỉnh táo nhanh.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-3 px-3 font-bold text-slate-800">11:00 – 13:30<br><span class="text-xs font-normal text-orange-600">Trưa nóng / hanh khô</span></td>
+                            <td class="py-3 px-3"><span class="font-bold text-rose-800">Giờ Ngọ – Mùi</span><br><span class="text-xs text-slate-500">Tâm/Tim (11-13h) → Tiểu trường (13-15h)</span></td>
+                            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-sky-100 text-sky-900 font-bold">Kim – Thủy</span><br><span class="text-xs text-slate-500">Thanh nhuận, bù nước & đạm</span></td>
+                            <td class="py-3 px-3"><strong class="text-sky-700">Dương Mặn vừa</strong> + <strong class="text-slate-700">Âm Cay ấm nhẹ</strong><br><span class="text-xs text-slate-500">Nước xương hầm, phở/bún/miến/cháo + hành tiêu</span></td>
+                            <td class="py-3 px-3 text-slate-700">Bù nước, khoáng chất, collagen dễ tiêu giữa trưa nóng.</td>
+                        </tr>
+                        <tr class="hover:bg-emerald-50/40">
+                            <td class="py-3 px-3 font-bold text-slate-800">15:30 – 17:30<br><span class="text-xs font-normal text-emerald-700">Chiều mát / bắt đầu dịu</span></td>
+                            <td class="py-3 px-3"><span class="font-bold text-emerald-800">Giờ Thân – Dậu</span><br><span class="text-xs text-slate-500">Bàng quang (15-17h) → Thận (17-19h)</span></td>
+                            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold">Mộc – Thủy</span><br><span class="text-xs text-slate-500">Thư giãn, giải độc, nạp vi chất</span></td>
+                            <td class="py-3 px-3"><strong class="text-emerald-700">Dương Chua thanh</strong> + <strong class="text-amber-700">Âm Ngọt tự nhiên</strong><br><span class="text-xs text-slate-500">Trái cây, sữa chua, hạt, thảo mộc / rau củ</span></td>
+                            <td class="py-3 px-3 text-slate-700">Chống mệt mỏi cuối chiều, dưỡng Thận – Can.</td>
+                        </tr>
+                        <tr class="hover:bg-rose-50/40">
+                            <td class="py-3 px-3 font-bold text-slate-800">18:30 – 20:30<br><span class="text-xs font-normal text-indigo-700">Tối mát chuyển lạnh</span></td>
+                            <td class="py-3 px-3"><span class="font-bold text-indigo-800">Giờ Tuất – Hợi</span><br><span class="text-xs text-slate-500">Tâm bào (19-21h) → Tam tiêu (21-23h)</span></td>
+                            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-rose-100 text-rose-900 font-bold">Hỏa – Thổ</span><br><span class="text-xs text-slate-500">Ấm bụng, chắc dạ, phục hồi</span></td>
+                            <td class="py-3 px-3"><strong class="text-slate-800">Âm Cay ấm (gừng, tiêu)</strong> + <strong class="text-sky-800">Dương Mặn ấm</strong><br><span class="text-xs text-slate-500">Cơm/cháo nóng + món mặn + rau củ</span></td>
+                            <td class="py-3 px-3 text-slate-700">Giữ ấm cơ thể ban đêm, phục hồi cơ bắp, ngủ sâu.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 5. LỊCH XOAY VÒNG 15 NGÀY -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h3 class="text-base sm:text-lg font-extrabold text-slate-800">Lịch Xoay Vòng 15 Ngày (Bấm Vào Từng Ngày Để Xem Cột 4 Bữa)</h3>
+                    <p class="text-xs text-slate-500">Kết hợp đồng thời Chu kỳ 15 (5 nhịp) và Chu kỳ 6 (6 bộ phận thực vật).</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 text-[11px] uppercase tracking-wider border-b border-slate-200">
+                            <th class="py-3 px-4 font-bold">Ngày</th>
+                            <th class="py-3 px-3 font-bold">Nhịp 15 (Chủ đạo ngày)</th>
+                            <th class="py-3 px-3 font-bold">Nhóm 6 (Thực vật)</th>
+                            <th class="py-3 px-4 font-bold">Gợi ý nhanh Sáng / Trưa / Tối</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecast-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-8 py-4 text-center text-xs text-slate-500">
+        Hệ Thống Thực Đơn Ngũ Hành & Giờ Nội Tạng (Mốc 01/01/1900) • Dùng cho cả đi chợ tại nhà và mua siêu thị khi đi xa.
+    </footer>
+
+    <script>
+        const CYCLE_15 = [
+            {
+                step: 1,
+                remRange: 'Dư 0, 1, 2',
+                title: 'Nhịp 1: Vị Chua & Vị Đắng / Thảo Dược',
+                morning: { home: ['2–3 cái bánh ngọt / bánh mì bơ sữa (Thổ - Ngọt)', '1 ly cà phê đen/nâu đắng nóng hoặc trà gừng (Hỏa - Đắng)'], travel: ['2–3 bánh bông lan / bánh quy bơ (Siêu thị)', '1 lon cà phê đen/nâu hoặc trà thảo mộc ấm (Tạp hóa)'], kcal: 520, cost: '25k – 35k' },
+                lunch: { home: ['Bún/phở nước xương hầm vắt chanh tươi (Kim Thủy + Chua)', 'Thịt luộc/gà xé + canh mướp đắng nhồi thịt'], travel: ['Phở/bún gói nước cốt xương + gói chanh/tắc', '1 chai trà khổ qua (mướp đắng) / trà xanh không độ'], kcal: 730, cost: '35k – 45k' },
+                afternoon: { home: ['Khế chua dầm / Cam sành / Bưởi (Dương Chua)', 'Trà tam thất / ngải cứu mật ong ấm'], travel: ['1 hộp sữa chua uống vị cam/chanh + Ô mai mơ', '1 chai nước chanh muối / nước yến ngân nhĩ'], kcal: 300, cost: '15k – 25k' },
+                dinner: { home: ['Cơm nóng + Cá/thịt sốt cà chua me chua nhẹ', 'Canh chua / Trứng rán ngải cứu nóng (Hỏa Thổ)'], travel: ['Cơm hộp/xôi nóng + Cá hộp sốt cà chua', 'Trứng vịt kho đóng gói + Súp ăn liền nóng'], kcal: 650, cost: '35k – 45k' }
+            },
+            {
+                step: 2,
+                remRange: 'Dư 3, 4, 5',
+                title: 'Nhịp 2: Cà Rốt & Đạm Động Vật Kho (Đỏ Cam – Nâu)',
+                morning: { home: ['2–3 bánh bao / bánh mì ngọt kẹp chà bông (Thổ)', '1 ly cà phê đắng nóng hoặc cacao đắng ấm (Hỏa)'], travel: ['2–3 bánh mì tươi / bánh quy ngũ cốc', '1 lon cà phê đắng hoặc hộp sữa cacao nóng'], kcal: 530, cost: '25k – 35k' },
+                lunch: { home: ['Miến/bún nước xương hầm cà rốt củ cải (Kim Thủy)', 'Thịt kho trứng / Cá kho tộ đậm đà'], travel: ['Miến/cháo gói hầm xương + Trứng kho đóng gói', '1 hộp nước ép cà rốt / nước cam đỏ'], kcal: 750, cost: '35k – 45k' },
+                afternoon: { home: ['Sinh tố cà rốt cam hoặc đu đủ chín (Mộc Thủy)', '1 nắm hạt hướng dương / lạc rang'], travel: ['1 hộp nước ép cà rốt / sinh tố đóng hộp', '1 gói bánh quy cà rốt hoặc hạt điều nhỏ'], kcal: 290, cost: '15k – 25k' },
+                dinner: { home: ['Cơm nóng + Thịt bò/lợn hầm cà rốt khoai tây tiêu ấm', 'Rau theo nhóm ngày luộc chấm kho quẹt'], travel: ['Cháo tươi thịt bằm cà rốt (SG Food/Cây Thị) hâm nóng', 'Thịt kho/cá kho đóng hộp + dưa chuột ăn liền'], kcal: 630, cost: '35k – 45k' }
+            },
+            {
+                step: 3,
+                remRange: 'Dư 6, 7, 8',
+                title: 'Nhịp 3: Bơ, Khoai Lang, Bí Ngô & Sữa (Vàng – Xanh Bơ)',
+                morning: { home: ['1 củ khoai lang luộc/nướng + 2 bánh quy bơ (Thổ)', '1 ly cà phê đắng nóng hoặc cà phê sữa ít đường (Hỏa)'], travel: ['1 gói khoai lang sấy giòn / bánh khoai môn', '1 lon cà phê đen/nâu đắng'], kcal: 540, cost: '20k – 30k' },
+                lunch: { home: ['Phở/bún nước dùng xương sườn hầm bí đỏ (Kim Thủy)', 'Thịt/cá hấp gừng hành ấm bụng'], travel: ['Phở/cháo gói nước xương + Xúc xích/giò lụa', '1 hộp sữa tươi tiệt trùng không/ít đường'], kcal: 720, cost: '35k – 45k' },
+                afternoon: { home: ['1 ly sinh tố bơ sữa chua hoặc chè bí ngô (Thổ Mộc)', 'Sữa tươi / sữa hạt ấm'], travel: ['1 hộp sữa hạt óc chó/bí đỏ + 1 hộp sữa chua ăn', 'Chuối chín hoặc bơ dầm sẵn (cửa hàng tiện lợi)'], kcal: 330, cost: '20k – 30k' },
+                dinner: { home: ['Cơm nóng + Canh bí ngô nấu thịt bằm nhiều tiêu gừng', 'Khoai lang hấp + Tôm/thịt rang mặn ngọt'], travel: ['Súp bí đỏ / Cháo gà bí đỏ đóng gói làm nóng', 'Bánh mì + Phô mai con bò cười + Chà bông'], kcal: 610, cost: '30k – 45k' }
+            },
+            {
+                step: 4,
+                remRange: 'Dư 9, 10, 11',
+                title: 'Nhịp 4: Củ Cải & Lòng, Tràng, Ngầu (Trắng – Nâu)',
+                morning: { home: ['2–3 cái bánh su kem / bánh sừng bò (Thổ - Ngọt)', '1 ly cà phê đen đắng nóng (Hỏa - Đắng)'], travel: ['2–3 bánh bông lan cuộn / bánh gạo ngọt', '1 lon cà phê đen đắng / trà ô long nóng'], kcal: 510, cost: '25k – 35k' },
+                lunch: { home: ['Cháo lòng / Bún nước xương hầm củ cải trắng (Kim Thủy)', 'Lòng non/tràng luộc chấm mắm gừng cay ấm'], travel: ['Cháo gói/phở gói nước xương + Giò thủ/pate đóng hộp', '1 gói củ cải muối chua ngọt kiểu Hàn/Nhật'], kcal: 760, cost: '35k – 50k' },
+                afternoon: { home: ['Lê tươi / Củ đậu (sắn nước) thanh mát (Kim Thủy)', '1 ly trà gừng mật ong ấm'], travel: ['1 lon nước ép lê củ cải (Hàn Quốc) / nước khoáng', '1 hộp sữa chua nha đam'], kcal: 280, cost: '15k – 25k' },
+                dinner: { home: ['Cơm nóng + Gầu bò/bắp bò hầm củ cải trắng gừng sả', 'Lòng xào củ cải/dưa cải ấm bụng'], travel: ['Cơm/xôi nóng + Thịt bò hầm ngũ vị đóng gói', 'Khô bò/heo miếng mềm + Canh rong biển ăn liền'], kcal: 650, cost: '40k – 50k' }
+            },
+            {
+                step: 5,
+                remRange: 'Dư 12, 13, 14',
+                title: 'Nhịp 5: Nước Xương Hầm Dưỡng Chất (Phục Hồi Toàn Diện)',
+                morning: { home: ['2–3 bánh mì ngọt / bánh tiêu / xôi đỗ (Thổ)', '1 ly cà phê đắng nóng hoặc trà đen đậm (Hỏa)'], travel: ['2–3 bánh mì sandwich bơ sữa / bánh quy bơ', '1 lon cà phê đen/nâu đắng'], kcal: 520, cost: '20k – 30k' },
+                lunch: { home: ['Phở bò / Bún thang / Miến gà nước xương ống ninh kỹ', 'Thêm hành hoa, rau thơm, tiêu bắc (Kim Thủy)'], travel: ['Phở/bún/miến gói cao cấp có gói nước cốt xương hầm', 'Thêm trứng luộc sẵn / xúc xích tiệt trùng'], kcal: 760, cost: '35k – 50k' },
+                afternoon: { home: ['1 ly sữa hạt sen / sữa đậu nành ấm + Chuối chín', 'Hạt óc chó / hạt dẻ rang'], travel: ['1 hộp sữa đậu nành/hạt sen + 1 gói hạt hỗn hợp', 'Trái cây tươi rửa sẵn (ổi, táo, chuối)'], kcal: 300, cost: '15k – 25k' },
+                dinner: { home: ['Cháo sườn ninh nước xương hoặc Cơm + Canh xương hầm rau củ', 'Thịt/cá rim tiêu gừng giữ ấm đêm'], travel: ['Cháo tươi sườn non / Cháo tổ yến hầm xương đóng gói', 'Bánh mì + Pate gan / Cá hộp ngâm dầu'], kcal: 620, cost: '35k – 45k' }
+            }
+        ];
+
+        const CYCLE_6 = [
+            { rem: 0, name: 'Rễ, củ', home: 'Cà rốt, củ cải, khoai lang, khoai tây, su hào, gừng nghệ', travel: 'Khoai lang sấy, nước ép cà rốt, củ cải muối gói, trà gừng' },
+            { rem: 1, name: 'Thân, cọng', home: 'Dọc mùng, cần tây, măng tây, cọng rau muống/cải, ngó sen', travel: 'Nước ép cần tây đóng chai, măng chua/ngó sen ngâm gói' },
+            { rem: 2, name: 'Lá', home: 'Rau cải, rau muống, rau ngót, mồng tơi, xà lách, rau thơm', travel: 'Canh rong biển/rau cải sấy ăn liền, trà xanh/trà lá đóng chai' },
+            { rem: 3, name: 'Hoa', home: 'Súp lơ xanh/trắng, hoa thiên lý, hoa bí, hoa chuối, atisô', travel: 'Trà hoa cúc/trà atisô đóng chai, súp lơ/rau củ sấy giòn' },
+            { rem: 4, name: 'Quả', home: 'Su su, đu đủ, bí ngô, bầu bí, cà chua, cam chuối ổi táo', travel: 'Chuối tươi, táo, ổi, nước ép trái cây, cá sốt cà chua' },
+            { rem: 5, name: 'Hạt', home: 'Óc chó, hướng dương, hạt dẻ, ngô, lạc vừng, đậu đỗ, giá đỗ', travel: 'Sữa hạt đóng hộp, hạt điều/hướng dương gói, bắp ngọt đóng lon' }
+        ];
+
+        // BỔ SUNG: Dữ liệu Thực đơn Siêu thị theo Mùa (Hạ-Thu vs Đông-Xuân)
+        const SEASONAL_TRAVEL_MENU = {
+            hot: { // Mùa Hè & Thu (Nóng bức) - Ưu tiên thanh nhiệt
+                badge: 'Mùa Hè & Thu (Trời Nóng)',
+                color: 'bg-orange-100 text-orange-800',
+                morning: { element: 'Kim – Thủy (Thanh mát)', items: ['Sữa chua Hy Lạp / Sữa hạt óc chó', 'Nước ép lê, táo, hoặc nước dừa tươi', 'Bánh mì sandwich kẹp ức gà / trứng', 'Sữa đậu nành ít đường'] },
+                lunch: { element: 'Mộc – Hỏa (Hành tiếp theo)', items: ['Cơm hộp cá hồi sốt chanh / Cơm gà luộc', 'Salad rau mầm trộn dầu giấm', 'Canh rong biển ăn liền', 'Trà xanh không đường (vị đắng nhẹ)'] },
+                afternoon: { element: 'Thổ – Kim (Bù khoáng)', items: ['Hạt điều / Óc chó gói nhỏ', 'Sữa chua nha đam', 'Bánh ngũ cốc granola bar'] },
+                dinner: { element: 'Thủy – Mộc (Nhẹ nhàng)', items: ['Cháo gói tươi thanh đạm (thịt bằm, cá)', 'Nước ép cần tây / Rau củ luộc sẵn', 'Sữa hạt sen đóng hộp'] }
+            },
+            cold: { // Mùa Đông & Xuân (Lạnh) - Ưu tiên giữ ấm
+                badge: 'Mùa Đông & Xuân (Trời Lạnh)',
+                color: 'bg-blue-100 text-blue-800',
+                morning: { element: 'Thổ – Hỏa (Ấm nóng)', items: ['Cà phê đen nóng / Trà gừng mật ong', 'Bánh bao nhân thịt / Xôi đỗ đóng hộp', 'Khoai lang nướng (mua sẵn)', 'Sữa đậu nành nóng'] },
+                lunch: { element: 'Kim – Thủy (Hành tiếp theo)', items: ['Phở/bún gói nước cốt xương hầm nóng', 'Trứng luộc sẵn / Xúc xích tiệt trùng', 'Nước ép ổi / Táo', 'Sữa tươi tiệt trùng ấm'] },
+                afternoon: { element: 'Mộc – Thổ (Nạp năng lượng)', items: ['Sinh tố bơ / Bánh quy ngũ cốc', 'Trà atisô / Trà hoa cúc ấm'] },
+                dinner: { element: 'Hỏa – Thổ (Ấm bụng)', items: ['Cơm hộp thịt kho trứng / Cá kho', 'Cháo tươi thịt bằm hâm nóng', 'Trà gừng ấm'] }
+            }
+        };
+
+        let state = { selectedDate: getTodayVietnamStr(), mode: 'both', targetCalo: 2200 };
+
+        function getTodayVietnamStr() {
+            const now = new Date();
+            const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const vnDate = new Date(utcMs + (7 * 3600000));
+            return `${vnDate.getUTCFullYear()}-${String(vnDate.getUTCMonth() + 1).padStart(2, '0')}-${String(vnDate.getUTCDate()).padStart(2, '0')}`;
+        }
+
+        function addDaysStr(dateStr, deltaDays) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const dt = new Date(Date.UTC(y, m - 1, d + deltaDays));
+            return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`;
+        }
+
+        function formatVietnameseDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const dt = new Date(Date.UTC(y, m - 1, d));
+            const weekdays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            return { short: `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`, weekday: weekdays[dt.getUTCDay()] };
+        }
+
+        function calculateCycleInfo(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const N = Math.floor((Date.UTC(y, m - 1, d) - Date.UTC(1900, 0, 1)) / 86400000);
+            const r15 = ((N % 15) + 15) % 15;
+            const step15Index = Math.floor(r15 / 3);
+            const dayInStep15 = (r15 % 3) + 1;
+            const r6 = ((N % 6) + 6) % 6;
+            return { N, r15, step15Index, dayInStep15, c15: CYCLE_15[step15Index], r6, c6: CYCLE_6[r6] };
+        }
+
+        // Xác định Mùa dựa trên tháng
+        function getSeason(dateStr) {
+            const month = parseInt(dateStr.split('-')[1]);
+            // Tháng 5,6,7,8,9,10 là Hè & Thu (Nóng). Còn lại là Đông & Xuân (Lạnh)
+            return (month >= 5 && month <= 10) ? 'hot' : 'cold';
+        }
+
+        function setMode(m) {
+            state.mode = m;
+            ['both', 'home', 'travel'].forEach(k => {
+                const btn = document.getElementById(`mode-${k}`);
+                if (k === m) btn.className = 'px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold transition';
+                else btn.className = 'px-3 py-1.5 rounded-lg text-white hover:bg-white/10 font-semibold transition';
+            });
+            renderAll();
+        }
+
+        function setTargetCalo(val) { state.targetCalo = Number(val); renderAll(); }
+        function setToday() { state.selectedDate = getTodayVietnamStr(); renderAll(); }
+        function shiftSelectedDate(delta) { state.selectedDate = addDaysStr(state.selectedDate, delta); renderAll(); }
+        function handleDateInput(val) { if (!val) return; state.selectedDate = val; renderAll(); }
+
+        function renderAll() {
+            document.getElementById('date-input').value = state.selectedDate;
+            const info = calculateCycleInfo(state.selectedDate);
+            const ratio = state.targetCalo / 2200;
+
+            document.getElementById('calc-n-days').textContent = info.N.toLocaleString('vi-VN');
+            document.getElementById('calc-mod-15').textContent = `${info.c15.title} (Ngày ${info.dayInStep15}/3)`;
+            document.getElementById('calc-mod-6').textContent = `${info.c6.name} (Dư ${info.r6})`;
+
+            const columnsConfig = [
+                { key: 'morning', mealName: '1. BỮA SÁNG', timeWeather: '06:00 – 08:30 • Trời lạnh / se lạnh', organ: 'Giờ Dạ Dày (Vị) & Tỳ vượng', element: 'Thổ – Hỏa', taste: 'Âm Ngọt ấm + Dương Đắng', headerBg: 'from-amber-600 to-orange-600', borderCol: 'border-amber-200', badgeBg: 'bg-amber-100 text-amber-900', data: info.c15.morning, plantNote: null },
+                { key: 'lunch', mealName: '2. BỮA TRƯA', timeWeather: '11:30 – 13:00 • Trời nóng / hanh', organ: 'Giờ Tâm (Tim) & Tiểu Trường', element: 'Kim – Thủy', taste: 'Dương Mặn vừa + Âm Cay nhẹ', headerBg: 'from-sky-600 to-blue-700', borderCol: 'border-sky-200', badgeBg: 'bg-sky-100 text-sky-900', data: info.c15.lunch, plantNote: `Kèm rau/củ nhóm ${info.c6.name}` },
+                { key: 'afternoon', mealName: '3. BỮA CHIỀU (XẾ)', timeWeather: '15:30 – 17:00 • Trời mát dịu', organ: 'Giờ Bàng Quang & Thận vượng', element: 'Mộc – Thủy', taste: 'Dương Chua thanh + Âm Ngọt dịu', headerBg: 'from-emerald-600 to-teal-700', borderCol: 'border-emerald-200', badgeBg: 'bg-emerald-100 text-emerald-900', data: info.c15.afternoon, plantNote: `Ưu tiên nhóm ${info.c6.name}: ${state.mode === 'travel' ? info.c6.travel : info.c6.home}` },
+                { key: 'dinner', mealName: '4. BỮA TỐI', timeWeather: '18:30 – 20:00 • Mát chuyển lạnh', organ: 'Giờ Tâm Bào & Tam Tiêu', element: 'Hỏa – Thổ', taste: 'Âm Cay ấm (gừng tiêu) + Mặn ấm', headerBg: 'from-rose-700 to-indigo-800', borderCol: 'border-rose-200', badgeBg: 'bg-rose-100 text-rose-900', data: info.c15.dinner, plantNote: `Bổ sung đủ nhóm ${info.c6.name}` }
+            ];
+
+            let totalEstKcal = 0;
+            const gridEl = document.getElementById('meals-columns-grid');
+            gridEl.innerHTML = columnsConfig.map(col => {
+                const estKcal = Math.round((col.data.kcal * ratio) / 10) * 10;
+                totalEstKcal += estKcal;
+                const showHome = state.mode === 'both' || state.mode === 'home';
+                const showTravel = state.mode === 'both' || state.mode === 'travel';
+
+                return `
+                    <div class="bg-white rounded-2xl shadow-sm border-2 ${col.borderCol} overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="bg-gradient-to-r ${col.headerBg} text-white px-4 py-3.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-extrabold text-base tracking-wide">${col.mealName}</span>
+                                    <span class="text-xs font-extrabold bg-white/20 px-2.5 py-0.5 rounded-full">~${estKcal} kcal</span>
+                                </div>
+                                <div class="text-xs text-white/90 mt-1">${col.timeWeather}</div>
+                            </div>
+                            <div class="p-3.5 bg-slate-50 border-b border-slate-100 space-y-1.5 text-xs">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="px-2 py-0.5 rounded font-extrabold ${col.badgeBg}">${col.element}</span>
+                                    <span class="font-semibold text-slate-600">${col.organ}</span>
+                                </div>
+                                <div class="text-slate-700 font-medium">Vị cân bằng: <strong>${col.taste}</strong></div>
+                            </div>
+                            <div class="p-4 space-y-3.5 text-sm">
+                                ${showHome ? `
+                                    <div>
+                                        <div class="text-[11px] font-extrabold uppercase text-emerald-700 mb-1 flex items-center gap-1"><i data-lucide="home" class="w-3.5 h-3.5"></i><span>Ở nhà (Đi chợ nấu ấm):</span></div>
+                                        <ul class="space-y-1.5 text-slate-800">${col.data.home.map(item => `<li class="flex items-start gap-1.5"><span class="text-emerald-600 font-bold">•</span><span>${item}</span></li>`).join('')}</ul>
+                                    </div>` : ''}
+                                ${showTravel ? `
+                                    <div class="${showHome ? 'pt-2.5 border-t border-dashed border-slate-200' : ''}">
+                                        <div class="text-[11px] font-extrabold uppercase text-amber-700 mb-1 flex items-center gap-1"><i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i><span>Ra ngoài (Siêu thị – Tạp hóa):</span></div>
+                                        <ul class="space-y-1.5 text-slate-800">${col.data.travel.map(item => `<li class="flex items-start gap-1.5"><span class="text-amber-600 font-bold">•</span><span>${item}</span></li>`).join('')}</ul>
+                                    </div>` : ''}
+                                ${col.plantNote ? `<div class="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-2.5 text-xs text-emerald-900"><strong>Thực vật Chu kỳ 6:</strong> ${col.plantNote}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                            <span>Chi phí tiết kiệm:</span><strong class="text-slate-900">${col.data.cost}</strong>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            document.getElementById('total-kcal-badge').textContent = `~${totalEstKcal.toLocaleString('vi-VN')} kcal`;
+
+            renderSeasonalMenu(info);
+            renderForecastTable();
+            lucide.createIcons();
+        }
+
+        // BỔ SUNG: Render Thực đơn Siêu thị theo Mùa
+        function renderSeasonalMenu(info) {
+            const seasonKey = getSeason(state.selectedDate);
+            const seasonData = SEASONAL_TRAVEL_MENU[seasonKey];
+            const section = document.getElementById('seasonal-travel-section');
+            
+            // Chỉ hiện khi chọn chế độ Đi Ngoài hoặc Cả Hai
+            if (state.mode === 'home') {
+                section.classList.add('hidden');
+                return;
+            }
+            section.classList.remove('hidden');
+
+            document.getElementById('season-badge').textContent = seasonData.badge;
+            document.getElementById('season-badge').className = `px-3 py-1 ${seasonData.color} text-xs font-bold rounded-lg`;
+
+            const meals = ['morning', 'lunch', 'afternoon', 'dinner'];
+            const mealNames = { morning: 'Sáng', lunch: 'Trưa', afternoon: 'Chiều', dinner: 'Tối' };
+            const mealIcons = { morning: 'sunrise', lunch: 'sun', afternoon: 'cloud-sun', dinner: 'moon' };
+
+            document.getElementById('seasonal-grid').innerHTML = meals.map(m => {
+                const data = seasonData[m];
+                return `
+                    <div class="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100 flex flex-col gap-2">
+                        <div class="flex items-center justify-between border-b border-indigo-200/60 pb-2">
+                            <span class="font-bold text-indigo-900 flex items-center gap-1.5">
+                                <i data-lucide="${mealIcons[m]}" class="w-4 h-4 text-indigo-600"></i> Bữa ${mealNames[m]}
+                            </span>
+                            <span class="text-[10px] font-extrabold bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded">${data.element}</span>
+                        </div>
+                        <ul class="space-y-1.5 text-xs text-slate-700 mt-1">
+                            ${data.items.map(item => `<li class="flex items-start gap-1.5"><span class="text-indigo-500 font-bold">-</span><span>${item}</span></li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderForecastTable() {
+            const tbody = document.getElementById('forecast-tbody');
+            const todayStr = getTodayVietnamStr();
+            const rows = [];
+
+            for (let i = 0; i < 15; i++) {
+                const dStr = addDaysStr(state.selectedDate, i);
+                const info = calculateCycleInfo(dStr);
+                const fmt = formatVietnameseDate(dStr);
+                const isToday = dStr === todayStr;
+                const isSelected = dStr === state.selectedDate;
+
+                let rowClass = 'hover:bg-slate-50';
+                if (isToday) rowClass = 'bg-emerald-50/80';
+                else if (isSelected) rowClass = 'bg-amber-50/60';
+
+                rows.push(`
+                    <tr class="${rowClass} cursor-pointer transition" onclick="handleDateInput('${dStr}')">
+                        <td class="py-2.5 px-4 whitespace-nowrap">
+                            <span class="font-bold text-slate-800">${fmt.short}</span>
+                            ${isToday ? '<span class="ml-1.5 text-[10px] font-extrabold bg-emerald-600 text-white px-1.5 py-0.5 rounded">HÔM NAY</span>' : ''}
+                            <div class="text-[11px] text-slate-500">${fmt.weekday} • N=${info.N}</div>
+                        </td>
+                        <td class="py-2.5 px-3">
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">Nhịp ${info.c15.step} (${info.dayInStep15}/3)</span>
+                            <div class="font-semibold text-slate-800 mt-0.5">${info.c15.title}</div>
+                        </td>
+                        <td class="py-2.5 px-3 whitespace-nowrap"><span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-xs">${info.c6.name}</span></td>
+                        <td class="py-2.5 px-4 text-xs text-slate-600">
+                            <div><strong>Sáng:</strong> Bánh ngọt + Cà phê đắng</div>
+                            <div><strong>Trưa:</strong> Nước xương / Phở bún miến cháo</div>
+                            <div><strong>Tối:</strong> ${info.c15.dinner.home[0]}</div>
+                        </td>
+                    </tr>
+                `);
+            }
+            tbody.innerHTML = rows.join('');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { renderAll(); });
+    </script>
+</body>
+</html>

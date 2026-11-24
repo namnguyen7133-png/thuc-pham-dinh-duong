@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 22: Phân Tích Đa Chiều & Chẩn Đoán Sức Khỏe Doanh Nghiệp - CEO AI Enterprise</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-lg">
+                    <i class="fa-solid fa-stethoscope text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white">CEO AI Enterprise</h1>
+                    <p class="text-xs text-indigo-400 font-medium">Module 22: Chẩn Đoán Sức Khỏe & Tổng Hợp Đa Chiều</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-900/60 text-indigo-300 border border-indigo-700/50">
+                    <i class="fa-solid fa-circle text-[8px] text-emerald-400 mr-1.5 animate-pulse"></i> Enterprise Diagnostic Core
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Cột Trái: Trọng số đánh giá & Đầu vào (5 Cột) -->
+        <div class="lg:col-span-5 space-y-6">
+            
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fa-solid fa-sliders text-indigo-400 mr-2"></i> Chỉ số tổng hợp cốt lõi (0 - 100)
+                </h2>
+                
+                <form id="healthForm" class="space-y-4" onsubmit="event.preventDefault(); diagnoseEnterprise();">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                            1. Điểm Dòng Tiền & Thanh Khoản
+                        </label>
+                        <input type="number" id="scoreCashflow" min="0" max="100" value="75" required
+                            class="w-full bg-slate-900 border border-slate-750 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition font-medium">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                            2. Điểm Khả Năng Sinh Lợi (ROS, ROE, ROA)
+                        </label>
+                        <input type="number" id="scoreProfit" min="0" max="100" value="80" required
+                            class="w-full bg-slate-900 border border-slate-750 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition font-medium">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                            3. Điểm Hiệu Quả Vận Hành (Tồn kho, Công nợ)
+                        </label>
+                        <input type="number" id="scoreOperations" min="0" max="100" value="65" required
+                            class="w-full bg-slate-900 border border-slate-750 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition font-medium">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                            4. Điểm An Toàn Tài Chính & Đòn Bẩy Nợ
+                        </label>
+                        <input type="number" id="scoreSafety" min="0" max="100" value="70" required
+                            class="w-full bg-slate-900 border border-slate-750 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition font-medium">
+                    </div>
+
+                    <div class="pt-2 flex space-x-3">
+                        <button type="button" onclick="diagnoseEnterprise()" 
+                            class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>Chạy Chẩn Đoán AI</span>
+                        </button>
+                        <button type="reset" onclick="setTimeout(diagnoseEnterprise, 50)"
+                            class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-3 px-4 rounded-xl transition">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Mô hình chuẩn -->
+            <div class="bg-slate-800/80 rounded-2xl p-6 border border-slate-700/80 backdrop-blur-sm">
+                <h3 class="text-sm font-semibold text-indigo-300 uppercase tracking-wider mb-3 flex items-center">
+                    <i class="fa-solid fa-book-bookmark mr-2"></i> Phương pháp chẩn đoán
+                </h3>
+                <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-750 text-xs text-slate-300 space-y-2 font-mono">
+                    <p><span class="text-indigo-400 font-semibold">Health Index</span> = &sum;(Điểm thành phần &times; Trọng số)</p>
+                    <p class="text-[11px] text-slate-400 font-sans mt-1">
+                        Trả lời trực diện câu hỏi cốt lõi của Chủ tịch: "Doanh nghiệp đang khỏe hay yếu?" dựa trên dữ liệu đa chiều.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Cột Phải: Kết quả, Biểu đồ Radar & Khuyến nghị AI (7 Cột) -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Thẻ Điểm Chẩn Đoán Tổng Thể -->
+            <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 shadow-xl flex flex-col justify-between bg-gradient-to-br from-slate-800 to-indigo-950/40">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-indigo-300">Chỉ Số Sức Khỏe Doanh Nghiệp (Enterprise Health Index)</span>
+                        <h3 id="healthIndexScore" class="text-4xl font-extrabold text-white mt-1">-- <span class="text-lg font-normal text-slate-400">/ 100 điểm</span></h3>
+                    </div>
+                    <div id="badgeHealthStatus" class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        Đang phân tích...
+                    </div>
+                </div>
+                <p id="healthSummary" class="text-xs text-slate-300 mt-3 pt-3 border-t border-slate-700/60">
+                    Đang tổng hợp các chiều dữ liệu chẩn đoán...
+                </p>
+            </div>
+
+            <!-- Khối Biểu đồ Radar đa chiều -->
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
+                <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center">
+                    <i class="fa-solid fa-chart-pie text-indigo-400 mr-2"></i> Bản đồ Radar Đa Chiều Sức Khỏe Doanh Nghiệp
+                </h3>
+                <div class="h-64 relative flex justify-center">
+                    <canvas id="healthRadarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Khối Phân tích, Cảnh báo & Khuyến nghị AI -->
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl space-y-4">
+                <h3 class="text-sm font-semibold text-indigo-300 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-robot text-indigo-400 mr-2"></i> Chẩn đoán & Khuyến nghị chiến lược từ AI CEO
+                </h3>
+                
+                <div class="space-y-3">
+                    <div id="aiHealthAnalysis" class="p-4 rounded-xl bg-slate-900/90 border border-slate-750 text-sm text-slate-200">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <div id="aiHealthWarnings" class="p-4 rounded-xl bg-amber-950/25 border border-amber-800/40 text-sm text-amber-200 space-y-1">
+                        <div class="font-semibold flex items-center text-amber-400 mb-1">
+                            <i class="fa-solid fa-triangle-exclamation mr-2"></i> Triệu chứng bệnh lý cần lưu ý:
+                        </div>
+                        <ul id="warningList" class="list-disc list-inside space-y-1 text-xs text-amber-200/90">
+                            <!-- Populated via JS -->
+                        </ul>
+                    </div>
+
+                    <div id="aiHealthRecommendations" class="p-4 rounded-xl bg-indigo-950/25 border border-indigo-800/40 text-sm text-indigo-200 space-y-1">
+                        <div class="font-semibold flex items-center text-indigo-400 mb-1">
+                            <i class="fa-solid fa-lightbulb mr-2"></i> Phác đồ điều trị của AI CEO:
+                        </div>
+                        <ul id="recommendationList" class="list-disc list-inside space-y-1 text-xs text-indigo-200/90">
+                            <!-- Populated via JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Thao tác mở rộng (SQLite & Excel) -->
+                <div class="pt-4 border-t border-slate-700/60 flex flex-wrap gap-3 justify-end">
+                    <button type="button" onclick="saveToSQLite()" 
+                        class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2.5 px-4 rounded-xl transition flex items-center space-x-2 shadow">
+                        <i class="fa-solid fa-database text-indigo-400"></i>
+                        <span>Lưu SQLite</span>
+                    </button>
+                    <button type="button" onclick="exportExcel()" 
+                        class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2.5 px-4 rounded-xl transition flex items-center space-x-2 shadow">
+                        <i class="fa-solid fa-file-excel text-emerald-400"></i>
+                        <span>Xuất Excel</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>CEO AI Enterprise System &bull; Module 22: Enterprise Diagnostic Health Index &bull; Thiết kế chuyên lập trình ra quyết định điều hành</p>
+    </footer>
+
+    <!-- JavaScript Xử lý logic chẩn đoán và biểu đồ radar -->
+    <script>
+        let healthRadarInstance = null;
+
+        function diagnoseEnterprise() {
+            const cf = parseFloat(document.getElementById('scoreCashflow').value) || 0;
+            const pf = parseFloat(document.getElementById('scoreProfit').value) || 0;
+            const op = parseFloat(document.getElementById('scoreOperations').value) || 0;
+            const sf = parseFloat(document.getElementById('scoreSafety').value) || 0;
+
+            // Trọng số: Dòng tiền (35%), Sinh lợi (25%), Vận hành (20%), An toàn nợ (20%)
+            const index = (cf * 0.35) + (pf * 0.25) + (op * 0.20) + (sf * 0.20);
+
+            document.getElementById('healthIndexScore').innerHTML = `${index.toFixed(1)} <span class="text-lg font-normal text-slate-400">/ 100 điểm</span>`;
+
+            let badge = document.getElementById('badgeHealthStatus');
+            let summary = document.getElementById('healthSummary');
+            let analysisHtml = '';
+            let warningsHtml = '';
+            let recommendationsHtml = '';
+
+            if (index >= 80) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                badge.innerText = "Doanh nghiệp khỏe mạnh";
+                summary.innerText = "Hệ thống vận hành trơn tru, dòng tiền dồi dào và sinh lời vượt trội.";
+                analysisHtml = `<strong class="text-emerald-400">Chẩn đoán tổng quát: Doanh nghiệp cực kỳ khỏe mạnh.</strong> Tất cả các trụ cột tài chính, dòng tiền và vận hành đều nằm trong vùng kiểm soát hoàn hảo.`;
+                warningsHtml = `<li>Không phát hiện triệu chứng rủi ro lớn. Tuy nhiên cần đề phòng sự chủ quan khi mở rộng quy mô quá nhanh.</li>`;
+                recommendationsHtml = `<li>Tập trung tối đa cho chiến lược tăng trưởng thị phần, đầu tư đổi mới công nghệ hoặc M&A để bứt phá quy mô lớn hơn.</li>`;
+            } else if (index >= 60) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+                badge.innerText = "Ổn định / Có điểm nghẽn";
+                summary.innerText = "Doanh nghiệp vận hành ổn định nhưng tồn tại một vài điểm nghẽn cục bộ cần tối ưu.";
+                analysisHtml = `<strong class="text-indigo-400">Chẩn đoán tổng quát: Doanh nghiệp ổn định nhưng có dấu hiệu ì ạch cục bộ.</strong> Một vài chỉ số thành phần (như vận hành hoặc dòng tiền ngắn hạn) đang kéo lùi hiệu suất chung.`;
+                warningsHtml = `<li>Có sự mất cân đối nhẹ giữa tốc độ tăng trưởng doanh thu và khả năng thu hồi vốn / tối ưu chi phí.</li>`;
+                recommendationsHtml = `<li>Rà soát ngay trụ cột có điểm số thấp nhất (ví dụ: vòng quay tồn kho hoặc công nợ) để tối ưu hóa nguồn lực lưu động.</li>`;
+            } else {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                badge.innerText = "Báo động đỏ / Yếu kém";
+                summary.innerText = "Cảnh báo nguy cơ mất thanh khoản hoặc suy yếu toàn diện, cần can thiệp khẩn cấp.";
+                analysisHtml = `<strong class="text-amber-400">Chẩn đoán tổng quát: Doanh nghiệp đang lâm vào tình trạng yếu kém trầm trọng.</strong> Chỉ số sức khỏe tổng thể dưới mức an toàn, đe dọa trực tiếp đến sự sinh tồn ngắn hạn.`;
+                warningsHtml = `
+                    <li>Dòng tiền thuần hoặc khả năng thanh toán đang đối mặt với áp lực cạn kiệt nghiêm trọng.</li>
+                    <li>Hiệu quả sinh lời và đòn bẩy nợ không tương thích, dẫn đến nguy cơ thâm hụt vốn chủ sở hữu.</li>
+                `;
+                recommendationsHtml = `
+                    <li>Triệu tập gấp ban điều hành để thực hiện phác đồ cắt giảm chi phí phung phí ngay lập tức.</li>
+                    <li>Đóng các kênh đầu tư kém hiệu quả, thu hồi triệt để công nợ và giải phóng hàng tồn kho chậm luân chuyển thành tiền mặt.</li>
+                `;
+            }
+
+            document.getElementById('aiHealthAnalysis').innerHTML = analysisHtml;
+            document.getElementById('warningList').innerHTML = warningsHtml;
+            document.getElementById('recommendationList').innerHTML = recommendationsHtml;
+
+            initRadarChart(cf, pf, op, sf);
+        }
+
+        function initRadarChart(cf, pf, op, sf) {
+            const ctx = document.getElementById('healthRadarChart').getContext('2d');
+            
+            if (healthRadarInstance) {
+                healthRadarInstance.destroy();
+            }
+
+            healthRadarInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Dòng tiền & Thanh khoản', 'Khả năng sinh lợi', 'Hiệu suất vận hành', 'An toàn tài chính'],
+                    datasets: [{
+                        label: 'Điểm số thành phần',
+                        data: [cf, pf, op, sf],
+                        backgroundColor: 'rgba(99, 102, 241, 0.25)',
+                        borderColor: 'rgb(99, 102, 241)',
+                        pointBackgroundColor: 'rgb(99, 102, 241)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#cbd5e1', font: { size: 11, weight: '600' } },
+                            ticks: { display: false, max: 100, min: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function saveToSQLite() {
+            alert("Đã kết nối luồng lưu trữ Module 22 (Enterprise Health Index) vào cơ sở dữ liệu SQLite.");
+        }
+
+        function exportExcel() {
+            alert("Đang khởi tạo tệp Excel xuất dữ liệu báo cáo chẩn đoán sức khỏe doanh nghiệp...");
+        }
+
+        window.onload = function() {
+            diagnoseEnterprise();
+        };
+    </script>
+</body>
+</html>

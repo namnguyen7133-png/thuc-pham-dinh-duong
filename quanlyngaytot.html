@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ Thống Theo Dõi Sức Khỏe & Phân Tích Nhị Phân</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --purple: #a855f7;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+        h2 { font-size: 1.4rem; border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-top: 20px; }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        label { font-weight: 600; font-size: 0.9rem; }
+        select, input[type="text"], input[type="date"], input[type="file"] {
+            background: #0f172a;
+            color: #fff;
+            border: 1px solid #475569;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #f59e0b;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.9; }
+        .btn-danger { background-color: var(--danger); color: #fff; }
+        .btn-music { background-color: var(--purple); color: #fff; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #475569;
+            padding: 8px;
+            text-align: center;
+        }
+        th { background-color: #334155; }
+        input.editable-cell {
+            width: 90%;
+            background: transparent;
+            border: none;
+            color: white;
+            text-align: center;
+        }
+        input.editable-cell:focus {
+            background: #334155;
+            outline: 1px solid var(--accent);
+        }
+        .badge-red { color: var(--danger); font-weight: bold; }
+        .badge-purple { color: var(--purple); font-weight: bold; }
+        .badge-green { color: var(--success); }
+        .badge-yellow-border { border: 2px solid var(--warning) !important; }
+    </style>
+</head>
+<body>
+
+    <h2>BẢNG THEO DÕI SỨC KHỎE & PHÂN TÍCH NHỊ PHÂN NGÀY HÔM NAY</h2>
+
+    <!-- 0. Trình Phát Nhạc Ngẫu Nhiên Từ File .txt -->
+    <div class="card" style="border: 1px solid var(--purple);">
+        <h3>🎵 Trình Phát Nhạc Ngẫu Nhiên (Đọc từ danhsachnhac.txt)</h3>
+        <div class="form-row">
+            <label>Chọn file danhsachnhac.txt:</label>
+            <input type="file" id="fileNhacTxt" accept=".txt">
+            <button class="btn-music" onclick="phatNhacNgauNhien()">🔀 Phát Bài Ngẫu Nhiên</button>
+            <span id="lblDangPhat" style="color: var(--accent); font-weight: bold;">Chưa chọn bài hát nào.</span>
+        </div>
+    </div>
+
+    <!-- 1. Thống Kê Số Ngày & Cấu Hình Đọc CSV Linh Hoạt -->
+    <div class="card">
+        <h3>1. Thống Kê Số Ngày & Cấu Hình Đọc CSV Linh Hoạt</h3>
+        <div class="form-row">
+            <label>Chọn Tài Khoản/Người:</label>
+            <select id="selectNguoi" onchange="luuTrangThaiGiaoDien(); taiLaiToanBoDuLieu();">
+                <option value="all">-- Tất Cả Dữ Liệu --</option>
+            </select>
+
+            <label>Ngày sinh:</label>
+            <input type="date" id="ngaySinh" value="1971-03-03" onchange="luuTrangThaiGiaoDien()">
+
+            <label>Chế độ:</label>
+            <select id="cheDoHienThi" onchange="doiCheDo(); luuTrangThaiGiaoDien();">
+                <option value="MonAn">Món Ăn</option>
+                <option value="XaTinh">Xã / Tỉnh</option>
+                <option value="QuocGia">Quốc Gia</option>
+            </select>
+        </div>
+        <div class="form-row" style="background: #0f172a; padding: 10px; border-radius: 6px; margin-top: 10px;">
+            <label>Nạp CSV Bảng 1:</label>
+            <input type="file" id="fileCsvB1" accept=".csv">
+            <label>Ô đọc (VD: I3):</label>
+            <input type="text" id="txtOvitriB1" value="I3" style="width: 70px; text-align: center;" onchange="luuTrangThaiGiaoDien()">
+            <button onclick="xuLyNapCsvB1()">📥 Đọc CSV B1</button>
+            <label>Thêm/Bớt Cột:</label>
+            <input type="text" id="txtCustomColsB1" value="Bánh chưng, Bánh canh, Cháo hải sản, Bún bò" style="width: 250px;" onchange="luuTrangThaiGiaoDien(); taiLaiToanBoDuLieu();">
+        </div>
+        <div class="form-row" style="font-size: 0.95rem; margin-top: 10px; background: #0f172a; padding: 10px; border-radius: 6px;">
+            <span>📅 Ngày Hôm Nay: <strong id="lblNgayNay"></strong></span>
+            <span>⏱️ Chênh lệch (Excel 1/1/1900): <strong id="lblChenhLech">0</strong></span>
+            <span>🎂 Tuổi: <strong id="lblTuoi">0</strong> ngày</span>
+            <span>💻 Mã Nhị Phân: <strong id="lblNhiPhan" style="color: var(--accent);">011010010011101</strong></span>
+        </div>
+    </div>
+
+    <!-- 2. Nạp File CSV Lịch Sử Mắc Bệnh & Tùy Chọn Cột -->
+    <div class="card">
+        <h3>2. Nạp File CSV Lịch Sử Mắc Bệnh & Đồng Bộ Cột Từ Sheet</h3>
+        <div class="form-row">
+            <label>Dải Cột Đọc (VD: F24:U24):</label>
+            <input type="text" id="txtPhamViCot" value="F24:U24" style="width: 120px;" onchange="luuTrangThaiGiaoDien()">
+            <input type="file" id="fileCsvInput" accept=".csv">
+            <button onclick="xuLyNapCsvB2VaDongBoCot()">📥 Đọc Sheet & Khớp Cột B2</button>
+            <button class="btn-danger" onclick="xoaBoNho()">🗑️ Xóa Bộ Nhớ</button>
+        </div>
+        <div class="form-row" style="margin-top: 8px;">
+            <label>Tùy chọn thêm bớt danh mục (Đã thay bánh bèo bằng Bánh xèo):</label>
+            <input type="text" id="txtColsB2" value="Bánh chưng, Bánh canh, Cháo hải sản, Bún bò, Cháo bồ câu, Mì xào, Mộc nhĩ, Bánh xèo, Miến ngan, Ớt hiểm, Cháo lòng, Bánh bao, Phở gà, Phở bò, Kỷ tử đỏ" style="width: 70%;" onchange="luuTrangThaiGiaoDien(); dongBộCộtB4VoiB2(); taiLaiToanBoDuLieu();">
+        </div>
+    </div>
+
+    <!-- 3. Bảng Cảnh Báo Danh Mục Cho NGÀY HÔM NAY -->
+    <div class="card">
+        <h3>3. Bảng Cảnh Báo Danh Mục Cho NGÀY HÔM NAY</h3>
+        <p style="font-size: 0.8rem; color: #94a3b8;">Chú thích màu: 🔴 Đỏ = Hôm Nay | 🟣 Tím = Lịch Sử | ⚠️ Viền Vàng = Trùng Cả Hai</p>
+        <div style="overflow-x: auto;">
+            <table id="bangCanhBao">
+                <thead>
+                    <tr id="hdCoiDanhMuc">
+                        <th>Loại Danh Dấu</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyCanhBao">
+                    <tr>
+                        <td><strong>Hôm Nay / Lịch Sử</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. Bảng Lịch Sử & Chứng Bệnh Theo Ngày -->
+    <div class="card">
+        <h3>4. Bảng Lịch Sử & Chứng Bệnh Theo Ngày (Tự Động Khớp Số Cột Sheet)</h3>
+        <div class="form-row" style="margin-bottom: 10px;">
+            <label>Nạp CSV Bảng 4:</label>
+            <input type="file" id="fileCsvB4" accept=".csv">
+            <label>Vị trí đọc:</label>
+            <input type="text" id="txtOvitriB4" value="A1" style="width: 60px; text-align: center;" onchange="luuTrangThaiGiaoDien()">
+            <button onclick="xuLyNapCsvB4()">📥 Đọc CSV B4</button>
+            <label>Tùy Chọn Cột (Tự động khớp ô trên):</label>
+            <input type="text" id="txtDanhSachCot" value="Bánh chưng, Bánh canh, Cháo hải sản, Bún bò, Cháo bồ câu, Mì xào, Mộc nhĩ, Bánh xèo, Miến ngan, Ớt hiểm, Cháo lòng, Bánh bao, Phở gà, Phở bò, Kỷ tử đỏ" style="width: 35%;" onchange="luuTrangThaiGiaoDien(); taiLaiToanBoDuLieu();">
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="bangLichSuLinhHoat">
+                <thead>
+                    <tr id="hdLichSuLinhHoat">
+                        <th>STT</th>
+                        <th>Tên / ID (I)</th>
+                        <th>Ngày Bệnh</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyLichSuLinhHoat">
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 10px;">
+            <button onclick="themDongLichSu()">➕ Thêm Dòng Dữ Liệu Mới</button>
+        </div>
+    </div>
+
+<script>
+    const today = new Date();
+    document.getElementById('lblNgayNay').innerText = today.toLocaleDateString('vi-VN');
+    
+    const baseDate = new Date(1899, 11, 30);
+    const diffTime = Math.abs(today - baseDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    document.getElementById('lblChenhLech').innerText = diffDays.toLocaleString('en-US');
+
+    function updateTuoi() {
+        const ns = new Date(document.getElementById('ngaySinh').value);
+        const ageDays = Math.floor(Math.abs(today - ns) / (1000 * 60 * 60 * 24));
+        document.getElementById('lblTuoi').innerText = ageDays.toLocaleString('en-US');
+    }
+    document.getElementById('ngaySinh').addEventListener('change', updateTuoi);
+
+    function luuTrangThaiGiaoDien() {
+        let state = {
+            selectNguoi: document.getElementById('selectNguoi').value,
+            ngaySinh: document.getElementById('ngaySinh').value,
+            cheDoHienThi: document.getElementById('cheDoHienThi').value,
+            txtOvitriB1: document.getElementById('txtOvitriB1').value,
+            txtCustomColsB1: document.getElementById('txtCustomColsB1').value,
+            txtPhamViCot: document.getElementById('txtPhamViCot').value,
+            txtColsB2: document.getElementById('txtColsB2').value,
+            txtOvitriB4: document.getElementById('txtOvitriB4').value,
+            txtDanhSachCot: document.getElementById('txtDanhSachCot').value
+        };
+        localStorage.setItem('suckhoe_ui_state_v6', JSON.stringify(state));
+    }
+
+    function taiTrangThaiGiaoDien() {
+        let savedState = localStorage.getItem('suckhoe_ui_state_v6');
+        if(savedState) {
+            let state = JSON.parse(savedState);
+            if(state.ngaySinh) document.getElementById('ngaySinh').value = state.ngaySinh;
+            if(state.cheDoHienThi) document.getElementById('cheDoHienThi').value = state.cheDoHienThi;
+            if(state.txtOvitriB1) document.getElementById('txtOvitriB1').value = state.txtOvitriB1;
+            if(state.txtCustomColsB1) document.getElementById('txtCustomColsB1').value = state.txtCustomColsB1;
+            if(state.txtPhamViCot) document.getElementById('txtPhamViCot').value = state.txtPhamViCot;
+            if(state.txtColsB2) document.getElementById('txtColsB2').value = state.txtColsB2;
+            if(state.txtOvitriB4) document.getElementById('txtOvitriB4').value = state.txtOvitriB4;
+            if(state.txtDanhSachCot) document.getElementById('txtDanhSachCot').value = state.txtDanhSachCot;
+        }
+        updateTuoi();
+    }
+
+    function layDuLieuMacDinh() {
+        return [
+            {stt: 1, ten: "Nam Nguyễn", ngaybenh: "04/08/2026", giatri: {"Bánh canh": "HÔM NAY", "Cháo bồ câu": "Lịch Sử", "Bánh bao": "TRÙNG"}},
+            {stt: 2, ten: "Nguyễn Văn A", ngaybenh: "03/08/2026", giatri: {"Bánh chưng": "HÔM NAY", "Phở bò": "Lịch Sử"}}
+        ];
+    }
+
+    function taiDuLieu() {
+        let savedData = localStorage.getItem('suckhoe_lichsu_data_v6');
+        return savedData ? JSON.parse(savedData) : layDuLieuMacDinh();
+    }
+
+    function luuDuLieu(rows) {
+        localStorage.setItem('suckhoe_lichsu_data_v6', JSON.stringify(rows));
+    }
+
+    function getColsB2() {
+        return document.getElementById('txtColsB2').value.split(',').map(c => c.trim()).filter(c => c);
+    }
+
+    function getColsB4() {
+        return document.getElementById('txtDanhSachCot').value.split(',').map(c => c.trim()).filter(c => c);
+    }
+
+    function dongBộCộtB4VoiB2() {
+        document.getElementById('txtDanhSachCot').value = document.getElementById('txtColsB2').value;
+    }
+
+    function renderBangCanhBao() {
+        let cols = getColsB2();
+        let hd = document.getElementById('hdCoiDanhMuc');
+        let tb = document.getElementById('tbodyCanhBao');
+
+        let hdHtml = `<th>Loại Danh Dấu</th>`;
+        let tbHtml = `<td><strong>Hôm Nay / Lịch Sử</strong></td>`;
+
+        cols.forEach((c, idx) => {
+            hdHtml += `<th>${c}</th>`;
+            let status = (idx % 2 === 0) ? '<span class="badge-green">Bình thường</span>' : '<span class="badge-red">🔴 HÔM NAY</span>';
+            tbHtml += `<td>${status}</td>`;
+        });
+
+        hd.innerHTML = hdHtml;
+        tb.innerHTML = `<tr>${tbHtml}</tr>`;
+    }
+
+    function taiLaiToanBoDuLieu() {
+        renderBangCanhBao();
+        taoBangLichSuLinhHoat();
+    }
+
+    function taoBangLichSuLinhHoat() {
+        let rows = taiDuLieu();
+        let selectNguoiElem = document.getElementById('selectNguoi');
+        let selectedNguoi = selectNguoiElem ? selectNguoiElem.value : 'all';
+        let cols = getColsB4();
+
+        let hdTr = document.getElementById('hdLichSuLinhHoat');
+        let hdHtml = `<th>STT</th><th>Tên / ID (I)</th><th>Ngày Bệnh</th>`;
+        cols.forEach(c => { hdHtml += `<th>${c}</th>`; });
+        hdTr.innerHTML = hdHtml;
+
+        let tbody = document.getElementById('tbodyLichSuLinhHoat');
+        tbody.innerHTML = '';
+
+        let filteredRows = rows.filter(r => selectedNguoi === 'all' || r.ten === selectedNguoi);
+
+        filteredRows.forEach((r, index) => {
+            let tr = document.createElement('tr');
+            let html = `
+                <td>${index + 1}</td>
+                <td><input type="text" class="editable-cell" value="${r.ten || ''}" onchange="capNhatGiaTriDong(${index}, 'ten', this.value)"></td>
+                <td><input type="text" class="editable-cell" value="${r.ngaybenh || ''}" onchange="capNhatGiaTriDong(${index}, 'ngaybenh', this.value)"></td>
+            `;
+
+            cols.forEach(c => {
+                let val = (r.giatri && r.giatri[c]) ? r.giatri[c] : 'Bình thường';
+                let badgeClass = 'badge-green';
+                let borderClass = '';
+                
+                if(val === 'HÔM NAY') badgeClass = 'badge-red';
+                else if(val === 'Lịch Sử') badgeClass = 'badge-purple';
+                else if(val === 'TRÙNG') { badgeClass = 'badge-red'; borderClass = 'badge-yellow-border'; }
+
+                html += `<td class="${borderClass}"><input type="text" class="editable-cell ${badgeClass}" value="${val}" onchange="capNhatGiaTriCotDung(${index}, '${c}', this.value)"></td>`;
+            });
+
+            tr.innerHTML = html;
+            tbody.appendChild(tr);
+        });
+
+        capNhatDanhSachNguoi(rows);
+    }
+
+    function capNhatDanhSachNguoi(rows) {
+        const selectNguoi = document.getElementById('selectNguoi');
+        let savedState = localStorage.getItem('suckhoe_ui_state_v6');
+        let currentVal = 'all';
+        if(savedState) {
+            currentVal = JSON.parse(savedState).selectNguoi || 'all';
+        }
+
+        let dsNguoi = new Set();
+        rows.forEach(r => { if(r.ten) dsNguoi.add(r.ten); });
+
+        selectNguoi.innerHTML = '<option value="all">-- Tất Cả Dữ Liệu --</option>';
+        dsNguoi.forEach(nguoi => {
+            let opt = document.createElement('option');
+            opt.value = nguoi;
+            opt.innerText = nguoi;
+            if(nguoi === currentVal) opt.selected = true;
+            selectNguoi.appendChild(opt);
+        });
+    }
+
+    function capNhatGiaTriDong(index, field, val) {
+        let rows = taiDuLieu();
+        rows[index][field] = val;
+        luuDuLieu(rows);
+        taiLaiToanBoDuLieu();
+    }
+
+    function capNhatGiaTriCotDung(index, colName, val) {
+        let rows = taiDuLieu();
+        if(!rows[index].giatri) rows[index].giatri = {};
+        rows[index].giatri[colName] = val;
+        luuDuLieu(rows);
+        taiLaiToanBoDuLieu();
+    }
+
+    function themDongLichSu() {
+        let rows = taiDuLieu();
+        rows.push({stt: rows.length + 1, ten: "Tài khoản mới", ngaybenh: today.toLocaleDateString('vi-VN'), giatri: {}});
+        luuDuLieu(rows);
+        taiLaiToanBoDuLieu();
+    }
+
+    function xoaBoNho() {
+        if(confirm("Bạn có chắc muốn xóa toàn bộ bộ nhớ lưu trữ không?")) {
+            localStorage.removeItem('suckhoe_lichsu_data_v6');
+            localStorage.removeItem('suckhoe_ui_state_v6');
+            location.reload();
+        }
+    }
+
+    function parseExcelCell(cellStr) {
+        cellStr = cellStr.trim().toUpperCase();
+        let match = cellStr.match(/^([A-Z]+)(\d+)$/);
+        if(!match) return {row: 0, col: 0};
+        let colStr = match[1];
+        let rowNum = parseInt(match[2]) - 1;
+        let colNum = 0;
+        for(let i=0; i<colStr.length; i++) {
+            colNum = colNum * 26 + (colStr.charCodeAt(i) - 64);
+        }
+        return {row: rowNum, col: colNum - 1};
+    }
+
+    function parseExcelRangeToCols(rangeStr) {
+        let parts = rangeStr.trim().toUpperCase().split(':');
+        if(parts.length !== 2) return null;
+        let start = parseExcelCell(parts[0]);
+        let end = parseExcelCell(parts[1]);
+        if(start.col > end.col) return null;
+        
+        let colsArray = [];
+        for(let c = start.col; c <= end.col; c++) {
+            colsArray.push("Mục " + (c + 1));
+        }
+        return {startRow: start.row, startCol: start.col, endCol: end.col, cols: colsArray};
+    }
+
+    function xuLyNapCsvB1() {
+        let fInput = document.getElementById('fileCsvB1');
+        let posStr = document.getElementById('txtOvitriB1').value;
+        if(fInput.files.length === 0) { alert("Vui lòng chọn file CSV cho Bảng 1!"); return; }
+        
+        let file = fInput.files[0];
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let lines = e.target.result.split('\n');
+            let target = parseExcelCell(posStr);
+            if(lines[target.row]) {
+                let cols = lines[target.row].split(',');
+                let val = cols[target.col] ? cols[target.col].replace(/['"]+/g, '').trim() : '';
+                if(val) {
+                    let rows = taiDuLieu();
+                    rows.push({stt: rows.length + 1, ten: val, ngaybenh: today.toLocaleDateString('vi-VN'), giatri: {}});
+                    luuDuLieu(rows);
+                    taiLaiToanBoDuLieu();
+                    alert("Đã đọc thành công tài khoản '" + val + "' tại ô " + posStr + "!");
+                } else {
+                    alert("Không tìm thấy dữ liệu tại tọa độ ô " + posStr);
+                }
+            }
+            luuTrangThaiGiaoDien();
+        };
+        reader.readAsText(file);
+    }
+
+    function xuLyNapCsvB2VaDongBoCot() {
+        let fInput = document.getElementById('fileCsvInput');
+        let rangeStr = document.getElementById('txtPhamViCot').value;
+        if(fInput.files.length === 0) { alert("Vui lòng chọn file CSV cho Bảng 2!"); return; }
+
+        let file = fInput.files[0];
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let lines = e.target.result.split('\n');
+            let rangeInfo = parseExcelRangeToCols(rangeStr);
+            
+            if(rangeInfo && lines[rangeInfo.startRow]) {
+                let rowData = lines[rangeInfo.startRow].split(',');
+                let extractedCols = [];
+                
+                for(let c = rangeInfo.startCol; c <= rangeInfo.endCol; c++) {
+                    let cellVal = rowData[c] ? rowData[c].replace(/['"]+/g, '').trim() : ("Cột " + (c+1));
+                    extractedCols.push(cellVal);
+                }
+
+                let newColsStr = extractedCols.join(', ');
+                document.getElementById('txtColsB2').value = newColsStr;
+                dongBộCộtB4VoiB2();
+                taiLaiToanBoDuLieu();
+                
+                alert("Đã tự động đọc và khớp chính xác " + extractedCols.length + " cột từ dải ô " + rangeStr + " của Sheet!");
+            } else {
+                alert("Không đọc được dữ liệu theo dải ô chỉ định. Vui lòng kiểm tra lại định dạng!");
+            }
+            luuTrangThaiGiaoDien();
+        };
+        reader.readAsText(file);
+    }
+
+    function xuLyNapCsvB4() {
+        let fInput = document.getElementById('fileCsvB4');
+        let posStr = document.getElementById('txtOvitriB4').value;
+        if(fInput.files.length === 0) { alert("Vui lòng chọn file CSV cho Bảng 4!"); return; }
+
+        let file = fInput.files[0];
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let lines = e.target.result.split('\n');
+            let target = parseExcelCell(posStr);
+            let rows = taiDuLieu();
+            
+            if(lines[target.row]) {
+                let cols = lines[target.row].split(',');
+                let val = cols[target.col] ? cols[target.col].replace(/['"]+/g, '').trim() : 'Dữ liệu đọc từ CSV';
+                rows.push({stt: rows.length + 1, ten: val, ngaybenh: today.toLocaleDateString('vi-VN'), giatri: {}});
+                luuDuLieu(rows);
+                taiLaiToanBoDuLieu();
+                alert("Đã nạp thành công dòng lịch sử từ vị trí " + posStr + "!");
+            }
+            luuTrangThaiGiaoDien();
+        };
+        reader.readAsText(file);
+    }
+
+    function doiCheDo() {
+        const cheDo = document.getElementById('cheDoHienThi').value;
+        let dsMoi = "";
+        if(cheDo === 'XaTinh') {
+            dsMoi = "Hà Nội, Hồ Chí Minh, Đà Nẵng, Hải Phòng, Cần Thơ";
+        } else if(cheDo === 'QuocGia') {
+            dsMoi = "Việt Nam, Nhật Bản, Hoa Kỳ, Hàn Quốc, Pháp";
+        } else {
+            dsMoi = "Bánh chưng, Bánh canh, Cháo hải sản, Bún bò, Cháo bồ câu, Mì xào, Mộc nhĩ, Bánh xèo, Miến ngan, Ớt hiểm, Cháo lòng, Bánh bao, Phở gà, Phở bò, Kỷ tử đỏ";
+        }
+        document.getElementById('txtColsB2').value = dsMoi;
+        document.getElementById('txtDanhSachCot').value = dsMoi;
+        document.getElementById('txtCustomColsB1').value = dsMoi;
+        taiLaiToanBoDuLieu();
+    }
+
+    // Đọc file danh sách nhạc từ TXT và phát ngẫu nhiên
+    function phatNhacNgauNhien() {
+        let fInput = document.getElementById('fileNhacTxt');
+        if(fInput.files.length === 0) {
+            alert("Vui lòng chọn file 'danhsachnhac.txt' ở ô chọn file phía trên trước!");
+            return;
+        }
+
+        let file = fInput.files[0];
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let content = e.target.result;
+            // Tách danh sách bài hát theo từng dòng
+            let lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            if(lines.length === 0) {
+                alert("File danhsachnhac.txt đang bị trống!");
+                return;
+            }
+
+            // Chọn ngẫu nhiên 1 bài hát trong danh sách
+            let randomIndex = Math.floor(Math.random() * lines.length);
+            let selectedSong = lines[randomIndex];
+            
+            document.getElementById('lblDangPhat').innerText = "Đang phát ngẫu nhiên: " + selectedSong;
+
+            // Nếu dòng trong file là link web/YouTube hoặc file mp3 thì mở hoặc phát trực tiếp
+            if(selectedSong.startsWith('http://') || selectedSong.startsWith('https://')) {
+                window.open(selectedSong, '_blank');
+            } else {
+                alert("Đã chọn bài: '" + selectedSong + "'. (Nếu là tên bài, bạn có thể kết hợp mở trình phát hoặc link tương ứng).");
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+    }
+
+    window.onload = function() {
+        taiTrangThaiGiaoDien();
+        taiLaiToanBoDuLieu();
+    };
+</script>
+</body>
+</html>

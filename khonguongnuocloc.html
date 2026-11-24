@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thói Quên Ăn Uống & Đầu Tư Của Warren Buffett</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --green-color: #4caf50;
+            --orange-color: #ff9800;
+            --border-color: #333333;
+            --font-size-base: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            overflow: hidden; /* Dùng container riêng để cuộn */
+            height: 100vh;
+        }
+
+        /* Ô tìm kiếm cố định phía trên */
+        .search-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #1a1a1a;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 800px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--orange-color);
+        }
+
+        /* Khu vực cuộn chính */
+        .scroll-container {
+            position: absolute;
+            top: 60px;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            overflow-y: scroll;
+            padding: 15px;
+            scroll-behavior: smooth;
+        }
+
+        /* Ẩn thanh cuộn để tăng trải nghiệm nhìn */
+        .scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1.main-title {
+            text-align: center;
+            color: var(--orange-color);
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            text-transform: uppercase;
+        }
+
+        .category-title {
+            background-color: #252525;
+            color: #fff;
+            padding: 8px 12px;
+            margin: 20px 0 10px 0;
+            border-left: 4px solid var(--orange-color);
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* Bảng 3 Cột */
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            background-color: var(--card-bg);
+        }
+
+        table.data-table th, table.data-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        table.data-table th {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+
+        .col-price {
+            width: 130px;
+            color: var(--green-color);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .col-stt {
+            width: 60px;
+            color: var(--orange-color);
+            font-weight: bold;
+            text-align: center !important;
+        }
+
+        .col-desc {
+            color: var(--text-color);
+        }
+
+        /* Thanh điều khiển cố định ở đáy */
+        .control-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #1a1a1a;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 10px;
+            z-index: 1000;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #444;
+        }
+
+        .btn-toggle.paused {
+            background-color: #c62828;
+            border-color: #f44336;
+        }
+
+        .btn-toggle.running {
+            background-color: #2e7d32;
+            border-color: #4caf50;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 0.85em;
+            color: #aaa;
+        }
+
+        input[type=range] {
+            width: 80px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .control-bar {
+                height: 85px;
+                padding: 5px;
+            }
+            .btn {
+                padding: 6px 8px;
+                font-size: 0.8em;
+            }
+            .col-price {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ô TÌM KIẾM FAST SEARCH -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Nhập từ khóa tìm kiếm (Ví dụ: Coca, McDonald's, 96 tuổi...)..." onkeyup="filterContent()">
+    </div>
+
+    <!-- KHU VỰC CUỘN NỘI DUNG -->
+    <div class="scroll-container" id="scrollContainer" onclick="toggleScrollFromContainer(event)">
+        <div class="content-wrapper" id="contentWrapper">
+            
+            <h1 class="main-title">THÓI QUEN ĂN UỐNG VÀ CHIẾN LƯỢC ĐẦU TƯ CỦA WARREN BUFFETT</h1>
+
+            <!-- NHÓM 1 -->
+            <div class="category-title">📌 THÓI QUEN UỐNG NƯỚC NGỌT VÀ NGUYÊN TẮC ĂN UỐNG</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-price">Giá / Tỷ lệ</th>
+                        <th class="col-stt">STT</th>
+                        <th class="col-desc">Tên món / Chi tiết câu chuyện kể</th>
+                    </tr>
+                </thead>
+                <tbody class="table-body">
+                    <tr>
+                        <td class="col-price">5 lon / ngày</td>
+                        <td class="col-stt">01</td>
+                        <td class="col-desc"><strong>Coca-Cola (Cherry Coke & Nguyên bản):</strong> Theo lời kể của Giám đốc điều hành quỹ Pershing Square Bill Ackman, ông Warren Buffett có thói quen uống 5 lon nước ngọt mỗi ngày và hầu như không uống nước lọc trong gần 50 năm qua. Vị tỷ phú từ chối nước lọc hay nước khoáng có ga để chọn Cherry Coke và cho biết: "Tôi đã 48 năm không uống nước lọc".</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">25% Calo</td>
+                        <td class="col-stt">02</td>
+                        <td class="col-desc"><strong>Khẩu phần Calo từ Nước Ngọt:</strong> Tỷ phú tiết lộ mỗi ngày ông uống ít nhất 5 lon Coca-Cola (3 lon ban ngày, 2 lon buổi tối). "Một phần tư cơ thể tôi là Coca-Cola", ông ví von và giải thích loại nước ngọt này chiếm 25% trong tổng lượng 2.700 calo ông nạp vào cơ thể mỗi ngày.</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">Rủi ro thấp</td>
+                        <td class="col-stt">03</td>
+                        <td class="col-desc"><strong>Triết lý ăn như trẻ lên 6:</strong> Giải thích về chế độ ăn nhiều đường, muối và thức ăn nhanh đi ngược lời khuyên y khoa, tỷ phú 96 tuổi cho biết ông đã nghiên cứu bảng thống kê bảo hiểm nhân thọ: "Tôi nhận thấy trẻ lên 6 có tỷ lệ tử vong thấp nhất, vì vậy tôi quyết định ăn uống như một đứa trẻ lên 6". Ông tránh ăn bông cải xanh vì khiến bữa ăn "giống như đi tù".</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- NHÓM 2 -->
+            <div class="category-title">📌 BỮA SÁNG TIẾT KIỆM VÀ SỞ THÍCH ĐẶC BIỆT</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-price">Giá ước tính</th>
+                        <th class="col-stt">STT</th>
+                        <th class="col-desc">Tên món / Chi tiết câu chuyện kể</th>
+                    </tr>
+                </thead>
+                <tbody class="table-body">
+                    <tr>
+                        <td class="col-price">2,61 USD</td>
+                        <td class="col-stt">04</td>
+                        <td class="col-desc"><strong>2 miếng xúc xích chiên McDonald's:</strong> Trên đường lái xe 5 phút đến văn phòng, ông hay ghé McDonald's. Nếu thị trường chứng khoán đi xuống, vợ ông chuẩn bị sẵn 2,61 USD để ông mua suất ăn này và uống kèm Coca-Cola ở công ty.</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">2,95 USD</td>
+                        <td class="col-stt">05</td>
+                        <td class="col-desc"><strong>Bánh Muffin kẹp thịt, trứng, phô mai:</strong> Mức giá bữa sáng trung bình được ông lựa chọn khi thị trường biến động bình thường.</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">3,17 USD</td>
+                        <td class="col-stt">06</td>
+                        <td class="col-desc"><strong>Bánh Biscuit kẹp thịt xông khói:</strong> Suất ăn sáng ngon nhất được ông lựa chọn vào những ngày thị trường chứng khoán khởi sắc.</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">Ăn sáng</td>
+                        <td class="col-stt">07</td>
+                        <td class="col-desc"><strong>Bánh Oreo ăn sáng:</strong> Tỷ phú Bill Gates từng kể lại trải nghiệm lần đầu tiên thấy bạn mình ăn sáng tại nhà, thực đơn của Warren Buffett là một gói bánh Oreo.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- NHÓM 3 -->
+            <div class="category-title">📌 DANH MỤC ĐẦU TƯ VÀ TRIẾT LÝ SỐNG</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-price">Giá trị đầu tư</th>
+                        <th class="col-stt">STT</th>
+                        <th class="col-desc">Tên thương hiệu / Triết lý</th>
+                    </tr>
+                </thead>
+                <tbody class="table-body">
+                    <tr>
+                        <td class="col-price">28 Tỷ USD</td>
+                        <td class="col-stt">08</td>
+                        <td class="col-desc"><strong>Cổ phiếu Coca-Cola:</strong> Minh chứng cho chiến lược "đặt tiền vào đúng nơi mình đặt miệng". Từ mức vốn 1,3 tỷ USD ban đầu cuối thập niên 1980, giá trị cổ phiếu Coca-Cola của Berkshire Hathaway đã lên tới khoảng 28 tỷ USD vào cuối năm 2025.</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">Sở hữu vốn</td>
+                        <td class="col-stt">09</td>
+                        <td class="col-desc"><strong>Dairy Queen, See's Candies, Kraft Heinz:</strong> Khẩu vị ăn uống phản ánh trực tiếp vào chiến lược đầu tư khi tập đoàn sở hữu chuỗi kem Dairy Queen, hãng kẹo See's Candies và rót vốn lớn vào Kraft Heinz.</td>
+                    </tr>
+                    <tr>
+                        <td class="col-price">Triết lý sống</td>
+                        <td class="col-stt">10</td>
+                        <td class="col-desc"><strong>Tận hưởng món ăn mình thích:</strong> Đáp lại lời trêu chọc của Charlie Munger về sức khỏe, nhà đầu tư 96 tuổi chia sẻ: "Nếu phải lựa chọn giữa việc ăn những món mình thích suốt đời hoặc ăn theo một chế độ nghiêm ngặt chỉ để hy vọng sống thêm một năm, tôi muốn ăn những gì mình tận hưởng".</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- KHU VỰC ĐỘN GIÚP LẶP TỰ ĐỘNG KHÔNG HẪNG -->
+            <div style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <!-- THANH ĐIỀU KHIỂN CỐ ĐỊNH (FIXED CONTROL BAR) -->
+    <div class="control-bar">
+        <button id="btnToggle" class="btn btn-toggle running" onclick="toggleScroll()">⏸ Tạm dừng</button>
+        <button class="btn" onclick="rewindScroll()">↺ Tua lại</button>
+        <button class="btn" onclick="restartScroll()">▶ Chạy lại từ đầu</button>
+
+        <div class="control-group">
+            <label for="speedRange">Tốc độ:</label>
+            <input type="range" id="speedRange" min="0.5" max="5" step="0.5" value="1" onchange="updateSpeed()">
+            <span id="speedVal" style="font-size: 0.85em; color: var(--orange-color);">1x</span>
+        </div>
+
+        <div class="control-group">
+            <button class="btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="btn" onclick="changeFontSize(1)">A+</button>
+        </div>
+    </div>
+
+    <script>
+        const scrollContainer = document.getElementById('scrollContainer');
+        const btnToggle = document.getElementById('btnToggle');
+        const speedRange = document.getElementById('speedRange');
+        const speedVal = document.getElementById('speedVal');
+
+        let isPaused = false;
+        let scrollSpeed = 1; // Pixels per frame base
+        let animationFrameId = null;
+        let currentFontSize = 14;
+
+        // Hàm cuộn liên tục
+        function step() {
+            if (!isPaused) {
+                scrollContainer.scrollTop += scrollSpeed;
+                
+                // Khi cuộn gần đến cuối, tự động vòng lên đầu mượt mà
+                if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 10) {
+                    scrollContainer.scrollTop = 0;
+                }
+            }
+            animationFrameId = requestAnimationFrame(step);
+        }
+
+        // Khởi động cuộn ngay khi tải trang
+        window.onload = () => {
+            scrollContainer.scrollTop = 0;
+            animationFrameId = requestAnimationFrame(step);
+        };
+
+        // Bật / Tắt Tạm dừng
+        function toggleScroll() {
+            isPaused = !isPaused;
+            if (isPaused) {
+                btnToggle.innerText = "▶ Tiếp tục";
+                btnToggle.className = "btn btn-toggle paused";
+            } else {
+                btnToggle.innerText = "⏸ Tạm dừng";
+                btnToggle.className = "btn btn-toggle running";
+            }
+        }
+
+        // Chạm/Click màn hình để tạm dừng hoặc chạy tiếp (trừ control bar & search)
+        function toggleScrollFromContainer(event) {
+            toggleScroll();
+        }
+
+        // Tua lại 100px
+        function rewindScroll() {
+            scrollContainer.scrollTop -= 150;
+            if (scrollContainer.scrollTop < 0) scrollContainer.scrollTop = 0;
+        }
+
+        // Chạy lại từ đầu
+        function restartScroll() {
+            scrollContainer.scrollTop = 0;
+            if (isPaused) toggleScroll();
+        }
+
+        // Cập nhật tốc độ cuộn
+        function updateSpeed() {
+            scrollSpeed = parseFloat(speedRange.value);
+            speedVal.innerText = scrollSpeed + 'x';
+        }
+
+        // Thay đổi cỡ chữ toàn trang
+        function changeFontSize(delta) {
+            currentFontSize += delta;
+            if (currentFontSize < 10) currentFontSize = 10;
+            if (currentFontSize > 24) currentFontSize = 24;
+            document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+        }
+
+        // Tìm kiếm nhanh (Filter)
+        function filterContent() {
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.data-table tbody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

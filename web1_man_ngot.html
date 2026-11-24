@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Món Ăn & Thức Uống Vị Mặn Ngọt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .price-col {
+            color: #4ade80;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .stt-col {
+            color: #fb923c;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="font-sans leading-relaxed pb-32">
+
+    <!-- THANH ĐIỀU KHIỂN CỐ ĐỊNH PHÍA DƯỚI -->
+    <div id="control-bar" class="fixed bottom-0 left-0 right-0 bg-stone-900/95 border-t border-stone-800 p-3 shadow-2xl z-50 flex flex-wrap items-center justify-center gap-3 text-xs md:text-sm backdrop-blur-md">
+        <!-- Nút Tạm dừng / Tiếp tục -->
+        <button id="btn-toggle" onclick="toggleScroll()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition shadow">
+            <i id="icon-play-pause" class="fa-solid fa-pause"></i> <span id="text-play-pause">Tạm dừng</span>
+        </button>
+
+        <!-- Nút Tua lại về đầu -->
+        <button onclick="rewindTop()" class="bg-stone-700 hover:bg-stone-600 text-white font-bold px-3 py-2 rounded-lg flex items-center gap-1 transition shadow">
+            <i class="fa-solid fa-rotate-left"></i> Tua lại
+        </button>
+
+        <!-- Nút Chạy lại từ đầu (Luôn sẵn sàng & khôi phục cuộn) -->
+        <button id="btn-restart-flow" onclick="restartFlow()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-lg flex items-center gap-1 transition shadow">
+            <i class="fa-solid fa-play"></i> Chạy lại từ đầu
+        </button>
+
+        <!-- Thanh trượt chỉnh tốc độ cuộn -->
+        <div class="flex items-center gap-2 bg-stone-800 px-3 py-1.5 rounded-lg border border-stone-700">
+            <span class="text-stone-400"><i class="fa-solid fa-gauge-high"></i> Tốc độ:</span>
+            <input type="range" id="speed-range" min="0.5" max="5" step="0.5" value="1.5" oninput="changeSpeed(this.value)" class="w-16 md:w-24 accent-amber-500 cursor-pointer">
+            <span id="speed-value" class="w-7 text-amber-400 font-bold">1.5x</span>
+        </div>
+
+        <!-- Tăng giảm cỡ chữ -->
+        <div class="flex items-center gap-1 bg-stone-800 p-1 rounded-lg border border-stone-700">
+            <button onclick="adjustFontSize(-1)" class="px-2.5 py-1 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded" title="Giảm cỡ chữ">A-</button>
+            <button onclick="adjustFontSize(1)" class="px-2.5 py-1 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded" title="Tăng cỡ chữ">A+</button>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <main id="main-content" class="max-w-4xl mx-auto p-4 md:p-6 space-y-8 mt-4">
+        
+        <header class="text-center border-b border-stone-800 pb-6 mb-6 space-y-3">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-amber-500 uppercase tracking-wide">Cẩm Nang Tổng Hợp Món Ăn & Thức Uống Vị Mặn Ngọt</h1>
+            <p class="text-stone-400 text-xs md:text-sm">Trang tự động cuộn mượt mà — Chạm vào màn hình để Tạm dừng / Tiếp tục</p>
+            
+            <!-- THANH TÌM KIẾM TRONG WEB -->
+            <div class="max-w-md mx-auto relative pt-2">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pt-2 text-stone-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="search-input" onkeyup="searchContent()" placeholder="Nhập tên món ăn cần tìm..." class="w-full bg-stone-900 border border-stone-700 text-stone-200 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-amber-500 shadow-inner">
+            </div>
+        </header>
+
+        <!-- KHU VỰC CHỨA DANH SÁCH MÓN ÁN (SẼ ĐƯỢC LẶP LIÊN TỤC) -->
+        <div id="scroll-container" class="space-y-8">
+            <!-- NHÓM 1: CÁC MÓN ĂN MẶN -->
+            <section class="space-y-4 food-section">
+                <h2 class="text-xl font-bold text-orange-400 border-l-4 border-orange-500 pl-3 uppercase">1. Các món ăn mặn (dùng trong bữa chính)</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse bg-stone-900 rounded-xl overflow-hidden shadow-lg border border-stone-800">
+                        <tbody>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top w-28">~60.000đ - 120.000đ</td>
+                                <td class="p-3 stt-col align-top w-12">1</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Thịt kho tàu / Thịt kho trứng:</strong> Món ăn truyền thống kinh điển với sự hòa quyện của nước mắm (mặn), đường thắng caramel/đường cát (ngọt) và nước dừa tươi[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~50.000đ - 90.000đ</td>
+                                <td class="p-3 stt-col align-top">2</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Cánh gà chiên nước mắm / Mực chiên nước mắm:</strong> Lớp sốt bên ngoài đậm đà vị mặn của nước mắm cốt, vị ngọt của đường/mật ong và tỏi ớt phi thơm[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~45.000đ - 80.000đ</td>
+                                <td class="p-3 stt-col align-top">3</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Thịt rim tiêu / Cá kho tộ:</strong> Các món kho đậm vị với tỉ lệ nước mắm và đường cân đối, tạo nên lớp sốt sánh đặc bao phủ lấy miếng thịt hoặc cá[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~50.000đ - 90.000đ</td>
+                                <td class="p-3 stt-col align-top">4</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Sườn xào chua ngọt:</strong> Dù có vị chua từ giấm hoặc chanh, nhưng điểm nhấn cốt lõi của món này là vị mặn của nước mắm kết hợp với lượng lớn đường để tạo độ bóng và sánh ngọt[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~70.000đ - 130.000đ</td>
+                                <td class="p-3 stt-col align-top">5</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Gà teriyaki / Thịt heo sốt Teriyaki:</strong> Ẩm thực Nhật Bản sử dụng nước tương (xì dầu) kết hợp với đường hoặc mirin để tạo ra lớp sốt ngọt mặn độc đáo[cite: 2].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- NHÓM 2: CÁC MÓN ĂN VẶT VÀ BÁNH KẸO -->
+            <section class="space-y-4 food-section">
+                <h2 class="text-xl font-bold text-orange-400 border-l-4 border-orange-500 pl-3 uppercase">2. Các món ăn vặt và bánh kẹo</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse bg-stone-900 rounded-xl overflow-hidden shadow-lg border border-stone-800">
+                        <tbody>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top w-28">~80.000đ - 150.000đ</td>
+                                <td class="p-3 stt-col align-top w-12">6</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Bánh bông lan trứng muối:</strong> Cốt bánh ngọt mềm, thơm béo kết hợp với vị mặn bùi đặc trưng của lòng đỏ trứng muối và chà bông (ruốc)[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~20.000đ - 40.000đ</td>
+                                <td class="p-3 stt-col align-top">7</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Bánh mì chà bông sốt bơ trứng:</strong> Sự kết hợp giữa vị mặn của chà bông, vị béo ngọt của sốt bơ và vỏ bánh mì ngọt nhẹ[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~25.000đ - 50.000đ</td>
+                                <td class="p-3 stt-col align-top">8</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Bắp rang bơ vị caramel muối (Salted Caramel Popcorn):</strong> Vị ngọt đậm của lớp caramel đường cháy kết hợp với một chút muối biển tinh tế làm nổi bật hương vị[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~30.000đ - 60.000đ</td>
+                                <td class="p-3 stt-col align-top">9</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Kem vị muối biển (Sea Salt Ice Cream / Salted Caramel Ice Cream):</strong> Kem ngọt lạnh có pha chút vị mặn nhẹ giúp cân bằng độ ngấy, tạo cảm giác lạ miệng và cuốn hút[cite: 2].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- NHÓM 3: THỨC UỐNG -->
+            <section class="space-y-4 food-section">
+                <h2 class="text-xl font-bold text-orange-400 border-l-4 border-orange-500 pl-3 uppercase">3. Thức uống</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse bg-stone-900 rounded-xl overflow-hidden shadow-lg border border-stone-800">
+                        <tbody>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top w-28">~35.000đ - 55.000đ</td>
+                                <td class="p-3 stt-col align-top w-12">10</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Trà sữa kem muối (Salted Cheese / Salted Cream Tea):</strong> Lớp màng sữa (macchiato/cheese) phía trên có vị mặn nhẹ và béo ngậy, kết hợp bên dưới là trà sữa hoặc trà trái cây có vị ngọt thanh[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~25.000đ - 45.000đ</td>
+                                <td class="p-3 stt-col align-top">11</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Cà phê muối:</strong> Thức uống đặc sản nổi tiếng gồm cà phê pha phin kết hợp với sữa đặc, sữa tươi và một chút muối để làm dịu vị đắng, tăng độ béo ngọt đậm đà cho cà phê[cite: 2].</td>
+                            </tr>
+                            <tr class="border-b border-stone-800 hover:bg-stone-800/50 transition item-row">
+                                <td class="p-3 price-col align-top">~15.000đ - 30.000đ</td>
+                                <td class="p-3 stt-col align-top">12</td>
+                                <td class="p-3 text-stone-200 align-top item-desc"><strong>Nước chanh muối / Soda chanh muối:</strong> Sự pha trộn giữa vị mặn của chanh muối ngâm lâu năm, vị chua thanh và lượng đường vừa đủ tạo nên thức uống giải khát cực kỳ đưa miệng[cite: 2].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT XỬ LÝ LẶP CUỘN KHÔNG KHOẢNG TRỐNG VÀ NÚT BẤM -->
+    <script>
+        let isScrolling = true;
+        let scrollSpeed = 1.5; 
+        let animId = null;
+
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            startAutoScroll();
+        };
+
+        function autoScrollStep() {
+            if (isScrolling) {
+                window.scrollBy(0, scrollSpeed);
+                
+                // Khi chạm gần chạm đáy, nhảy mượt về đầu mà không tạo khoảng trắng hẫng
+                let maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                if (window.scrollY >= maxScroll - 2) {
+                    window.scrollTo(0, 0);
+                }
+            }
+            animId = requestAnimationFrame(autoScrollStep);
+        }
+
+        function startAutoScroll() {
+            if (!animId) {
+                animId = requestAnimationFrame(autoScrollStep);
+            }
+        }
+
+        function toggleScroll() {
+            isScrolling = !isScrolling;
+            updateBtnState();
+        }
+
+        function updateBtnState() {
+            const icon = document.getElementById('icon-play-pause');
+            const text = document.getElementById('text-play-pause');
+            const btn = document.getElementById('btn-toggle');
+
+            if (isScrolling) {
+                icon.className = "fa-solid fa-pause";
+                text.innerText = "Tạm dừng";
+                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                btn.classList.add('bg-amber-600', 'hover:bg-amber-700');
+            } else {
+                icon.className = "fa-solid fa-play";
+                text.innerText = "Tiếp tục";
+                btn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+        }
+
+        function rewindTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            isScrolling = true;
+            updateBtnState();
+        }
+
+        function restartFlow() {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            isScrolling = true;
+            updateBtnState();
+            if (!animId) {
+                startAutoScroll();
+            }
+        }
+
+        function changeSpeed(val) {
+            scrollSpeed = parseFloat(val);
+            document.getElementById('speed-value').innerText = val + 'x';
+        }
+
+        document.addEventListener('click', function(e) {
+            const controlBar = document.getElementById('control-bar');
+            const searchInput = document.getElementById('search-input');
+            if (!controlBar.contains(e.target) && !searchInput.contains(e.target)) {
+                toggleScroll();
+            }
+        });
+
+        function searchContent() {
+            let input = document.getElementById('search-input').value.toLowerCase();
+            let rows = document.getElementsByClassName('item-row');
+
+            if (input.length > 0 && isScrolling) {
+                toggleScroll();
+            }
+
+            for (let i = 0; i < rows.length; i++) {
+                let desc = rows[i].getElementsByClassName('item-desc')[0].innerText.toLowerCase();
+                if (desc.includes(input)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        let currentFontSize = 100;
+        function adjustFontSize(delta) {
+            currentFontSize += delta * 10;
+            if (currentFontSize < 80) currentFontSize = 80;
+            if (currentFontSize > 150) currentFontSize = 150;
+            document.getElementById('main-content').style.fontSize = currentFontSize + '%';
+        }
+    </script>
+</body>
+</html>
